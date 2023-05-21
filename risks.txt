@@ -1,0 +1,3 @@
+when making relative requests, we are supplying "https://" maybe we don't need the s or also need the www.
+some links are null and we need to figure out why
+for some reason splittesting is super slow
