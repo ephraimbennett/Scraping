@@ -1,12 +1,10 @@
 package com.scrape.ephraim;
 
-import org.jsoup.nodes.Document;
+
 
 import java.util.*;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Crawler
 {
@@ -17,9 +15,10 @@ public class Crawler
     private String mDomain;
 
     ///visited links
-    private Set<Link> mVisitedLinks = new HashSet<>();
+    private Set<String> mVisitedLinks = new HashSet<>();
 
-    ///association to the visitor
+    ///association to the scraper
+    private Scraper mScraper;
 
     /**
      * Constructor with base url
@@ -32,16 +31,19 @@ public class Crawler
     }
 
     /**
+     * Sets the scraper
+     * @param scraper
+     */
+    public void setScraper(Scraper scraper)
+    {
+        mScraper = scraper;
+    }
+
+    /**
      * Getter for
      * @return url
      */
     public String getUrl() {return mBaseUrl;}
-
-    /**
-     * Setter for base
-     * @param url
-     */
-    public void setUrl(String url){mBaseUrl = url;}
 
     /**
      * Getter for the domain name
@@ -53,7 +55,7 @@ public class Crawler
      * Grabs the set of visited links
      * @return
      */
-    public Set<Link> getVisitedLinks() {return mVisitedLinks;}
+    public Set<String> getVisitedLinks() {return mVisitedLinks;}
 
     /**
      * recursive crawl
@@ -62,10 +64,11 @@ public class Crawler
     {
         System.out.println("NEW VISITOR\n\n\n\n\n\n");
         Visitor visitor = new Visitor();
+        visitor.setCrawler(this);
+        visitor.setScraper(mScraper);
         int index = 0;
         for (Link link : urlList) {
             try {
-                index++;
                 if (visitedLink(link))
                 {
                     continue;
@@ -76,8 +79,7 @@ public class Crawler
                 } else {
                     visitor.addUrl(link.getUrl());
                 }
-                visitor.setCrawler(this);
-                addLink(link);
+                addLink(link.getUrl());
             } catch (NullPointerException e)
             {
                 var x = urlList.subList(index, index + 20);
@@ -100,19 +102,9 @@ public class Crawler
      * Adds a singular link to the list of visited links
      * @param link
      */
-    public void addLink(Link link)
+    public void addLink(String link)
     {
         mVisitedLinks.add(link);
-    }
-
-    /**
-     * Adds links from another list onto the list of visted links
-     * ignores duplicates
-     * @param links
-     */
-    public void addLinks(List<Link> links)
-    {
-        mVisitedLinks.addAll(links);
     }
 
     /**
@@ -122,14 +114,7 @@ public class Crawler
      */
     public boolean visitedLink(Link link)
     {
-        for (var checkLink : mVisitedLinks)
-        {
-            if (link.equals(checkLink))
-            {
-                return true;
-            }
-        }
-        return false;
+        return mVisitedLinks.contains(link.getUrl());
     }
 
 

@@ -1,6 +1,7 @@
 import com.scrape.ephraim.Crawler;
 import com.scrape.ephraim.Fetcher;
 import com.scrape.ephraim.Link;
+import com.scrape.ephraim.Scraper;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
@@ -15,12 +16,25 @@ public class TestRun {
 
     static void TestCrawler()
     {
-        Crawler crawler = new Crawler("https://developer.mozilla.org/en-US/");
+        //set up a timer for performance
+        long beginTime = System.currentTimeMillis();
+
+        //creates a crawler
+        Crawler crawler = new Crawler("https://www.coursereport.com/");
         List<Link> urls = new ArrayList<>();
-        Link link = new Link("https://developer.mozilla.org/en-US/", true, false);
+        Link link = new Link("https://www.coursereport.com/", true, false);
         urls.add(link);
+
+        //now create a scraper
+        Scraper scraper = new Scraper(crawler.getDomain());
+        crawler.setScraper(scraper);
+
+
         crawler.crawl(urls);
         System.out.println("total links visited: " + crawler.getVisitedLinks().size());
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
     }
 
     static void TestFetcher()

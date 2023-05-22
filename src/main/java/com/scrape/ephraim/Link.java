@@ -79,7 +79,6 @@ public class Link {
      */
     public boolean equals(Link otherLink)
     {
-        boolean res = false;
         //simple exact url check
         if (this.getUrl().equals(otherLink.getUrl()))
         {
@@ -88,27 +87,27 @@ public class Link {
 //
         //need to count for reference
         //first check the smaller link is contained in the other one
-        String containerUrl = "";
-        String baseUrl = "";
-        if (this.getUrl().contains(otherLink.getUrl()))
-        {
-            containerUrl = this.getUrl();
-            baseUrl = otherLink.getUrl();
-        }
-        else if (otherLink.getUrl().contains(this.getUrl()))
-        {
-            containerUrl = otherLink.getUrl();
-            baseUrl = this.getUrl();
-        }
-        //if either of them contains the other one
-        if (containerUrl.length() > 0)
-        {
-            String difference = containerUrl.substring(baseUrl.length(), containerUrl.length());
-            if (difference.charAt(0) == '#')
-            {
-                return true;
-            }
-        }
-        return res;
+//        String containerUrl = "";
+//        String baseUrl = "";
+//        if (this.getUrl().contains(otherLink.getUrl()))
+//        {
+//            containerUrl = this.getUrl();
+//            baseUrl = otherLink.getUrl();
+//        }
+//        else if (otherLink.getUrl().contains(this.getUrl()))
+//        {
+//            containerUrl = otherLink.getUrl();
+//            baseUrl = this.getUrl();
+//        }
+//        //if either of them contains the other one
+//        if (containerUrl.length() > 0)
+//        {
+//            String difference = containerUrl.substring(baseUrl.length(), containerUrl.length());
+//            if (difference.charAt(0) == '#')
+//            {
+//                return true;
+//            }
+//        }
+        return false;
     }
 }

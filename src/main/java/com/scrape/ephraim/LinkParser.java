@@ -50,7 +50,7 @@ public class LinkParser {
      */
     public void setDomainName(String domainName){
         mDomainName = domainName;
-        mDomainPattern = Pattern.compile("^https?://" + domainName);
+        mDomainPattern = Pattern.compile("^https?://(www.)?" + domainName);
     }
 
     /**
@@ -121,6 +121,7 @@ public class LinkParser {
         {
             String url = a.attr("href");
             Link link = processUrl(url);
+            if (link == null) continue;
             if (link.isInternal())
             {
                 mInternalLinks.add(link);
@@ -140,6 +141,7 @@ public class LinkParser {
     private Link processUrl(String url)
     {
         //first determine if it's an on sight page
+
 
         //if it begins with a slash it's gotta be internal & relative
         Matcher m1 = Patterns.slashPattern.matcher(url);

@@ -8,24 +8,21 @@ import org.jsoup.nodes.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class Visitor {
     ///document we are returning
     Document mDocument;
 
-    ///composite link parser
-    LinkParser mLinkParser;
-
     ///composite fetcher
     Fetcher mFetcher;
 
     //association to the crawler
     List<Crawler> mCrawler;
+
+    ///association to the scraper
+    Scraper mScraper;
 
     ///the different urls we have to visit
     List<String> mUrls;
@@ -35,7 +32,6 @@ public class Visitor {
      */
     public Visitor()
     {
-        mLinkParser = new LinkParser();
         mFetcher = new Fetcher();
         mCrawler = new ArrayList<>();
         mUrls = new ArrayList<>();
@@ -47,6 +43,15 @@ public class Visitor {
      */
     public void setCrawler(Crawler crawler) {
         mCrawler.add(crawler);
+    }
+
+    /**
+     * Sets the association to the scraper
+     * @param scraper
+     */
+    public void setScraper(Scraper scraper)
+    {
+        mScraper = scraper;
     }
 
     public void addUrl(String url)
@@ -61,31 +66,36 @@ public class Visitor {
     {
         //res
         List<List<Link>> res = new ArrayList<>();
-        Executor executor = Executors.newFixedThreadPool(64);
-        List<CompletableFuture<List<Link>>> futures = new ArrayList<>();
+        //the executor
+        Executor executor = Executors.newFixedThreadPool(256);
+
+        //list of futures that we are going to combine into one later
+        //the loop will populate this list with a request to each url
+        List<CompletableFuture<Document>> futures = new ArrayList<>();
         for (String url : mUrls) {
             CompletableFuture<Document> futureDoc = CompletableFuture.supplyAsync(()-> {
                 Fetcher fetcher = new Fetcher(url);
                 return fetcher.fetch();
             });
-            //second future that provides parsing
-            CompletableFuture<List<Link>> futureLinks = futureDoc.thenApplyAsync((document) -> {
-                mLinkParser.reset();
-                mLinkParser.setDomainName(mCrawler.get(0).getDomain());
-                mLinkParser.parse(document);
-                mLinkParser.setParentUrl(url);
-                List<Link> returnList = new ArrayList<>(mLinkParser.getInternalLinks());
-                return returnList;
-            }, executor);
-            futures.add(futureLinks);
-            System.out.println("Fetching " + url + " ... ");
+            futures.add(futureDoc);
+//            System.out.println("Fetching " + url + " ... ");
         }
+
+        //make one giant combined future
         CompletableFuture<Void> combinedFutureVoid = CompletableFuture.allOf(futures.toArray(
                 new CompletableFuture[futures.size()]));
-        CompletableFuture<List<List<Link>>> combinedFuture = combinedFutureVoid.thenApply(
+        CompletableFuture<List<Document>> combinedFuture = combinedFutureVoid.thenApply(
                 t -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
         try {
-            res = combinedFuture.get();
+            var documents = combinedFuture.get();
+            System.out.println("Fetching done!");
+            for (int i = 0; i < documents.size(); i++)
+            {
+                var document = documents.get(i);
+                mScraper.setParentUrl(mUrls.get(i));
+                mScraper.scrapePage(document);
+                res.add(mScraper.getInternalLinks());
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {

@@ -64,9 +64,9 @@ public class Fetcher {
         Document document = null;
         try {
             var connection =  Jsoup.connect(mUrl);
-            connection.timeout(100 * 1000);
+            connection.timeout(10 * 1000);
             document = connection.get();
-//            System.out.println(mUrl + " done!");
+            System.out.println(mUrl + " done!");
             return document;
         } catch (HttpStatusException e)
         {
@@ -81,7 +81,11 @@ public class Fetcher {
         }
         catch (SocketTimeoutException e)
         {
-            System.out.println("Connection Exception! " + mUrl);
+            System.out.println("the socket timed out! " + mUrl);
+        }
+        catch (ConnectException e)
+        {
+            System.out.println("Connection timed out! " + mUrl);
         }
         catch (Exception e)
         {
