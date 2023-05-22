@@ -20,15 +20,13 @@ public class TestRun {
         long beginTime = System.currentTimeMillis();
 
         //creates a crawler
-        Crawler crawler = new Crawler("https://www.coursereport.com/");
-        List<Link> urls = new ArrayList<>();
-        Link link = new Link("https://www.coursereport.com/", true, false);
-        urls.add(link);
+        Crawler crawler = new Crawler("https://www.zenrows.com/");
+        List<String> urls = new ArrayList<>();
+        urls.add(crawler.getUrl());
 
         //now create a scraper
         Scraper scraper = new Scraper(crawler.getDomain());
         crawler.setScraper(scraper);
-
 
         crawler.crawl(urls);
         System.out.println("total links visited: " + crawler.getVisitedLinks().size());

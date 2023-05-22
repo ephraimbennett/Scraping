@@ -43,7 +43,11 @@ public class Scraper
         mLinkParser.setParentUrl(parentUrl);
     }
 
-    public List<Link> getInternalLinks()
+    /**
+     * getter for the internal links
+     * @return hmmmm
+     */
+    public List<String> getInternalLinks()
     {
         return mLinkParser.getInternalLinks();
     }

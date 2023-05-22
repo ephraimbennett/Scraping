@@ -13,10 +13,10 @@ public class LinkParser {
     private Document mDocument = null;
 
     ///list of the internal links we find
-    private List<Link> mInternalLinks;
+    private List<String> mInternalLinks;
 
     ///list of the external links we find
-    private List<Link> mExternalLinks;
+    private List<String> mExternalLinks;
 
     ///the domain name
     private String mDomainName;
@@ -32,8 +32,8 @@ public class LinkParser {
      */
     public LinkParser()
     {
-        mInternalLinks = new ArrayList<Link>();
-        mExternalLinks = new ArrayList<Link>();
+        mInternalLinks = new ArrayList<String>();
+        mExternalLinks = new ArrayList<String>();
         mDomainName = "%";
     }
 
@@ -73,9 +73,9 @@ public class LinkParser {
      * Setter for document
      * @return
      */
-    public List<Link> getInternalLinks() {return mInternalLinks;}
+    public List<String> getInternalLinks() {return mInternalLinks;}
 
-    public List<Link> getExternalLinks() {return mExternalLinks;}
+    public List<String> getExternalLinks() {return mExternalLinks;}
 
     /**
      * Resets the list of internal and external links
@@ -120,16 +120,7 @@ public class LinkParser {
         for (var a : elementsA)
         {
             String url = a.attr("href");
-            Link link = processUrl(url);
-            if (link == null) continue;
-            if (link.isInternal())
-            {
-                mInternalLinks.add(link);
-            }
-            else
-            {
-                mExternalLinks.add(link);
-            }
+            processUrl(url);
         }
     }
 
@@ -138,27 +129,30 @@ public class LinkParser {
      * @param url
      * @return the link object
      */
-    private Link processUrl(String url)
+    private void processUrl(String url)
     {
-        //first determine if it's an on sight page
-
+        String res = "";
 
         //if it begins with a slash it's gotta be internal & relative
         Matcher m1 = Patterns.slashPattern.matcher(url);
         if (m1.find())
         {
-            return new Link(url, true, true);
+            res = "https://" + mDomainName + url;
+            mInternalLinks.add(res);
+            return;
         }
 
         //if it starts with the domain name, then it's internal but not relative
         Matcher m2 = mDomainPattern.matcher(url);
         if (m2.find())
         {
-            return new Link(url, true, false);
+            res = url;
+            mInternalLinks.add(res);
+            return;
         }
 
         //at this point it's external (and therefore not relative)
-        return new Link(url, false, false);
+        mExternalLinks.add(url);
     }
 
 }

@@ -1,19 +1,13 @@
 package com.scrape.ephraim;
 
-import com.scrape.ephraim.Fetcher;
-import com.scrape.ephraim.LinkParser;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class Visitor {
-    ///document we are returning
-    Document mDocument;
 
     ///composite fetcher
     Fetcher mFetcher;
@@ -62,10 +56,10 @@ public class Visitor {
     /**
      * Visits the url page
      */
-    public List<List<Link>> visit()
+    public List<List<String>> visit()
     {
         //res
-        List<List<Link>> res = new ArrayList<>();
+        List<List<String>> res = new ArrayList<>();
         //the executor
         Executor executor = Executors.newFixedThreadPool(256);
 
@@ -78,7 +72,6 @@ public class Visitor {
                 return fetcher.fetch();
             });
             futures.add(futureDoc);
-//            System.out.println("Fetching " + url + " ... ");
         }
 
         //make one giant combined future

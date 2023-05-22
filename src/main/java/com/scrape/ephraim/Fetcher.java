@@ -1,5 +1,10 @@
 package com.scrape.ephraim;
 
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -63,11 +68,12 @@ public class Fetcher {
     {
         Document document = null;
         try {
-            var connection =  Jsoup.connect(mUrl);
+            var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
             document = connection.get();
             System.out.println(mUrl + " done!");
             return document;
+
         } catch (HttpStatusException e)
         {
             System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
