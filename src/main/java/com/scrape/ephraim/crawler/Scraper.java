@@ -1,7 +1,10 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.data.Page;
+import com.scrape.ephraim.data.SiteMap;
 import org.jsoup.nodes.Document;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Scraper
@@ -9,10 +12,12 @@ public class Scraper
     ///composite link parser
     private LinkParser mLinkParser;
 
+    ///association to the site map
+    private SiteMap mSiteMap;
+
     ///the domain name
     private String mDomain;
 
-    ///the parent url
 
     /**
      * Constructor
@@ -21,17 +26,26 @@ public class Scraper
     {
         mLinkParser = new LinkParser();
         mDomain = domain;
+        mSiteMap = new SiteMap();
     }
 
     /**
      * Scrapes the webpage
      * @param document
      */
-    public void scrapePage(Document document)
+    public void scrapePage(Document document, String url)
     {
+        //parse the links
         mLinkParser.clear();
         mLinkParser.setDomainName(mDomain);
         mLinkParser.parse(document);
+
+        //make a page object for this specific url
+        Page page = new Page(url);
+        page.setOutLinks(mLinkParser.getInternalLinks());
+
+        mSiteMap.addPage(page);
+
     }
 
     /**

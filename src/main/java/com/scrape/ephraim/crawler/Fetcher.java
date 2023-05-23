@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 import okhttp3.Call;
 import okhttp3.Request;

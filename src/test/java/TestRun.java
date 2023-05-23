@@ -1,7 +1,6 @@
-import com.scrape.ephraim.Crawler;
-import com.scrape.ephraim.Fetcher;
-import com.scrape.ephraim.Link;
-import com.scrape.ephraim.Scraper;
+import com.scrape.ephraim.crawler.Crawler;
+import com.scrape.ephraim.crawler.Fetcher;
+import com.scrape.ephraim.crawler.Scraper;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;

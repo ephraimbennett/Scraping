@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 public class Main {
     public static void main(String[] args) {

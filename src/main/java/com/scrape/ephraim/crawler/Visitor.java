@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 import org.jsoup.nodes.Document;
 
@@ -85,8 +85,9 @@ public class Visitor {
             for (int i = 0; i < documents.size(); i++)
             {
                 var document = documents.get(i);
-                mScraper.setParentUrl(mUrls.get(i));
-                mScraper.scrapePage(document);
+                var url = mUrls.get(i);
+                mScraper.setParentUrl(url);
+                mScraper.scrapePage(document, url);
                 res.add(mScraper.getInternalLinks());
             }
         } catch (InterruptedException e) {
