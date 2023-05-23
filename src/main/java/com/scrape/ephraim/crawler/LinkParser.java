@@ -133,11 +133,20 @@ public class LinkParser {
     {
         String res = "";
 
+        //remove the on page jump from the url
+        Matcher mJump = Patterns.onPagePattern.matcher(url);
+        if (mJump.find())
+        {
+           url = mJump.group(1);
+//           System.out.println(url + " removed: " + mJump.group(2));
+        }
+
         //if it begins with a slash it's gotta be internal & relative
         Matcher m1 = Patterns.slashPattern.matcher(url);
         if (m1.find())
         {
             res = "https://" + mDomainName + url;
+
             mInternalLinks.add(res);
             return;
         }
@@ -147,6 +156,7 @@ public class LinkParser {
         if (m2.find())
         {
             res = url;
+
             mInternalLinks.add(res);
             return;
         }

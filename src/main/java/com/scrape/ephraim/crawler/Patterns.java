@@ -11,5 +11,6 @@ public class Patterns {
     ///grabs the domain name from the url
     public static Pattern domainPattern = Pattern.compile("^https?://([\\w.]+)");
 
-    ///determine
+    ///determines if the link is an on page jump
+    public static Pattern onPagePattern = Pattern.compile("^(.*)(#[^/]*)$");
 }
