@@ -1,10 +1,5 @@
 package com.scrape.ephraim.crawler;
 
-import okhttp3.Call;
-import okhttp3.Request;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -73,7 +68,6 @@ public class Fetcher {
             document = connection.get();
             System.out.println(mUrl + " done!");
             return document;
-
         } catch (HttpStatusException e)
         {
             System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
