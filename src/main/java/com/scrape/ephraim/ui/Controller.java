@@ -100,6 +100,7 @@ public class Controller
                 if (level < page.getPath().size() - 1)
                 {
                     populateTreeView(page, x, level + 1);
+                    return;
                 }
             }
         }
