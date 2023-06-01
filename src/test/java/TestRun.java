@@ -37,7 +37,7 @@ public class TestRun {
     static void TestFetcher()
     {
         Fetcher fetcher = new Fetcher();
-        fetcher.setUrl("https://https://unclejulios.com/");
+        fetcher.setUrl("https://unclejulios.com/");
 //        fetcher.fetch();
         Document drD = fetcher.getDocument();
 

@@ -13,4 +13,8 @@ public class Patterns {
 
     ///determines if the link is an on page jump
     public static Pattern onPagePattern = Pattern.compile("^(.*)(#[^/]*)$");
+
+
+    ///grabs the path from the url
+    public static Pattern pathPattern = Pattern.compile("^https?://([\\w.]+)(.*)$");
 }

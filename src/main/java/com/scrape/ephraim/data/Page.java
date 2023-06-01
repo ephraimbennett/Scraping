@@ -1,12 +1,19 @@
 package com.scrape.ephraim.data;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+
+import com.scrape.ephraim.crawler.Patterns;
 
 public class Page
 {
     ///this page's url
     private String mUrl;
+
+    ///this page's path (url - domain name)
+    private ArrayList<String> mPath;
 
     ///list of in link
     private HashSet<String> mInLinks;
@@ -23,6 +30,14 @@ public class Page
         mUrl = url;
         mInLinks = new HashSet<>();
         mOutLinks = new HashSet<>();
+
+        //create the path
+        Matcher matcher = Patterns.pathPattern.matcher(mUrl);
+        if (matcher.find())
+        {
+            String totalPath = matcher.group(2);
+            mPath = new ArrayList<String>(List.of(totalPath.split("/")));
+        }
     }
 
     /**
@@ -55,4 +70,20 @@ public class Page
      * @return hmm...
      */
     public String getUrl() {return mUrl;}
+
+    /**
+     * Getter for the path
+     * @return
+     */
+    public ArrayList<String> getPath() {return mPath;}
+
+    /**
+     * Indicates if this page is a child of the supplied path
+     * @param path
+     * @return
+     */
+    public boolean belongsToPath(String path)
+    {
+        return mUrl.contains(path);
+    }
 }

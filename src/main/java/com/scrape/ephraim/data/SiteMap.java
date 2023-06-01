@@ -2,8 +2,9 @@ package com.scrape.ephraim.data;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
-public class SiteMap
+public class SiteMap implements Iterable<Page>
 {
     ///the hashtable for the site map
     private HashMap<String, Page> mMap;
@@ -14,6 +15,11 @@ public class SiteMap
     public SiteMap()
     {
         mMap = new HashMap<>();
+    }
+
+    @Override
+    public Iterator<Page> iterator() {
+        return this.mMap.values().iterator();
     }
 
     /**

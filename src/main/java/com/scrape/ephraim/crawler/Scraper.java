@@ -66,6 +66,18 @@ public class Scraper
         return mLinkParser.getInternalLinks();
     }
 
+    /**
+     * Getter for the site map
+     * @return
+     */
+    public SiteMap getSiteMap() {return mSiteMap;}
+
+    /**
+     *
+     * @return
+     */
+    public String getDomain() {return mDomain;}
+
 
 
 }
