@@ -2,3 +2,4 @@ when making relative requests, we are supplying "https://" maybe we don't need t
 some links are null and we need to figure out why *fixed;
 for some reason splittesting is super slow *fixed;
 the scraper may be given the incorrect url
+need to account for subdomains

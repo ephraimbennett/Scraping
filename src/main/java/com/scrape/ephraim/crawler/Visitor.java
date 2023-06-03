@@ -65,9 +65,9 @@ public class Visitor {
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
-        List<CompletableFuture<Document>> futures = new ArrayList<>();
+        List<CompletableFuture<ResponseWrapper>> futures = new ArrayList<>();
         for (String url : mUrls) {
-            CompletableFuture<Document> futureDoc = CompletableFuture.supplyAsync(()-> {
+            CompletableFuture<ResponseWrapper> futureDoc = CompletableFuture.supplyAsync(()-> {
                 Fetcher fetcher = new Fetcher(url);
                 return fetcher.fetch();
             });
@@ -77,18 +77,22 @@ public class Visitor {
         //make one giant combined future
         CompletableFuture<Void> combinedFutureVoid = CompletableFuture.allOf(futures.toArray(
                 new CompletableFuture[futures.size()]));
-        CompletableFuture<List<Document>> combinedFuture = combinedFutureVoid.thenApply(
+        CompletableFuture<List<ResponseWrapper>> combinedFuture = combinedFutureVoid.thenApply(
                 t -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
         try {
-            var documents = combinedFuture.get();
+            var responses = combinedFuture.get();
             System.out.println("Fetching done!");
-            for (int i = 0; i < documents.size(); i++)
+            for (int i = 0; i < responses.size(); i++)
             {
-                var document = documents.get(i);
-                var url = mUrls.get(i);
+                //scrape the document
+                var document = responses.get(i).getDocument();
+                var url = responses.get(i).getUrl();
                 mScraper.setParentUrl(url);
                 mScraper.scrapePage(document, url);
                 res.add(mScraper.getInternalLinks());
+
+                //store the headers
+                mScraper.getHeaders().addResponseHeader(url, responses.get(i).getHeaders());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

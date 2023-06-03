@@ -7,6 +7,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -34,22 +36,30 @@
           </Menu>
         </menus>
       </MenuBar>
-      <SplitPane dividerPositions="0.7023411371237458" prefHeight="244.0" prefWidth="600.0">
+      <SplitPane dividerPositions="0.5535117056856187" prefHeight="244.0" prefWidth="600.0">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="377.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="328.0">
                <children>
-                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" prefHeight="220.0" prefWidth="345.0">
+                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" prefHeight="220.0" prefWidth="291.0">
                      <cursor>
                         <Cursor fx:constant="H_RESIZE" />
                      </cursor></TreeView>
                </children></AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="251.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <TabPane prefHeight="242.0" prefWidth="264.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Internal Links" />
+                      <Tab text="External Links" />
+                    </tabs>
+                  </TabPane>
+               </children></AnchorPane>
         </items>
       </SplitPane>
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
             <Label text="Enter Url:" />
-            <TextField />
+            <TextField fx:id="urlField" />
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
          </children>
       </HBox>

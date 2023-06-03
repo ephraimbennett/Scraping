@@ -6,6 +6,7 @@ import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -23,6 +24,9 @@ public class Controller
     @FXML
     public TreeView treeView;
 
+    @FXML
+    TextField urlField;
+
     public void onExit()
     {
         Platform.exit();
@@ -35,7 +39,7 @@ public class Controller
         long beginTime = System.currentTimeMillis();
 
         //creates a crawler
-        Crawler crawler = new Crawler("https://unclejulios.com/");
+        Crawler crawler = new Crawler(urlField.getText());
         List<String> urls = new ArrayList<>();
         urls.add(crawler.getUrl());
 
@@ -66,7 +70,7 @@ public class Controller
 
         for (Page page : scraper.getSiteMap())
         {
-            if (page.getPath().size() > 1)
+            if (page.getPath().size() > 1)//if we have more than just a /
             {
                 populateTreeView(page, rootItem, 1);
             }
@@ -89,7 +93,6 @@ public class Controller
         {
             e.printStackTrace();
         }
-
 
         //try to match this node with some branch in this element of the tree
         for (var x : root.getChildren())

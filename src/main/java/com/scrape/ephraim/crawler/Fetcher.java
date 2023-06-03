@@ -13,6 +13,7 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.MalformedInputException;
+import java.util.HashMap;
 import java.util.concurrent.*;
 
 public class Fetcher {
@@ -59,15 +60,17 @@ public class Fetcher {
 
 
     ///returns a future document
-    public Document fetch()
+    public ResponseWrapper fetch()
     {
         Document document = null;
+        HashMap<String, String> responseHeaders = null;
         try {
             var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
-            document = connection.get();
+            Connection.Response response = connection.execute();
+            responseHeaders = new HashMap<>(response.headers());
+            document = response.parse();
             System.out.println(mUrl + " done!");
-            return document;
         } catch (HttpStatusException e)
         {
             System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
@@ -92,7 +95,8 @@ public class Fetcher {
             e.printStackTrace();
         }
         finally {
-            return document;
+            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl);
+            return wrapper;
         }
     }
 

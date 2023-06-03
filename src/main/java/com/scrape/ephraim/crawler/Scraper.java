@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.data.Headers;
 import com.scrape.ephraim.data.Page;
 import com.scrape.ephraim.data.SiteMap;
 import org.jsoup.nodes.Document;
@@ -15,6 +16,9 @@ public class Scraper
     ///association to the site map
     private SiteMap mSiteMap;
 
+    ///association to the headers storage
+    private Headers mHeaders;
+
     ///the domain name
     private String mDomain;
 
@@ -27,6 +31,7 @@ public class Scraper
         mLinkParser = new LinkParser();
         mDomain = domain;
         mSiteMap = new SiteMap();
+        mHeaders = new Headers();
     }
 
     /**
@@ -73,10 +78,16 @@ public class Scraper
     public SiteMap getSiteMap() {return mSiteMap;}
 
     /**
-     *
+     * gets the domain name
      * @return
      */
     public String getDomain() {return mDomain;}
+
+    /**
+     * Getter for the headers association
+     * @return
+     */
+    public Headers getHeaders() {return mHeaders;}
 
 
 
