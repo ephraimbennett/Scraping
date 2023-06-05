@@ -127,7 +127,6 @@ public class LinkParser {
     /**
      * Processes a valid url into a link object
      * @param url
-     * @return the link object
      */
     private void processUrl(String url)
     {

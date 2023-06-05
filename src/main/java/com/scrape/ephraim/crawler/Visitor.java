@@ -84,15 +84,18 @@ public class Visitor {
             System.out.println("Fetching done!");
             for (int i = 0; i < responses.size(); i++)
             {
-                //scrape the document
-                var document = responses.get(i).getDocument();
-                var url = responses.get(i).getUrl();
-                mScraper.setParentUrl(url);
-                mScraper.scrapePage(document, url);
-                res.add(mScraper.getInternalLinks());
+                if (!mScraper.generateIssue(responses.get(i)))
+                {
+                    //scrape the document
+                    var document = responses.get(i).getDocument();
+                    var url = responses.get(i).getUrl();
+                    mScraper.setParentUrl(url);
+                    mScraper.scrapePage(document, url);
+                    res.add(mScraper.getInternalLinks());
 
-                //store the headers
-                mScraper.getHeaders().addResponseHeader(url, responses.get(i).getHeaders());
+                    //store the headers
+                    mScraper.getHeaders().addResponseHeader(url, responses.get(i).getHeaders());
+                }
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

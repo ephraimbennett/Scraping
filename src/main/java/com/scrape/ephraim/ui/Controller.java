@@ -2,20 +2,22 @@ package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Crawler;
 import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
+import com.scrape.ephraim.data.StatusIssue;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
 
-public class Controller
+public class Controller implements Initializable
 {
 
     @FXML
@@ -26,6 +28,12 @@ public class Controller
 
     @FXML
     TextField urlField;
+
+    @FXML
+    TableView internalLinks;
+
+    @FXML
+    TableView issues;
 
     public void onExit()
     {
@@ -55,6 +63,29 @@ public class Controller
 
         createTreeView(scraper);
 
+        populateInternalLinks(scraper);
+        populateIssues(scraper);
+
+    }
+
+    private void populateIssues(Scraper scraper)
+    {
+        for (var issue : scraper.getIssues())
+        {
+            issues.getItems().add(issue);
+        }
+    }
+
+    /**
+     * Creates the table view for the internal links
+     * @param scraper
+     */
+    private void populateInternalLinks(Scraper scraper)
+    {
+        for (var page : scraper.getSiteMap())
+        {
+            internalLinks.getItems().add(page);
+        }
     }
 
     /**
@@ -119,4 +150,56 @@ public class Controller
         }
     }
 
+    @FXML
+    public void clickItem(MouseEvent event)
+    {
+        if (event.getClickCount() == 2) //Checking double click
+        {
+            System.out.println(internalLinks.getSelectionModel().getSelectedItem());
+        }
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle)
+    {
+
+        //initialize table columns
+        initInternalLinks();
+        initIssues();
+
+    }
+
+    /**
+     * Sets up the columns for the internal links
+     */
+    private void initInternalLinks()
+    {
+        TableColumn<Page, String> urlColumn = new TableColumn<>("url");
+        urlColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(page.getValue().getUrl()));
+        urlColumn.setPrefWidth(200);
+        internalLinks.getColumns().add(urlColumn);
+
+        TableColumn<Page, String> inLinkNumColumn = new TableColumn<>("# of in links");
+        inLinkNumColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(
+                String.valueOf(page.getValue().getInLinks().size())));
+        inLinkNumColumn.setPrefWidth(70);
+        internalLinks.getColumns().add(inLinkNumColumn);
+
+        TableColumn<Page, String> outLinkNumColumn = new TableColumn<>("# of out links");
+        outLinkNumColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(
+                String.valueOf(page.getValue().getOutLinks().size())));
+        outLinkNumColumn.setPrefWidth(80);
+        internalLinks.getColumns().add(outLinkNumColumn);
+    }
+
+    /**
+     * Sets up the columns for the issues table
+     */
+    private void initIssues()
+    {
+        TableColumn<Issue, String> categoryColumn = new TableColumn<>("category");
+        categoryColumn.setCellValueFactory(statusIssue -> new ReadOnlyStringWrapper(
+                statusIssue.getValue().getCategory()));
+        issues.getColumns().add(categoryColumn);
+    }
 }

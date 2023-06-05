@@ -1,8 +1,6 @@
 package com.scrape.ephraim.crawler;
 
-import com.scrape.ephraim.data.Headers;
-import com.scrape.ephraim.data.Page;
-import com.scrape.ephraim.data.SiteMap;
+import com.scrape.ephraim.data.*;
 import org.jsoup.nodes.Document;
 
 import java.util.HashMap;
@@ -19,6 +17,9 @@ public class Scraper
     ///association to the headers storage
     private Headers mHeaders;
 
+    ///association to the issues storage
+    private Issues mIssues;
+
     ///the domain name
     private String mDomain;
 
@@ -32,6 +33,7 @@ public class Scraper
         mDomain = domain;
         mSiteMap = new SiteMap();
         mHeaders = new Headers();
+        mIssues = new Issues();
     }
 
     /**
@@ -51,6 +53,23 @@ public class Scraper
 
         mSiteMap.addPage(page);
 
+    }
+
+    /**
+     * Determines if there was an issue associated with this response.
+     * If so, add an issue to the issues list.
+     * @param response
+     * @return true if there was an issue generated
+     */
+    public boolean generateIssue(ResponseWrapper response)
+    {
+        boolean isIssue = false;
+        if (response.getResponseCode() < 200 || response.getResponseCode() > 299)
+        {
+            mIssues.addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+            isIssue = true;
+        }
+        return isIssue;
     }
 
     /**
@@ -89,6 +108,11 @@ public class Scraper
      */
     public Headers getHeaders() {return mHeaders;}
 
+    /**
+     * Getter for the issues association
+     * @return
+     */
+    public Issues getIssues() {return mIssues;}
 
 
 }

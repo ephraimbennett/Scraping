@@ -64,11 +64,13 @@ public class Fetcher {
     {
         Document document = null;
         HashMap<String, String> responseHeaders = null;
+        int responseCode = 0;
         try {
             var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
             Connection.Response response = connection.execute();
             responseHeaders = new HashMap<>(response.headers());
+            responseCode = response.statusCode();
             document = response.parse();
             System.out.println(mUrl + " done!");
         } catch (HttpStatusException e)
@@ -95,7 +97,7 @@ public class Fetcher {
             e.printStackTrace();
         }
         finally {
-            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl);
+            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode);
             return wrapper;
         }
     }

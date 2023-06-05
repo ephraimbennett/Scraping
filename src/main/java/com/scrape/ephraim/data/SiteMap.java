@@ -48,8 +48,14 @@ public class SiteMap implements Iterable<Page>
         }
 
         //update the map with the page
-        //even if this page already exists in the map, we need to update it because it doesn't have the outlinks
-        mMap.put(url, page);
+        if (mMap.containsKey(url))
+        {
+            mMap.get(url).setOutLinks(page.getOutLinks());
+        }
+        else
+        {
+            mMap.put(url, page);
+        }
     }
 
 }

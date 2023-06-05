@@ -15,11 +15,15 @@ public class ResponseWrapper
     ///the url for safekeeping
     private String mUrl;
 
-    public ResponseWrapper(Document doc, HashMap<String, String> headers, String url)
+    ///the response code we're given
+    private int mResponseCode;
+
+    public ResponseWrapper(Document doc, HashMap<String, String> headers, String url, int code)
     {
         mDocument = doc;
         mHeaders = headers;
         mUrl = url;
+        mResponseCode = code;
     }
 
     /**
@@ -39,4 +43,10 @@ public class ResponseWrapper
      * @return
      */
     public String getUrl() {return mUrl;}
+
+    /**
+     * Getter for the response code
+     * @return
+     */
+    public int getResponseCode() {return mResponseCode;}
 }

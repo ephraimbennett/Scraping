@@ -10,7 +10,7 @@ import com.scrape.ephraim.crawler.Patterns;
 public class Page
 {
     ///this page's url
-    private String mUrl;
+    private final String mUrl;
 
     ///this page's path (url - domain name)
     private ArrayList<String> mPath;
@@ -54,16 +54,25 @@ public class Page
      * converts it from a list to a hash set
      * @param links
      */
-    public void setOutLinks(List<String> links)
-    {
-        mOutLinks = new HashSet<>(links);
-    }
+    public void setOutLinks(List<String> links) {mOutLinks = new HashSet<>(links);}
+
+    /**
+     * Sets the outlinks
+     * @param links
+     */
+    public void setOutLinks(HashSet<String> links) {mOutLinks = new HashSet<>(links);}
 
     /**
      * getter for the outlinks
      * @return
      */
     public HashSet<String> getOutLinks() {return mOutLinks;}
+
+    /**
+     * Getter for the inlinks
+     * @return
+     */
+    public HashSet<String> getInLinks() {return mInLinks;}
 
     /**
      * getter for the url
