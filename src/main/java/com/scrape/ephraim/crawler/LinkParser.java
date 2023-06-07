@@ -50,7 +50,7 @@ public class LinkParser {
      */
     public void setDomainName(String domainName){
         mDomainName = domainName;
-        mDomainPattern = Pattern.compile("^https?://(www.)?" + domainName);
+        mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + domainName);
     }
 
     /**

@@ -185,9 +185,9 @@ public class Controller implements Initializable
 
         //display the headers
         TableView headersView = new TableView();
-        TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>();
+        TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>("Name");
         nameCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getName()));
-        TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>();
+        TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>("Value");
         valueCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getValue()));
         headersView.getColumns().add(nameCol);
         headersView.getColumns().add(valueCol);
@@ -219,6 +219,9 @@ public class Controller implements Initializable
      */
     private void populateDescriptorIssue(Issue issue)
     {
+        //reset the title
+        descriptorBox.setText("Issue: " + issue.getCategory());
+
         HBox nodes = new HBox();
         nodes.setSpacing(10);
         //get the summary
