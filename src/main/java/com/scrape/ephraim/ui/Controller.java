@@ -4,16 +4,13 @@ import com.scrape.ephraim.crawler.Crawler;
 import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
-import com.scrape.ephraim.data.StatusIssue;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -162,7 +159,6 @@ public class Controller implements Initializable
     @FXML
     public void clickItemInternalLinks(MouseEvent event)
     {
-
         Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
         if (selectedPage == null) return;
         populateDescriptorPage(selectedPage);
@@ -187,10 +183,50 @@ public class Controller implements Initializable
         ObservableList<String> ext = FXCollections.observableArrayList(page.getExternalLinks());
         externalLinksView.setItems(ext);
 
+        //display the headers
+        TableView headersView = new TableView();
+        TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>();
+        nameCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getName()));
+        TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>();
+        valueCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getValue()));
+        headersView.getColumns().add(nameCol);
+        headersView.getColumns().add(valueCol);
+        //populate the table
+        for (Map.Entry<String, String> entry : scraper.getHeaders().get(page.getUrl()).entrySet())
+        {
+            headersView.getItems().add(new HeaderWrapper(entry.getKey(), entry.getValue()));
+        }
+
         HBox nodes = new HBox();
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinksView));
         nodes.getChildren().add(new VBox(new Label("Out Links (internal)"), outLinksView));
         nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
+        nodes.getChildren().add(new VBox(new Label("Headers"), headersView));
+        descriptorBox.setContent(nodes);
+    }
+
+    @FXML
+    public void clickItemIssue(MouseEvent event)
+    {
+        Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
+        if (selectedIssue == null) return;
+        populateDescriptorIssue(selectedIssue);
+    }
+
+    /**
+     * Provides description for the issue selected
+     * @param issue
+     */
+    private void populateDescriptorIssue(Issue issue)
+    {
+        HBox nodes = new HBox();
+        nodes.setSpacing(10);
+        //get the summary
+        nodes.getChildren().add(new VBox(new Label("Summary"), new Label(issue.getSummary())));
+        //get the description
+        nodes.getChildren().add(new VBox(new Label("Description"), new Label(issue.getDescription())));
+        //get the url
+        nodes.getChildren().add(new VBox(new Label("Url Associated"), new Label(issue.getUrl())));
         descriptorBox.setContent(nodes);
     }
 
@@ -247,5 +283,27 @@ public class Controller implements Initializable
         TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
+    }
+
+    /**
+     * Used to help display the headers in a tableview easier
+     */
+    private class HeaderWrapper
+    {
+        ///the name
+        private String mName;
+
+        ///the value
+        private String mValue;
+
+        public HeaderWrapper(String name, String value)
+        {
+            mName = name;
+            mValue = value;
+        }
+
+        public String getName() {return mName;}
+
+        public String getValue() {return mValue;}
     }
 }

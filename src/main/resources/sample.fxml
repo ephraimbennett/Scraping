@@ -54,7 +54,7 @@
                     <tabs>
                         <Tab text="Issues">
                            <content>
-                              <TableView fx:id="issues" prefHeight="200.0" prefWidth="200.0" />
+                              <TableView fx:id="issues" onMouseClicked="#clickItemIssue" prefHeight="200.0" prefWidth="200.0" />
                            </content>
                         </Tab>
                       <Tab text="Internal Links">
