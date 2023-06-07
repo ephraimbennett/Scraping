@@ -21,6 +21,9 @@ public class Page
     ///list of out links
     private HashSet<String> mOutLinks;
 
+    ///list of the external links
+    private HashSet<String> mExternalLinks;
+
     /**
      * Constructor
      * @param url
@@ -60,7 +63,7 @@ public class Page
      * Sets the outlinks
      * @param links
      */
-    public void setOutLinks(HashSet<String> links) {mOutLinks = new HashSet<>(links);}
+    public void setOutLinks(HashSet<String> links) {mOutLinks = links;}
 
     /**
      * getter for the outlinks
@@ -85,6 +88,25 @@ public class Page
      * @return
      */
     public ArrayList<String> getPath() {return mPath;}
+
+    /**
+     * Setter for the external links
+     * converts into hashset
+     * @param externalLinks
+     */
+    public void setExternalLinks(List<String> externalLinks) {mExternalLinks = new HashSet<>(externalLinks);}
+
+    /**
+     * Setter for the external links
+     * @param externalLinks
+     */
+    public void setExternalLinks(HashSet<String> externalLinks) {mExternalLinks = externalLinks;}
+
+    /**
+     * Getter for the external links
+     * @return
+     */
+    public HashSet<String> getExternalLinks() {return mExternalLinks;}
 
     /**
      * Indicates if this page is a child of the supplied path

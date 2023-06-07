@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.data.StatusIssue;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class Visitor {
         //res
         List<List<String>> res = new ArrayList<>();
         //the executor
-        Executor executor = Executors.newFixedThreadPool(256);
+        Executor executor = Executors.newCachedThreadPool();
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
@@ -84,18 +85,23 @@ public class Visitor {
             System.out.println("Fetching done!");
             for (int i = 0; i < responses.size(); i++)
             {
-                if (!mScraper.generateIssue(responses.get(i)))
+                var response = responses.get(i);
+                if (response.getResponseCode() > 399)
+                {
+                    mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+                }
+                else
                 {
                     //scrape the document
-                    var document = responses.get(i).getDocument();
+                    var document = response.getDocument();
                     var url = responses.get(i).getUrl();
                     mScraper.setParentUrl(url);
                     mScraper.scrapePage(document, url);
                     res.add(mScraper.getInternalLinks());
-
-                    //store the headers
-                    mScraper.getHeaders().addResponseHeader(url, responses.get(i).getHeaders());
                 }
+
+                //store the headers
+                mScraper.getHeaders().addResponseHeader(response.getUrl(), responses.get(i).getHeaders());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

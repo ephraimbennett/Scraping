@@ -8,11 +8,15 @@ import com.scrape.ephraim.data.StatusIssue;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.*;
@@ -35,6 +39,11 @@ public class Controller implements Initializable
     @FXML
     TableView issues;
 
+    @FXML TitledPane descriptorBox;
+
+    ///the scraper
+    private Scraper scraper;
+
     public void onExit()
     {
         Platform.exit();
@@ -52,7 +61,7 @@ public class Controller implements Initializable
         urls.add(crawler.getUrl());
 
         //now create a scraper
-        Scraper scraper = new Scraper(crawler.getDomain());
+        scraper = new Scraper(crawler.getDomain());
         crawler.setScraper(scraper);
 
         crawler.crawl(urls);
@@ -151,17 +160,45 @@ public class Controller implements Initializable
     }
 
     @FXML
-    public void clickItem(MouseEvent event)
+    public void clickItemInternalLinks(MouseEvent event)
     {
-        if (event.getClickCount() == 2) //Checking double click
-        {
-            System.out.println(internalLinks.getSelectionModel().getSelectedItem());
-        }
+
+        Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
+        if (selectedPage == null) return;
+        populateDescriptorPage(selectedPage);
+    }
+
+    private void populateDescriptorPage(Page page)
+    {
+        descriptorBox.setText("Viewing " + page.getUrl());
+
+        //create the inlinks list
+        ListView<String> inLinksView = new ListView<>();
+        ObservableList<String> inLinksObservable = FXCollections.observableArrayList(page.getInLinks());
+        inLinksView.setItems(inLinksObservable);
+
+        //create the outlinks list
+        ListView<String> outLinksView = new ListView<>();
+        ObservableList<String> x = FXCollections.observableArrayList(page.getOutLinks());
+        outLinksView.setItems(x);
+
+        //create the external links list
+        ListView<String> externalLinksView = new ListView<>();
+        ObservableList<String> ext = FXCollections.observableArrayList(page.getExternalLinks());
+        externalLinksView.setItems(ext);
+
+        HBox nodes = new HBox();
+        nodes.getChildren().add(new VBox(new Label("In Links"), inLinksView));
+        nodes.getChildren().add(new VBox(new Label("Out Links (internal)"), outLinksView));
+        nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
+        descriptorBox.setContent(nodes);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
+        //make an empty scraper
+        scraper = null;
 
         //initialize table columns
         initInternalLinks();
@@ -201,5 +238,14 @@ public class Controller implements Initializable
         categoryColumn.setCellValueFactory(statusIssue -> new ReadOnlyStringWrapper(
                 statusIssue.getValue().getCategory()));
         issues.getColumns().add(categoryColumn);
+
+        TableColumn<Issue, String> urlColumn = new TableColumn<>("url");
+        urlColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(
+                issue.getValue().getUrl()));
+        issues.getColumns().add(urlColumn);
+
+        TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
+        summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
+        issues.getColumns().add(summaryColumn);
     }
 }

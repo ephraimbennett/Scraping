@@ -68,6 +68,7 @@ public class Fetcher {
         try {
             var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
+            connection.ignoreContentType(true);
             Connection.Response response = connection.execute();
             responseHeaders = new HashMap<>(response.headers());
             responseCode = response.statusCode();
@@ -76,6 +77,7 @@ public class Fetcher {
         } catch (HttpStatusException e)
         {
             System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
+            responseCode = e.getStatusCode();
         } catch (UnsupportedMimeTypeException e)
         {
             System.out.println("Unsuported Mime Type! " + e.getMimeType());

@@ -51,11 +51,18 @@ public class SiteMap implements Iterable<Page>
         if (mMap.containsKey(url))
         {
             mMap.get(url).setOutLinks(page.getOutLinks());
+            mMap.get(url).setExternalLinks(page.getExternalLinks());
         }
         else
         {
             mMap.put(url, page);
         }
     }
+
+    /**
+     * Getter for the actual map
+     * @return
+     */
+    public HashMap<String, Page> getMap() {return mMap;}
 
 }

@@ -5,6 +5,9 @@ public class Issue
     ///the description of the issue
     private String mDescription;
 
+    ///the summary of the issue
+    private String mSummary;
+
     ///the category of the issue
     private String mCategory;
 
@@ -14,10 +17,12 @@ public class Issue
     ///the url which gave this issue
     private String mUrl;
 
-    public Issue(String description, int severity)
+    public Issue(String description, int severity, String url)
     {
         mDescription = description;
         mSeverity = severity;
+        mUrl = url;
+        mSummary = "";
     }
 
     public void setCategory(String category)
@@ -42,4 +47,16 @@ public class Issue
      * @return
      */
     public String getUrl() {return mUrl;}
+
+    /**
+     * Setter for the summary
+     * @param summary
+     */
+    public void setSummary(String summary) {mSummary = summary;}
+
+    /**
+     * getter for the summary
+     * @return
+     */
+    public String getSummary() {return mSummary;}
 }

@@ -4,6 +4,7 @@ import com.scrape.ephraim.data.*;
 import org.jsoup.nodes.Document;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class Scraper
@@ -50,9 +51,8 @@ public class Scraper
         //make a page object for this specific url
         Page page = new Page(url);
         page.setOutLinks(mLinkParser.getInternalLinks());
-
+        page.setExternalLinks(mLinkParser.getExternalLinks());
         mSiteMap.addPage(page);
-
     }
 
     /**

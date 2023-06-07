@@ -10,9 +10,10 @@ public class StatusIssue extends Issue
      */
     public StatusIssue(int code, String url)
     {
-        super("Non 200 status code", 1);
+        super("Non 200 status code", 1, url);
         setCategory("Status Issue");
         mStatusCode = code;
+        setSummary(String.valueOf(mStatusCode));
     }
 
     /**

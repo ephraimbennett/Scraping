@@ -59,7 +59,7 @@
                         </Tab>
                       <Tab text="Internal Links">
                            <content>
-                              <TableView fx:id="internalLinks" onMouseClicked="#clickItem" prefHeight="300.0" prefWidth="504.0" />
+                              <TableView fx:id="internalLinks" onMouseClicked="#clickItemInternalLinks" prefHeight="300.0" prefWidth="504.0" />
                            </content></Tab>
                       <Tab text="External Links" />
                     </tabs>
@@ -80,9 +80,9 @@
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
          </children>
       </HBox>
-      <HBox alignment="TOP_RIGHT" prefHeight="178.0" prefWidth="902.0">
+      <HBox prefHeight="178.0" prefWidth="902.0">
          <children>
-            <TitledPane prefHeight="144.0" prefWidth="404.0" text="Issue Description" />
+            <TitledPane fx:id="descriptorBox" text="Descriptor Box" />
          </children>
       </HBox>
    </children>

@@ -61,7 +61,7 @@ public class LinkParser {
 
 
     /**
-     * Getter for document
+     * Setter for document
      * @param doc
      */
     public void setDocument(Document doc)
@@ -70,11 +70,15 @@ public class LinkParser {
     }
 
     /**
-     * Setter for document
+     * Getter for internal links
      * @return
      */
     public List<String> getInternalLinks() {return mInternalLinks;}
 
+    /**
+     * Getter for th external links
+     * @return
+     */
     public List<String> getExternalLinks() {return mExternalLinks;}
 
     /**
@@ -103,7 +107,9 @@ public class LinkParser {
     public void parse(Document document)
     {
         mDocument = document;
-        if (mDocument == null) return;
+        if (mDocument == null) {
+            return;
+        }
 
         CheckA();
     }
