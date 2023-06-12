@@ -18,7 +18,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="533.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
+<?import com.scrape.ephraim.ui.Descriptor?>
+
+<VBox maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
    <children>
       <MenuBar fx:id="menuBar">
         <menus>
@@ -43,7 +45,7 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="328.0">
                <children>
-                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="220.0" prefWidth="291.0">
+                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="300.0" prefWidth="248.0">
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor></TreeView>
@@ -82,7 +84,7 @@
       </HBox>
       <HBox prefHeight="178.0" prefWidth="902.0">
          <children>
-            <TitledPane fx:id="descriptorBox" text="Descriptor Box" />
+            <Descriptor fx:id="descriptorBox"/>
          </children>
       </HBox>
    </children>

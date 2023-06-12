@@ -46,11 +46,17 @@ public class LinkParser {
     /**
      * Setter for domain name
      * Also creates the regex pattern for the domain name
-     * @param domainName
+     * @params url, defaultDomain
      */
-    public void setDomainName(String domainName){
-        mDomainName = domainName;
-        mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + domainName);
+    public void setDomainName(String url, String defaultDomain) {
+        Matcher matcher = Patterns.domainPattern.matcher(url);
+        if (matcher.find())
+        {
+            mDomainName = matcher.group(1);
+        } else {
+            mDomainName = defaultDomain;
+        }
+        mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
     }
 
     /**
@@ -88,6 +94,7 @@ public class LinkParser {
     {
         mInternalLinks.clear();
         mExternalLinks.clear();
+        mDomainName = "";
     }
 
     /**

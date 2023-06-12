@@ -22,6 +22,8 @@ public class Visitor {
     ///the different urls we have to visit
     List<String> mUrls;
 
+    ///lists the origin
+
     /**
      * Constructor
      */
@@ -62,7 +64,7 @@ public class Visitor {
         //res
         List<List<String>> res = new ArrayList<>();
         //the executor
-        Executor executor = Executors.newCachedThreadPool();
+        Executor executor = Executors.newFixedThreadPool(256);
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
@@ -71,7 +73,7 @@ public class Visitor {
             CompletableFuture<ResponseWrapper> futureDoc = CompletableFuture.supplyAsync(()-> {
                 Fetcher fetcher = new Fetcher(url);
                 return fetcher.fetch();
-            });
+            }, executor);
             futures.add(futureDoc);
         }
 
@@ -86,9 +88,11 @@ public class Visitor {
             for (int i = 0; i < responses.size(); i++)
             {
                 var response = responses.get(i);
+                //check if this is a 400 error
                 if (response.getResponseCode() > 399)
                 {
                     mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+                    var x = response.getHeaders();
                 }
                 else
                 {

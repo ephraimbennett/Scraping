@@ -13,7 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 import java.net.URL;
 import java.util.*;
@@ -36,7 +38,7 @@ public class Controller implements Initializable
     @FXML
     TableView issues;
 
-    @FXML TitledPane descriptorBox;
+    @FXML Descriptor descriptorBox;
 
     ///the scraper
     private Scraper scraper;
@@ -100,16 +102,32 @@ public class Controller implements Initializable
      */
     private void createTreeView(Scraper scraper)
     {
-        //create treeview
+        //create most basic root
+        treeView.setRoot(new TreeItem<String>("Site Map"));
+
+        //map of the roots. Synonymous for the different types of domains.
+        HashMap<String, TreeItem> roots = new HashMap<>();
+
+        //the basic domain name from the user. Not including subdomains.
         String domain = scraper.getDomain() + "/";
-        TreeItem<String> rootItem = new TreeItem(domain);
-        treeView.setRoot(rootItem);
+
+        //add it as the first root. Add it to the map of known roots.
+        TreeItem<String> basicRoot = new TreeItem(domain);
+        roots.put(domain, basicRoot);
+        treeView.getRoot().getChildren().add(basicRoot);
 
         for (Page page : scraper.getSiteMap())
         {
+            String wholeDomain = page.getWholeDomain();
+            if (!roots.containsKey(wholeDomain))//if this whole domain isn't added yet, add it.
+            {
+                TreeItem<String> newRoot = new TreeItem<>(wholeDomain);
+                treeView.getRoot().getChildren().add(newRoot);
+                roots.put(wholeDomain, newRoot);
+            }
             if (page.getPath().size() > 1)//if we have more than just a /
             {
-                populateTreeView(page, rootItem, 1);
+                populateTreeView(page, roots.get(wholeDomain), 1);
             }
         }
     }
@@ -161,48 +179,7 @@ public class Controller implements Initializable
     {
         Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
         if (selectedPage == null) return;
-        populateDescriptorPage(selectedPage);
-    }
-
-    private void populateDescriptorPage(Page page)
-    {
-        descriptorBox.setText("Viewing " + page.getUrl());
-
-        //create the inlinks list
-        ListView<String> inLinksView = new ListView<>();
-        ObservableList<String> inLinksObservable = FXCollections.observableArrayList(page.getInLinks());
-        inLinksView.setItems(inLinksObservable);
-
-        //create the outlinks list
-        ListView<String> outLinksView = new ListView<>();
-        ObservableList<String> x = FXCollections.observableArrayList(page.getOutLinks());
-        outLinksView.setItems(x);
-
-        //create the external links list
-        ListView<String> externalLinksView = new ListView<>();
-        ObservableList<String> ext = FXCollections.observableArrayList(page.getExternalLinks());
-        externalLinksView.setItems(ext);
-
-        //display the headers
-        TableView headersView = new TableView();
-        TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>("Name");
-        nameCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getName()));
-        TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>("Value");
-        valueCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getValue()));
-        headersView.getColumns().add(nameCol);
-        headersView.getColumns().add(valueCol);
-        //populate the table
-        for (Map.Entry<String, String> entry : scraper.getHeaders().get(page.getUrl()).entrySet())
-        {
-            headersView.getItems().add(new HeaderWrapper(entry.getKey(), entry.getValue()));
-        }
-
-        HBox nodes = new HBox();
-        nodes.getChildren().add(new VBox(new Label("In Links"), inLinksView));
-        nodes.getChildren().add(new VBox(new Label("Out Links (internal)"), outLinksView));
-        nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
-        nodes.getChildren().add(new VBox(new Label("Headers"), headersView));
-        descriptorBox.setContent(nodes);
+        descriptorBox.populateDescriptorPage(selectedPage, scraper);
     }
 
     @FXML
@@ -210,27 +187,7 @@ public class Controller implements Initializable
     {
         Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
         if (selectedIssue == null) return;
-        populateDescriptorIssue(selectedIssue);
-    }
-
-    /**
-     * Provides description for the issue selected
-     * @param issue
-     */
-    private void populateDescriptorIssue(Issue issue)
-    {
-        //reset the title
-        descriptorBox.setText("Issue: " + issue.getCategory());
-
-        HBox nodes = new HBox();
-        nodes.setSpacing(10);
-        //get the summary
-        nodes.getChildren().add(new VBox(new Label("Summary"), new Label(issue.getSummary())));
-        //get the description
-        nodes.getChildren().add(new VBox(new Label("Description"), new Label(issue.getDescription())));
-        //get the url
-        nodes.getChildren().add(new VBox(new Label("Url Associated"), new Label(issue.getUrl())));
-        descriptorBox.setContent(nodes);
+        descriptorBox.populateDescriptorIssue(selectedIssue, scraper);
     }
 
     @Override

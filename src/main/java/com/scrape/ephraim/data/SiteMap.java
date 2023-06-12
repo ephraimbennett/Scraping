@@ -39,9 +39,9 @@ public class SiteMap implements Iterable<Page>
             //if this page's out link hasn't been indexed yet, index it!
             if (targetPage == null)
             {
-                Page newPage = new Page(link);
-                newPage.addInLink(url);
-                mMap.put(link, newPage);
+                targetPage = new Page(link);
+                targetPage.addInLink(url);
+                mMap.put(link, targetPage);
             } else {//if the target has already been indexed, simply add an inlink to it
                 targetPage.addInLink(url);
             }
@@ -50,13 +50,9 @@ public class SiteMap implements Iterable<Page>
         //update the map with the page
         if (mMap.containsKey(url))
         {
-            mMap.get(url).setOutLinks(page.getOutLinks());
-            mMap.get(url).setExternalLinks(page.getExternalLinks());
+            page.setInLinks(mMap.get(url).getInLinks());
         }
-        else
-        {
-            mMap.put(url, page);
-        }
+        mMap.put(url, page);
     }
 
     /**

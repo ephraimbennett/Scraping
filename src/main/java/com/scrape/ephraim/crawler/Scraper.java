@@ -24,6 +24,9 @@ public class Scraper
     ///the domain name
     private String mDomain;
 
+    ///determines if we are testing the external links
+    private boolean mTestExternals;
+
 
     /**
      * Constructor
@@ -35,6 +38,7 @@ public class Scraper
         mSiteMap = new SiteMap();
         mHeaders = new Headers();
         mIssues = new Issues();
+        mTestExternals = false;
     }
 
     /**
@@ -45,7 +49,7 @@ public class Scraper
     {
         //parse the links
         mLinkParser.clear();
-        mLinkParser.setDomainName(mDomain);
+        mLinkParser.setDomainName(url, mDomain);
         mLinkParser.parse(document);
 
         //make a page object for this specific url
@@ -53,6 +57,11 @@ public class Scraper
         page.setOutLinks(mLinkParser.getInternalLinks());
         page.setExternalLinks(mLinkParser.getExternalLinks());
         mSiteMap.addPage(page);
+
+        if (document != null)//if this was a parse-able document, then add the html data
+        {
+            page.getDocumentInfo().processDocument(document);
+        }
     }
 
     /**

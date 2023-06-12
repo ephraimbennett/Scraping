@@ -63,7 +63,7 @@ public class Fetcher {
     public ResponseWrapper fetch()
     {
         Document document = null;
-        HashMap<String, String> responseHeaders = null;
+        HashMap<String, String> responseHeaders = new HashMap<>();
         int responseCode = 0;
         try {
             var connection = Jsoup.connect(mUrl);
