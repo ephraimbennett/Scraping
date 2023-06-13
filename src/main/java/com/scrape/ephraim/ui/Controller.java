@@ -210,9 +210,9 @@ public class Controller implements Initializable
     @FXML
     public void clickItemExternalLinks(MouseEvent event)
     {
-        Page selectedPage = (Page) externalLinks.getSelectionModel().getSelectedItem();
-        if (selectedPage == null) return;
-        descriptorBox.populateDescriptorPage(selectedPage, scraper);
+        ExternalSite selectedSite = (ExternalSite) externalLinks.getSelectionModel().getSelectedItem();
+        if (selectedSite == null) return;
+        descriptorBox.populateExternalSite(selectedSite, scraper);
     }
 
 

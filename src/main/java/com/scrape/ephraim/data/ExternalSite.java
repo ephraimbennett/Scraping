@@ -44,4 +44,10 @@ public class ExternalSite
      * @return
      */
     public int getOccurrences() {return mInLinks.size();}
+
+    /**
+     * Getter for the inlinks
+     * @return
+     */
+    public HashMap<String, Integer> getInLinks() {return mInLinks;}
 }

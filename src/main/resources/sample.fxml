@@ -64,7 +64,7 @@
                            </content></Tab>
                       <Tab text="External Links">
                            <content>
-                              <TableView fx:id="externalLinks" prefHeight="200.0" prefWidth="200.0" />
+                              <TableView fx:id="externalLinks" onMouseClicked="#clickItemExternalLinks" prefHeight="200.0" prefWidth="200.0" />
                            </content>
                       </Tab>
                     </tabs>

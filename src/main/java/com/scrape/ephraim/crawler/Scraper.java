@@ -24,10 +24,6 @@ public class Scraper
     ///the domain name
     private String mDomain;
 
-    ///determines if we are testing the external links
-    private boolean mTestExternals;
-
-
     /**
      * Constructor
      */
@@ -38,7 +34,6 @@ public class Scraper
         mSiteMap = new SiteMap();
         mHeaders = new Headers();
         mIssues = new Issues();
-        mTestExternals = false;
     }
 
     /**

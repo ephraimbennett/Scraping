@@ -1,6 +1,7 @@
 package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -126,6 +127,36 @@ public class Descriptor extends TitledPane
         inLinks.setItems(observableInLinks);
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinks));
 
+        this.setContent(nodes);
+    }
+
+    public void populateExternalSite(ExternalSite site, Scraper scraper) {
+        this.setText("Viewing: " + site.getUrl());
+
+        HBox nodes = new HBox();
+
+        //display the in links
+        //
+        TableView inLinks = new TableView();//will be displaying two columns, so need to use tableview
+
+        //column for the url
+        TableColumn<Map.Entry<String, Integer>, String> urlCol = new TableColumn<>("url");
+        urlCol.setCellValueFactory(entry -> new ReadOnlyStringWrapper(entry.getValue().getKey()));
+        urlCol.setPrefWidth(200);
+        inLinks.getColumns().add(urlCol);
+
+        //column for the number of appearances on that url
+        TableColumn<Map.Entry<String, Integer>, String> occCol = new TableColumn<>("Occurrences");
+        occCol.setCellValueFactory(entry -> new ReadOnlyStringWrapper(String.valueOf(entry.getValue().getValue())));
+        occCol.setPrefWidth(100);
+        inLinks.getColumns().add(occCol);
+
+        for (Map.Entry<String, Integer> entry : site.getInLinks().entrySet())
+        {
+            inLinks.getItems().add(entry);
+        }
+
+        nodes.getChildren().add(inLinks);
         this.setContent(nodes);
     }
 
