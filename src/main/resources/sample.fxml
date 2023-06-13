@@ -17,8 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import com.scrape.ephraim.ui.Descriptor?>
-
+<?import javafx.scene.control.TitledPane?>
 <VBox maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
    <children>
       <MenuBar fx:id="menuBar">
@@ -85,6 +84,6 @@
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
          </children>
       </HBox>
-       <Descriptor fx:id="descriptorBox" />
+       <TitledPane fx:id="descriptorBox" />
    </children>
 </VBox>

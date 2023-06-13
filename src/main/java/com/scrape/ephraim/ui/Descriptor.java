@@ -15,15 +15,20 @@ import javafx.scene.text.TextAlignment;
 
 import java.util.Map;
 
-public class Descriptor extends TitledPane
+import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
+
+public class Descriptor
 {
 
-    public Descriptor()
+    ///the descriptor box we are controlling
+    private TitledPane descriptorBox;
+
+    public Descriptor(TitledPane descriptorBox)
     {
-        super();
-        setPrefHeight(USE_COMPUTED_SIZE);
-        setPrefWidth(USE_COMPUTED_SIZE);
-        setMaxHeight(450);
+        this.descriptorBox = descriptorBox;
+        descriptorBox.setPrefHeight(USE_COMPUTED_SIZE);
+        descriptorBox.setPrefWidth(USE_COMPUTED_SIZE);
+        descriptorBox.setMaxHeight(450);
     }
 
 
@@ -32,7 +37,7 @@ public class Descriptor extends TitledPane
      * @param page
      */
     public void populateDescriptorPage(Page page, Scraper scraper) {
-        this.setText("Viewing " + page.getUrl());
+        descriptorBox.setText("Viewing " + page.getUrl());
 
         //create the inlinks list
         ListView<String> inLinksView = new ListView<>();
@@ -75,7 +80,7 @@ public class Descriptor extends TitledPane
         metaDescription.setWrapText(true);
         metaDescription.setTextAlignment(TextAlignment.LEFT);
         metaDescription.setMaxWidth(200);
-        metaDescription.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        metaDescription.setPrefHeight(USE_COMPUTED_SIZE);
         titleSection.getChildren().add(metaDescription);
         titleSection.setPrefHeight(500);
 
@@ -100,7 +105,7 @@ public class Descriptor extends TitledPane
         nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
         nodes.getChildren().add(new VBox(new Label("Headers"), headersView));
         nodes.getChildren().add(titleSection);
-        this.setContent(new VBox(nodes, nodes2));
+        descriptorBox.setContent(new VBox(nodes, nodes2));
     }
 
     /**
@@ -110,7 +115,7 @@ public class Descriptor extends TitledPane
     public void populateDescriptorIssue(Issue issue, Scraper scraper)
     {
         //reset the title
-        this.setText("Issue: " + issue.getCategory());
+        descriptorBox.setText("Issue: " + issue.getCategory());
 
         HBox nodes = new HBox();
         nodes.setSpacing(10);
@@ -127,11 +132,11 @@ public class Descriptor extends TitledPane
         inLinks.setItems(observableInLinks);
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinks));
 
-        this.setContent(nodes);
+        descriptorBox.setContent(nodes);
     }
 
     public void populateExternalSite(ExternalSite site, Scraper scraper) {
-        this.setText("Viewing: " + site.getUrl());
+        descriptorBox.setText("Viewing: " + site.getUrl());
 
         HBox nodes = new HBox();
 
@@ -157,7 +162,7 @@ public class Descriptor extends TitledPane
         }
 
         nodes.getChildren().add(inLinks);
-        this.setContent(nodes);
+        descriptorBox.setContent(nodes);
     }
 
     /**

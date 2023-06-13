@@ -38,15 +38,25 @@ public class Controller implements Initializable
     @FXML
     TableView issues;
 
-    @FXML Descriptor descriptorBox;
+    @FXML TitledPane descriptorBox;
+
+    @FXML MenuBar menuBar;
+
+    ///controller for the descriptorBox
+    Descriptor descriptorController;
+
+    ///controller for the menu bar
+    MenuBarController menuBarController;
 
     ///the scraper
     private Scraper scraper;
 
+    /**
+     * handler for exit on menu bar
+     */
     public void onExit()
     {
-        Platform.exit();
-        System.out.println("Application ended.");
+        menuBarController.onExit();
     }
 
     /**
@@ -204,7 +214,7 @@ public class Controller implements Initializable
     {
         Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
         if (selectedPage == null) return;
-        descriptorBox.populateDescriptorPage(selectedPage, scraper);
+        descriptorController.populateDescriptorPage(selectedPage, scraper);
     }
 
     @FXML
@@ -212,7 +222,7 @@ public class Controller implements Initializable
     {
         ExternalSite selectedSite = (ExternalSite) externalLinks.getSelectionModel().getSelectedItem();
         if (selectedSite == null) return;
-        descriptorBox.populateExternalSite(selectedSite, scraper);
+        descriptorController.populateExternalSite(selectedSite, scraper);
     }
 
 
@@ -221,7 +231,7 @@ public class Controller implements Initializable
     {
         Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
         if (selectedIssue == null) return;
-        descriptorBox.populateDescriptorIssue(selectedIssue, scraper);
+        descriptorController.populateDescriptorIssue(selectedIssue, scraper);
     }
 
     @Override
@@ -229,6 +239,10 @@ public class Controller implements Initializable
     {
         //make an empty scraper
         scraper = null;
+
+        //assign the elements to the proper controllers
+        descriptorController = new Descriptor(descriptorBox);
+        menuBarController = new MenuBarController(menuBar);
 
         //initialize table columns
         initInternalLinks();
