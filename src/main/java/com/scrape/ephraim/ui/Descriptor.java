@@ -20,6 +20,9 @@ public class Descriptor extends TitledPane
     public Descriptor()
     {
         super();
+        setPrefHeight(USE_COMPUTED_SIZE);
+        setPrefWidth(USE_COMPUTED_SIZE);
+        setMaxHeight(450);
     }
 
 
@@ -75,13 +78,28 @@ public class Descriptor extends TitledPane
         titleSection.getChildren().add(metaDescription);
         titleSection.setPrefHeight(500);
 
+        //new row
+        HBox nodes2 = new HBox();
+
+        //deal with the h1
+        ListView h1View = new ListView();
+        var observableH1 = FXCollections.observableArrayList(page.getDocumentInfo().getH1());
+        h1View.setItems(observableH1);
+
+        //deal with the h2
+        ListView h2View = new ListView();
+        var observableH2 = FXCollections.observableArrayList(page.getDocumentInfo().getH2());
+        h2View.setItems(observableH2);
+        nodes2.getChildren().add(new VBox(new Label("H1"), h1View));
+        nodes2.getChildren().add(new VBox(new Label("H2"), h2View));
+
         HBox nodes = new HBox();
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinksView));
         nodes.getChildren().add(new VBox(new Label("Out Links (internal)"), outLinksView));
         nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
         nodes.getChildren().add(new VBox(new Label("Headers"), headersView));
         nodes.getChildren().add(titleSection);
-        this.setContent(nodes);
+        this.setContent(new VBox(nodes, nodes2));
     }
 
     /**

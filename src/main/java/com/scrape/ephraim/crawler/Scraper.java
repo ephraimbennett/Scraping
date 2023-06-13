@@ -100,6 +100,12 @@ public class Scraper
     }
 
     /**
+     * Getter for the external links
+     * @return the external links
+     */
+    public List<String> getExternalLinks() {return mLinkParser.getExternalLinks();}
+
+    /**
      * Getter for the site map
      * @return
      */

@@ -12,7 +12,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -63,7 +62,11 @@
                            <content>
                               <TableView fx:id="internalLinks" onMouseClicked="#clickItemInternalLinks" prefHeight="300.0" prefWidth="504.0" />
                            </content></Tab>
-                      <Tab text="External Links" />
+                      <Tab text="External Links">
+                           <content>
+                              <TableView fx:id="externalLinks" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                      </Tab>
                     </tabs>
                   </TabPane>
                </children></AnchorPane>
@@ -82,10 +85,6 @@
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
          </children>
       </HBox>
-      <HBox prefHeight="178.0" prefWidth="902.0">
-         <children>
-            <Descriptor fx:id="descriptorBox"/>
-         </children>
-      </HBox>
+       <Descriptor fx:id="descriptorBox" />
    </children>
 </VBox>

@@ -2,23 +2,20 @@ package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Crawler;
 import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class Controller implements Initializable
 {
@@ -36,6 +33,9 @@ public class Controller implements Initializable
     TableView internalLinks;
 
     @FXML
+    TableView externalLinks;
+
+    @FXML
     TableView issues;
 
     @FXML Descriptor descriptorBox;
@@ -49,30 +49,43 @@ public class Controller implements Initializable
         System.out.println("Application ended.");
     }
 
+    /**
+     * Asynchronously crawl
+     */
     public void onSubmit()
     {
-        //set up a timer for performance
-        long beginTime = System.currentTimeMillis();
+        CompletableFuture<Scraper> futureScraper = CompletableFuture.supplyAsync(() -> {
+            //set up a timer for performance
+            long beginTime = System.currentTimeMillis();
 
-        //creates a crawler
-        Crawler crawler = new Crawler(urlField.getText());
-        List<String> urls = new ArrayList<>();
-        urls.add(crawler.getUrl());
+            //creates a crawler
+            Crawler crawler = new Crawler(urlField.getText());
+            List<String> urls = new ArrayList<>();
+            urls.add(crawler.getUrl());
 
-        //now create a scraper
-        scraper = new Scraper(crawler.getDomain());
-        crawler.setScraper(scraper);
+            //now create a scraper
+            scraper = new Scraper(crawler.getDomain());
+            crawler.setScraper(scraper);
 
-        crawler.crawl(urls);
-        System.out.println("total links visited: " + crawler.getVisitedLinks().size());
+            crawler.crawl(urls);
+            System.out.println("total links visited: " + crawler.getVisitedLinks().size());
 
-        long endTime = System.currentTimeMillis();
-        System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
+            long endTime = System.currentTimeMillis();
+            System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
+            return scraper;
+        });
 
-        createTreeView(scraper);
+        futureScraper.thenAccept((scraper)-> {
+            Platform.runLater(() -> {
+                createTreeView(scraper);
 
-        populateInternalLinks(scraper);
-        populateIssues(scraper);
+                populateInternalLinks(scraper);
+                populateExternalLinks(scraper);
+                populateIssues(scraper);
+            });
+        });
+
+
 
     }
 
@@ -93,6 +106,18 @@ public class Controller implements Initializable
         for (var page : scraper.getSiteMap())
         {
             internalLinks.getItems().add(page);
+        }
+    }
+
+    /**
+     * Creates the table for the external links
+     * @param scraper
+     */
+    private void populateExternalLinks(Scraper scraper)
+    {
+        for (ExternalSite site : scraper.getSiteMap().getExternals().values())
+        {
+            externalLinks.getItems().add(site);
         }
     }
 
@@ -183,6 +208,15 @@ public class Controller implements Initializable
     }
 
     @FXML
+    public void clickItemExternalLinks(MouseEvent event)
+    {
+        Page selectedPage = (Page) externalLinks.getSelectionModel().getSelectedItem();
+        if (selectedPage == null) return;
+        descriptorBox.populateDescriptorPage(selectedPage, scraper);
+    }
+
+
+    @FXML
     public void clickItemIssue(MouseEvent event)
     {
         Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
@@ -198,9 +232,28 @@ public class Controller implements Initializable
 
         //initialize table columns
         initInternalLinks();
+        initExternalLinks();
         initIssues();
 
     }
+
+    /**
+     * Sets up the columns for the external links table
+     */
+    private void initExternalLinks()
+    {
+        TableColumn<ExternalSite, String> urlColumn = new TableColumn<>("url");
+        urlColumn.setCellValueFactory(externalSite -> new ReadOnlyStringWrapper(externalSite.getValue().getUrl()));
+        urlColumn.setPrefWidth(200);
+        externalLinks.getColumns().add(urlColumn);
+
+        TableColumn<ExternalSite, String> occurrences = new TableColumn<>("# of occurrences");
+        occurrences.setCellValueFactory(ext -> new ReadOnlyStringWrapper(
+                String.valueOf(ext.getValue().getOccurrences())));
+        occurrences.setPrefWidth(70);
+        externalLinks.getColumns().add(occurrences);
+    }
+
 
     /**
      * Sets up the columns for the internal links
@@ -243,27 +296,5 @@ public class Controller implements Initializable
         TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
-    }
-
-    /**
-     * Used to help display the headers in a tableview easier
-     */
-    private class HeaderWrapper
-    {
-        ///the name
-        private String mName;
-
-        ///the value
-        private String mValue;
-
-        public HeaderWrapper(String name, String value)
-        {
-            mName = name;
-            mValue = value;
-        }
-
-        public String getName() {return mName;}
-
-        public String getValue() {return mValue;}
     }
 }

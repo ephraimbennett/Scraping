@@ -9,12 +9,16 @@ public class SiteMap implements Iterable<Page>
     ///the hashtable for the site map
     private HashMap<String, Page> mMap;
 
+    ///the map of the external sites
+    private HashMap<String, ExternalSite> mExternals;
+
     /**
      * Default constructor
      */
     public SiteMap()
     {
         mMap = new HashMap<>();
+        mExternals = new HashMap<>();
     }
 
     @Override
@@ -53,6 +57,19 @@ public class SiteMap implements Iterable<Page>
             page.setInLinks(mMap.get(url).getInLinks());
         }
         mMap.put(url, page);
+
+        //now we have to keep the running total of the external links
+        for (String externalLink : page.getExternalLinks())
+        {
+            if (mExternals.containsKey(externalLink))
+            {
+                mExternals.get(externalLink).addOccurrance(url);
+            }
+            else
+            {
+                mExternals.put(externalLink, new ExternalSite(externalLink));
+            }
+        }
     }
 
     /**
@@ -60,5 +77,11 @@ public class SiteMap implements Iterable<Page>
      * @return
      */
     public HashMap<String, Page> getMap() {return mMap;}
+
+    /**
+     * Getter for the external sites
+     * @return
+     */
+    public HashMap<String, ExternalSite> getExternals() {return mExternals;}
 
 }

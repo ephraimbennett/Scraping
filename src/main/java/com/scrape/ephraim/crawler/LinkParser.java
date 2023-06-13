@@ -2,6 +2,8 @@ package com.scrape.ephraim.crawler;
 
 import org.jsoup.nodes.Document;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,9 @@ public class LinkParser {
 
     ///regex pattern for the domain name
     private Pattern mDomainPattern;
+
+    ///regex pattern to check if the default domain name exists in the url
+    private Pattern mDefaultPattern;
 
     /**
      * only constructor cause fuck that
@@ -57,6 +62,8 @@ public class LinkParser {
             mDomainName = defaultDomain;
         }
         mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
+        mDefaultPattern = Pattern.compile("^https?://(www.)?([\\\\w]+\\\\.)?" + defaultDomain);
+        mParentUrl = url;
     }
 
     /**
@@ -153,6 +160,20 @@ public class LinkParser {
 //           System.out.println(url + " removed: " + mJump.group(2));
         }
 
+        //determine if it's a relative path
+        Matcher relative = Patterns.relativePattern.matcher(url);
+        if (!relative.find())
+        {
+            try {
+                URL base = new URL(mParentUrl);
+                URL resolvedUrl = new URL(base, url);
+                url = resolvedUrl.toString();
+            } catch (MalformedURLException e)
+            {
+                return;
+            }
+        }
+
         //if it begins with a slash it's gotta be internal & relative
         Matcher m1 = Patterns.slashPattern.matcher(url);
         if (m1.find())
@@ -163,9 +184,19 @@ public class LinkParser {
             return;
         }
 
-        //if it starts with the domain name, then it's internal but not relative
+        //if it matches the parentUrl's domain name
         Matcher m2 = mDomainPattern.matcher(url);
         if (m2.find())
+        {
+            res = url;
+
+            mInternalLinks.add(res);
+            return;
+        }
+
+        //if it matches the default domain name
+        Matcher defaultMatcher = mDefaultPattern.matcher(url);
+        if (defaultMatcher.find())
         {
             res = url;
 
@@ -176,5 +207,6 @@ public class LinkParser {
         //at this point it's external (and therefore not relative)
         mExternalLinks.add(url);
     }
+
 
 }

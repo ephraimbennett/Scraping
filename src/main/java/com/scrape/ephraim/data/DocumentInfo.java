@@ -13,8 +13,11 @@ public class DocumentInfo
     ///the meta description
     private String mMeta;
 
-    ///the h tags
-    private List<String> mHeaderTags;
+    ///the h1 tags
+    private List<String> mH1;
+
+    ///the h2 tags
+    private List<String> mH2;
 
     ///indicates if it has been processed or not
     private boolean mProcessed;
@@ -26,7 +29,8 @@ public class DocumentInfo
     {
         mTitle = "";
         mMeta = "";
-        mHeaderTags = new ArrayList<>();
+        mH1 = new ArrayList<>();
+        mH2 = new ArrayList<>();
         mProcessed = false;
     }
 
@@ -48,6 +52,15 @@ public class DocumentInfo
                 mMeta = meta.attr("content");
             }
         }
+
+        //grab the headers
+        for (var h1 : doc.getElementsByTag("h1")) {
+            mH1.add(h1.text());
+        }
+        for (var h2 : doc.getElementsByTag("h2"))
+        {
+            mH2.add(h2.text());
+        }
     }
 
     /**
@@ -61,6 +74,18 @@ public class DocumentInfo
      * @return
      */
     public String getMetaDescription() {return mMeta;}
+
+    /**
+     * Getter for the h1
+     * @return
+     */
+    public List<String> getH1() {return mH1;}
+
+    /**
+     * Getter for the h2
+     * @return
+     */
+    public List<String> getH2() {return mH2;}
 
 }
 
