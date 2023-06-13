@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import com.scrape.ephraim.ui.Descriptor?>
+
+<VBox maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
+   <children>
+      <MenuBar fx:id="menuBar">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <SplitPane dividerPositions="0.36444444444444446" prefHeight="340.0" prefWidth="600.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="328.0">
+               <children>
+                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="300.0" prefWidth="248.0">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor></TreeView>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="251.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <TabPane prefHeight="300.0" prefWidth="521.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                        <Tab text="Issues">
+                           <content>
+                              <TableView fx:id="issues" onMouseClicked="#clickItemIssue" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                        </Tab>
+                      <Tab text="Internal Links">
+                           <content>
+                              <TableView fx:id="internalLinks" onMouseClicked="#clickItemInternalLinks" prefHeight="300.0" prefWidth="504.0" />
+                           </content></Tab>
+                      <Tab text="External Links">
+                           <content>
+                              <TableView fx:id="externalLinks" onMouseClicked="#clickItemExternalLinks" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+      <HBox prefHeight="51.0" prefWidth="902.0">
+         <children>
+            <Label text="Enter Url:">
+               <padding>
+                  <Insets right="10.0" />
+               </padding></Label>
+            <TextField fx:id="urlField">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></TextField>
+            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
+         </children>
+      </HBox>
+       <Descriptor fx:id="descriptorBox" />
+   </children>
+</VBox>

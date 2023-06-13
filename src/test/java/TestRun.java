@@ -1,7 +1,6 @@
-import com.scrape.ephraim.Crawler;
-import com.scrape.ephraim.Fetcher;
-import com.scrape.ephraim.Link;
-import com.scrape.ephraim.Scraper;
+import com.scrape.ephraim.crawler.Crawler;
+import com.scrape.ephraim.crawler.Fetcher;
+import com.scrape.ephraim.crawler.Scraper;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
@@ -20,15 +19,13 @@ public class TestRun {
         long beginTime = System.currentTimeMillis();
 
         //creates a crawler
-        Crawler crawler = new Crawler("https://www.coursereport.com/");
-        List<Link> urls = new ArrayList<>();
-        Link link = new Link("https://www.coursereport.com/", true, false);
-        urls.add(link);
+        Crawler crawler = new Crawler("https://jsoup.com/");
+        List<String> urls = new ArrayList<>();
+        urls.add(crawler.getUrl());
 
         //now create a scraper
         Scraper scraper = new Scraper(crawler.getDomain());
         crawler.setScraper(scraper);
-
 
         crawler.crawl(urls);
         System.out.println("total links visited: " + crawler.getVisitedLinks().size());
@@ -40,7 +37,7 @@ public class TestRun {
     static void TestFetcher()
     {
         Fetcher fetcher = new Fetcher();
-        fetcher.setUrl("https://https://unclejulios.com/");
+            fetcher.setUrl("https://unclejulios.com/");
 //        fetcher.fetch();
         Document drD = fetcher.getDocument();
 

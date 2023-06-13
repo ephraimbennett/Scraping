@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 
 
@@ -60,26 +60,21 @@ public class Crawler
     /**
      * recursive crawl
      */
-    public void crawl(List<Link> urlList)
+    public void crawl(List<String> urlList)
     {
         System.out.println("NEW VISITOR\n\n\n\n\n\n");
         Visitor visitor = new Visitor();
         visitor.setCrawler(this);
         visitor.setScraper(mScraper);
         int index = 0;
-        for (Link link : urlList) {
+        for (String link : urlList) {
             try {
                 if (visitedLink(link))
                 {
                     continue;
                 }
-                if (link.isRelative())
-                {
-                    visitor.addUrl("https://" + mDomain + link.getUrl());
-                } else {
-                    visitor.addUrl(link.getUrl());
-                }
-                addLink(link.getUrl());
+                visitor.addUrl(link);
+                addLink(link);
             } catch (NullPointerException e)
             {
                 var x = urlList.subList(index, index + 20);
@@ -87,7 +82,7 @@ public class Crawler
             }
         }
         var listOfLinks = visitor.visit();
-        List<Link> finalList = new ArrayList<>();
+        List<String> finalList = new ArrayList<>();
         for (var list : listOfLinks)
         {
             finalList.addAll(list);
@@ -112,9 +107,9 @@ public class Crawler
      * @param link
      * @return
      */
-    public boolean visitedLink(Link link)
+    public boolean visitedLink(String link)
     {
-        return mVisitedLinks.contains(link.getUrl());
+        return mVisitedLinks.contains(link);
     }
 
 

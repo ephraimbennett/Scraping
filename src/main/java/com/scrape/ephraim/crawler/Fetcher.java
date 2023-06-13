@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
@@ -13,6 +13,7 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.MalformedInputException;
+import java.util.HashMap;
 import java.util.concurrent.*;
 
 public class Fetcher {
@@ -59,18 +60,24 @@ public class Fetcher {
 
 
     ///returns a future document
-    public Document fetch()
+    public ResponseWrapper fetch()
     {
         Document document = null;
+        HashMap<String, String> responseHeaders = new HashMap<>();
+        int responseCode = 0;
         try {
-            var connection =  Jsoup.connect(mUrl);
+            var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
-            document = connection.get();
+            connection.ignoreContentType(true);
+            Connection.Response response = connection.execute();
+            responseHeaders = new HashMap<>(response.headers());
+            responseCode = response.statusCode();
+            document = response.parse();
             System.out.println(mUrl + " done!");
-            return document;
         } catch (HttpStatusException e)
         {
             System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
+            responseCode = e.getStatusCode();
         } catch (UnsupportedMimeTypeException e)
         {
             System.out.println("Unsuported Mime Type! " + e.getMimeType());
@@ -92,7 +99,8 @@ public class Fetcher {
             e.printStackTrace();
         }
         finally {
-            return document;
+            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode);
+            return wrapper;
         }
     }
 

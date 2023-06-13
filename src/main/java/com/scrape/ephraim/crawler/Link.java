@@ -1,4 +1,4 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
 import java.util.ArrayList;
 import java.util.List;

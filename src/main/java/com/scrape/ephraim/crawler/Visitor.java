@@ -1,19 +1,14 @@
-package com.scrape.ephraim;
+package com.scrape.ephraim.crawler;
 
-import com.scrape.ephraim.Fetcher;
-import com.scrape.ephraim.LinkParser;
-import org.jsoup.Jsoup;
+import com.scrape.ephraim.data.StatusIssue;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class Visitor {
-    ///document we are returning
-    Document mDocument;
 
     ///composite fetcher
     Fetcher mFetcher;
@@ -26,6 +21,8 @@ public class Visitor {
 
     ///the different urls we have to visit
     List<String> mUrls;
+
+    ///lists the origin
 
     /**
      * Constructor
@@ -62,39 +59,53 @@ public class Visitor {
     /**
      * Visits the url page
      */
-    public List<List<Link>> visit()
+    public List<List<String>> visit()
     {
         //res
-        List<List<Link>> res = new ArrayList<>();
+        List<List<String>> res = new ArrayList<>();
         //the executor
         Executor executor = Executors.newFixedThreadPool(256);
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
-        List<CompletableFuture<Document>> futures = new ArrayList<>();
+        List<CompletableFuture<ResponseWrapper>> futures = new ArrayList<>();
         for (String url : mUrls) {
-            CompletableFuture<Document> futureDoc = CompletableFuture.supplyAsync(()-> {
+            CompletableFuture<ResponseWrapper> futureDoc = CompletableFuture.supplyAsync(()-> {
                 Fetcher fetcher = new Fetcher(url);
                 return fetcher.fetch();
-            });
+            }, executor);
             futures.add(futureDoc);
-//            System.out.println("Fetching " + url + " ... ");
         }
 
         //make one giant combined future
         CompletableFuture<Void> combinedFutureVoid = CompletableFuture.allOf(futures.toArray(
                 new CompletableFuture[futures.size()]));
-        CompletableFuture<List<Document>> combinedFuture = combinedFutureVoid.thenApply(
+        CompletableFuture<List<ResponseWrapper>> combinedFuture = combinedFutureVoid.thenApply(
                 t -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
         try {
-            var documents = combinedFuture.get();
+            var responses = combinedFuture.get();
             System.out.println("Fetching done!");
-            for (int i = 0; i < documents.size(); i++)
+            for (int i = 0; i < responses.size(); i++)
             {
-                var document = documents.get(i);
-                mScraper.setParentUrl(mUrls.get(i));
-                mScraper.scrapePage(document);
-                res.add(mScraper.getInternalLinks());
+                var response = responses.get(i);
+                //check if this is a 400 error
+                if (response.getResponseCode() > 399)
+                {
+                    mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+                    var x = response.getHeaders();
+                }
+                else
+                {
+                    //scrape the document
+                    var document = response.getDocument();
+                    var url = responses.get(i).getUrl();
+                    mScraper.setParentUrl(url);
+                    mScraper.scrapePage(document, url);
+                    res.add(mScraper.getInternalLinks());
+                }
+
+                //store the headers
+                mScraper.getHeaders().addResponseHeader(response.getUrl(), responses.get(i).getHeaders());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
