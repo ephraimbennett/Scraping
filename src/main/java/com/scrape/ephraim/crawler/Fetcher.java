@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.ui.FetcherObserver;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -13,6 +14,7 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.MalformedInputException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.*;
 
@@ -23,12 +25,15 @@ public class Fetcher {
     /// the document this fetcher should return
     private Document mDocument = null;
 
+    /// list of observers
+    private ArrayList<FetcherObserver> mObservers;
+
     /**
      * Default constructor
      */
     public Fetcher()
     {
-
+        mObservers = new ArrayList<>();
     }
 
     /**
@@ -38,6 +43,7 @@ public class Fetcher {
     public Fetcher(String url)
     {
         mUrl = url;
+        mObservers = new ArrayList<>();
     }
 
     /**
@@ -73,10 +79,11 @@ public class Fetcher {
             responseHeaders = new HashMap<>(response.headers());
             responseCode = response.statusCode();
             document = response.parse();
-            System.out.println(mUrl + " done!");
+//            System.out.println(mUrl + " done!");
+            updateObservers();
         } catch (HttpStatusException e)
         {
-            System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
+//            System.out.println("HTTP Status Error! " + e.getStatusCode() + " " + e.getUrl());
             responseCode = e.getStatusCode();
         } catch (UnsupportedMimeTypeException e)
         {
@@ -101,6 +108,26 @@ public class Fetcher {
         finally {
             ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode);
             return wrapper;
+        }
+    }
+
+    /**
+     * Adds an observer
+     * @param observer
+     */
+    public void addObserver(FetcherObserver observer)
+    {
+        mObservers.add(observer);
+    }
+
+    /**
+     * Update the oberservers
+     */
+    public void updateObservers()
+    {
+        for (var observer : mObservers)
+        {
+            observer.update(mUrl);
         }
     }
 

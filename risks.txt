@@ -3,4 +3,4 @@ some links are null and we need to figure out why *fixed;
 for some reason splittesting is super slow *fixed;
 the scraper may be given the incorrect url
 need to account for subdomains*fixed;
-When dealing with relative links, we are simply adding the first domain name given, this doesn't account for any subdomains.
+When dealing with relative links, we are simply adding the first domain name given, this doesn't account for any subdomains. *fixed;

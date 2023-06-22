@@ -62,7 +62,7 @@ public class LinkParser {
             mDomainName = defaultDomain;
         }
         mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
-        mDefaultPattern = Pattern.compile("^https?://(www.)?([\\\\w]+\\\\.)?" + defaultDomain);
+        mDefaultPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + defaultDomain);
         mParentUrl = url;
     }
 
@@ -205,6 +205,10 @@ public class LinkParser {
         }
 
         //at this point it's external (and therefore not relative)
+//        if (url.contains("https://order.unclejulios.com"))
+//        {
+//            System.out.println(url);
+//        }
         mExternalLinks.add(url);
     }
 

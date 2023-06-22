@@ -1,13 +1,13 @@
 package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Crawler;
+import com.scrape.ephraim.crawler.Patterns;
 import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -38,6 +38,9 @@ public class Controller implements Initializable
     @FXML
     TableView issues;
 
+    @FXML
+    ListView visitedLinks;
+
     @FXML TitledPane descriptorBox;
 
     @FXML MenuBar menuBar;
@@ -47,6 +50,9 @@ public class Controller implements Initializable
 
     ///controller for the menu bar
     MenuBarController menuBarController;
+
+    ///controller for the lists that contain links and errors
+    VisitedListController visitedController;
 
     ///the scraper
     private Scraper scraper;
@@ -72,6 +78,9 @@ public class Controller implements Initializable
             Crawler crawler = new Crawler(urlField.getText());
             List<String> urls = new ArrayList<>();
             urls.add(crawler.getUrl());
+
+            //add observers
+            crawler.addObserver(visitedController);
 
             //now create a scraper
             scraper = new Scraper(crawler.getDomain());
@@ -243,6 +252,7 @@ public class Controller implements Initializable
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox);
         menuBarController = new MenuBarController(menuBar);
+        visitedController = new VisitedListController(visitedLinks);
 
         //initialize table columns
         initInternalLinks();

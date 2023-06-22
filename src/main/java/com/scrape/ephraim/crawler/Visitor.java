@@ -1,9 +1,11 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.data.StatusIssue;
+import com.scrape.ephraim.ui.FetcherObserver;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -22,7 +24,10 @@ public class Visitor {
     ///the different urls we have to visit
     List<String> mUrls;
 
-    ///lists the origin
+    ///list of the observers
+    List<FetcherObserver> mObservers;
+
+    ArrayList<ResponseWrapper> codes;
 
     /**
      * Constructor
@@ -32,6 +37,8 @@ public class Visitor {
         mFetcher = new Fetcher();
         mCrawler = new ArrayList<>();
         mUrls = new ArrayList<>();
+        mObservers = new ArrayList<>();
+        codes = new ArrayList<>();
     }
 
     /**
@@ -63,8 +70,9 @@ public class Visitor {
     {
         //res
         List<List<String>> res = new ArrayList<>();
+        codes = new ArrayList<>();
         //the executor
-        Executor executor = Executors.newFixedThreadPool(256);
+        Executor executor = Executors.newCachedThreadPool();
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
@@ -72,7 +80,13 @@ public class Visitor {
         for (String url : mUrls) {
             CompletableFuture<ResponseWrapper> futureDoc = CompletableFuture.supplyAsync(()-> {
                 Fetcher fetcher = new Fetcher(url);
-                return fetcher.fetch();
+                for (FetcherObserver observer : mObservers)
+                {
+                    observer.setFetcher(fetcher);
+                }
+                ResponseWrapper response = fetcher.fetch();
+                codes.add(response);
+                return response;
             }, executor);
             futures.add(futureDoc);
         }
@@ -85,27 +99,27 @@ public class Visitor {
         try {
             var responses = combinedFuture.get();
             System.out.println("Fetching done!");
-            for (int i = 0; i < responses.size(); i++)
-            {
-                var response = responses.get(i);
+
+            for (int i = 0; i < codes.size(); i++) {
+                var response = codes.get(i);
+
                 //check if this is a 400 error
-                if (response.getResponseCode() > 399)
+                if (response.getResponseCode() > 299)
                 {
                     mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
-                    var x = response.getHeaders();
                 }
                 else
                 {
                     //scrape the document
                     var document = response.getDocument();
-                    var url = responses.get(i).getUrl();
+                    var url = response.getUrl();
                     mScraper.setParentUrl(url);
                     mScraper.scrapePage(document, url);
                     res.add(mScraper.getInternalLinks());
                 }
 
                 //store the headers
-                mScraper.getHeaders().addResponseHeader(response.getUrl(), responses.get(i).getHeaders());
+                mScraper.getHeaders().addResponseHeader(response.getUrl(), response.getHeaders());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -115,4 +129,10 @@ public class Visitor {
             return res;
         }
     }
+
+    /**
+     * Setter for the observers
+     * @param observers
+     */
+    public void setObservers(ArrayList<FetcherObserver> observers) {mObservers = observers;}
 }
