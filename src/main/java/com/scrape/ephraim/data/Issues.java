@@ -29,4 +29,22 @@ public class Issues implements Iterable<Issue>
     {
         mIssues.add(issue);
     }
+
+    /**
+     * grabs issues based on the url
+     * @param url
+     * @return arraylist of issues
+     */
+    public ArrayList<Issue> findIssues(String url)
+    {
+        ArrayList<Issue> res = new ArrayList<>();
+        for (var issue : mIssues)
+        {
+            if (issue.getUrl().equals(url))
+            {
+                res.add(issue);
+            }
+        }
+        return res;
+    }
 }

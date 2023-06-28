@@ -97,7 +97,7 @@ public class Visitor {
         CompletableFuture<List<ResponseWrapper>> combinedFuture = combinedFutureVoid.thenApply(
                 t -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
         try {
-            var responses = combinedFuture.get();
+            combinedFuture.get();
             System.out.println("Fetching done!");
 
             for (int i = 0; i < codes.size(); i++) {

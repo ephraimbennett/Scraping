@@ -19,12 +19,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
+<VBox fx:id="page" maxHeight="1.7976931348623157E308" prefHeight="438.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
    <children>
-      <MenuBar fx:id="menuBar">
+      <MenuBar fx:id="menuBar" prefHeight="15.0" prefWidth="846.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onExportCSV" text="Export to CSV" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
             </items>
           </Menu>
@@ -90,7 +91,7 @@
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
          </children>
          <VBox.margin>
-            <Insets top="5.0" />
+            <Insets top="4.0" />
          </VBox.margin>
       </HBox>
        <TitledPane fx:id="descriptorBox" />

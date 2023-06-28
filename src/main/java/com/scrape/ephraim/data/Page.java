@@ -1,8 +1,6 @@
 package com.scrape.ephraim.data;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 
 import com.scrape.ephraim.crawler.Patterns;
@@ -196,4 +194,47 @@ public class Page
      * @return
      */
     public DocumentInfo getDocumentInfo() {return mDocumentInfo;}
+
+    /**
+     * Returns an array of strings that represent this page object
+     * @return
+     */
+    public List<String> saveCSV()
+    {
+        ArrayList<String> line = new ArrayList<>();
+
+        //add the url
+        line.add(mUrl);
+
+        //add the inlinks
+        line.add(listToString(mInLinks));
+
+        //add the outlinks
+        line.add(listToString(mOutLinks));
+
+        //add the external links
+        line.add(listToString(mExternalLinks));
+
+        //add the document info
+        line.addAll(mDocumentInfo.saveCSV());
+
+        return line;
+    }
+
+    /**
+     * Converts a list of strings into a csv item
+     * @param list
+     * @return
+     */
+    private String listToString(Iterable<String> list)
+    {
+        StringBuilder links = new StringBuilder();
+        for (String link : list)
+        {
+            links.append(link).append(",");
+        }
+        if (links.length() > 0)//same as above
+            links.deleteCharAt(links.length() - 1);
+        return links.toString();
+    }
 }

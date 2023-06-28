@@ -56,6 +56,8 @@ public class Scraper
         if (document != null)//if this was a parse-able document, then add the html data
         {
             page.getDocumentInfo().processDocument(document);
+        } else {
+            System.out.println(url + " gives us a null document");
         }
     }
 

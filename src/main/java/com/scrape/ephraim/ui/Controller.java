@@ -12,13 +12,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class Controller implements Initializable
 {
+    @FXML
+    public VBox page;
 
     @FXML
     public Button submitButton;
@@ -63,6 +69,19 @@ public class Controller implements Initializable
     public void onExit()
     {
         menuBarController.onExit();
+    }
+
+    /**
+     * handler for hitting export to csv
+     */
+    public void onExportCSV()
+    {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", ".csv"));
+        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        ExporterCSV exporter = new ExporterCSV(path);
+        exporter.export(scraper);
     }
 
     /**

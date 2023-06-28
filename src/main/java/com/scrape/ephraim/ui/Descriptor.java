@@ -13,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
+import java.util.List;
 import java.util.Map;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
@@ -98,6 +99,24 @@ public class Descriptor
         h2View.setItems(observableH2);
         nodes2.getChildren().add(new VBox(new Label("H1"), h1View));
         nodes2.getChildren().add(new VBox(new Label("H2"), h2View));
+
+        //list the issues associated
+        TableView issues = new TableView();
+        TableColumn<Issue, String> categoryCol = new TableColumn<>("Category");
+        categoryCol.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getCategory()));
+        TableColumn<Issue, String> summaryCol = new TableColumn<>("Summary");
+        summaryCol.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
+        TableColumn<Issue, String> descriptionCol = new TableColumn<>("Description");
+        descriptionCol.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getDescription()));
+        issues.getColumns().addAll(categoryCol, summaryCol, descriptionCol);
+        nodes2.getChildren().add(new VBox(new Label("Issues"), issues));//add it to the row
+
+        //fill out the issues table
+        List<Issue> associatedIssues = scraper.getIssues().findIssues(page.getUrl());
+        for (var issue : associatedIssues)
+        {
+            issues.getItems().add(issue);
+        }
 
         HBox nodes = new HBox();
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinksView));

@@ -87,5 +87,39 @@ public class DocumentInfo
      */
     public List<String> getH2() {return mH2;}
 
+    public List<String> saveCSV()
+    {
+        ArrayList<String> line = new ArrayList<>();
+        //save the title
+        line.add(mTitle);
+
+        //save the meta
+        line.add(mMeta);
+
+        //save the h1's
+        line.add(listToString(mH1));
+
+        //save the h2's
+        line.add(listToString(mH2));
+
+        return line;
+    }
+
+    /**
+     * Converts a list of strings into a csv item
+     * @param list
+     * @return
+     */
+    private String listToString(Iterable<String> list)
+    {
+        StringBuilder links = new StringBuilder();
+        for (String link : list)
+        {
+            links.append(link).append(",");
+        }
+        if (links.length() > 0)//same as above
+            links.deleteCharAt(links.length() - 1);
+        return links.toString();
+    }
 }
 
