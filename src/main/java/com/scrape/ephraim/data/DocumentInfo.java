@@ -1,6 +1,7 @@
 package com.scrape.ephraim.data;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,9 @@ public class DocumentInfo
     public void processDocument(Document doc)
     {
         //grab the title
-        mTitle = doc.getElementsByTag("title").get(0).text();
+        Elements titles = doc.getElementsByTag("title");
+        if (titles.size() > 0)
+            mTitle = titles.get(0).text();
 
         //grab the meta description
         var metas = doc.getElementsByTag("meta");

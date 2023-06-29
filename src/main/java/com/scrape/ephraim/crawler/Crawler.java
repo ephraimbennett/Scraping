@@ -17,7 +17,7 @@ public class Crawler
     private String mDomain;
 
     ///visited links
-    private Set<String> mVisitedLinks = new HashSet<>();
+    private HashSet<String> mVisitedLinks = new HashSet<>();
 
     ///association to the scraper
     private Scraper mScraper;
@@ -61,7 +61,7 @@ public class Crawler
      * Grabs the set of visited links
      * @return
      */
-    public Set<String> getVisitedLinks() {return mVisitedLinks;}
+    public HashSet<String> getVisitedLinks() {return mVisitedLinks;}
 
     /**
      * recursive crawl

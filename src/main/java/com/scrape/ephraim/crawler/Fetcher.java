@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -70,7 +71,9 @@ public class Fetcher {
     {
         Document document = null;
         HashMap<String, String> responseHeaders = new HashMap<>();
-        int responseCode = 0;
+        int responseCode = 2000;
+        if (mUrl.equals("https://unclejulios.com/illinois/northlake/"))
+            System.out.println("dede");
         try {
             var connection = Jsoup.connect(mUrl);
             connection.timeout(10 * 1000);
@@ -96,10 +99,16 @@ public class Fetcher {
         catch (SocketTimeoutException e)
         {
             System.out.println("the socket timed out! " + mUrl);
+            responseCode = -1;
         }
         catch (ConnectException e)
         {
             System.out.println("Connection timed out! " + mUrl);
+        }
+        catch (SSLHandshakeException e)
+        {
+            System.out.println("Handshake exception! " + mUrl);
+            responseCode = 525;//this is a 525
         }
         catch (Exception e)
         {

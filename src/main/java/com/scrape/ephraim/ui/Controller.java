@@ -85,6 +85,20 @@ public class Controller implements Initializable
     }
 
     /**
+     * Handler for hitting export to json
+     */
+    public void onExportJSON()
+    {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save");
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON File", ".json")
+        , new FileChooser.ExtensionFilter("All file types", "."));
+        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        ExporterJSON exporter = new ExporterJSON(path);
+        exporter.export(scraper);
+    }
+
+    /**
      * Asynchronously crawl
      */
     public void onSubmit()

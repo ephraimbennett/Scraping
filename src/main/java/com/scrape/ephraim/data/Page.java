@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import com.scrape.ephraim.crawler.Patterns;
-import org.jsoup.nodes.Document;
 
 public class Page
 {
@@ -25,6 +24,12 @@ public class Page
 
     ///list of the external links
     private HashSet<String> mExternalLinks;
+
+    ///map to store the headers
+    private HashMap<String, String> mHeaders;
+
+    ///the response code for this page
+    private int mResponseCode;
 
     ///association to the document info
     private DocumentInfo mDocumentInfo;
@@ -62,6 +67,8 @@ public class Page
         mOutLinks = new HashSet<>();
         mExternalLinks = new HashSet<>();
         mDocumentInfo = new DocumentInfo();
+        mHeaders = new HashMap<>();
+        mResponseCode = 0;
 
         //create the path
         Matcher matcher = Patterns.pathPattern.matcher(mUrl);
@@ -181,13 +188,28 @@ public class Page
     }
 
     /**
-     * Composite function to document info
-     * @param document
+     * Setter for the headers
+     * @param map
      */
-    public void processDocument(Document document)
-    {
-        mDocumentInfo.processDocument(document);
-    }
+    public void setHeaders(HashMap<String, String> map) {mHeaders = map;}
+
+    /**
+     * Getter for the headers
+     * @return
+     */
+    public HashMap<String, String> getHeaders() {return mHeaders;}
+
+    /**
+     * Setter for the respoonse code
+     * @param code
+     */
+    public void setResponseCode(int code) {mResponseCode = code;}
+
+    /**
+     * Getter for the response code
+     * @return
+     */
+    public int getResponseCode() {return mResponseCode;}
 
     /**
      * Getter for the document info
@@ -206,6 +228,9 @@ public class Page
         //add the url
         line.add(mUrl);
 
+        //add the response code
+        line.add(String.valueOf(mResponseCode));
+
         //add the inlinks
         line.add(listToString(mInLinks));
 
@@ -217,6 +242,10 @@ public class Page
 
         //add the document info
         line.addAll(mDocumentInfo.saveCSV());
+
+        //add the headers
+        if (mHeaders != null)
+            line.add(mapToString(mHeaders));
 
         return line;
     }
@@ -236,5 +265,23 @@ public class Page
         if (links.length() > 0)//same as above
             links.deleteCharAt(links.length() - 1);
         return links.toString();
+    }
+
+    /**
+     * Converts a map into a csv item
+     * @param map
+     * @return
+     */
+    private String mapToString(Map<String, String> map)
+    {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, String> item : map.entrySet())
+        {
+            builder.append(item.getKey()).append("=").append(item.getValue()).append(",");
+        }
+        if (builder.length() > 0)
+            builder.deleteCharAt(builder.length() - 1);
+
+        return builder.toString();
     }
 }

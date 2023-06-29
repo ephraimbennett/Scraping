@@ -26,6 +26,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#onExportCSV" text="Export to CSV" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportJSON" text="Export to JSON" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
             </items>
           </Menu>

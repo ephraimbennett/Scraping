@@ -38,10 +38,13 @@ public class Scraper
 
     /**
      * Scrapes the webpage
-     * @param document
+     * @param wrapper
      */
-    public void scrapePage(Document document, String url)
+    public void scrapePage(ResponseWrapper wrapper)
     {
+        String url = wrapper.getUrl();
+        Document document = wrapper.getDocument();
+
         //parse the links
         mLinkParser.clear();
         mLinkParser.setDomainName(url, mDomain);
@@ -51,13 +54,21 @@ public class Scraper
         Page page = new Page(url);
         page.setOutLinks(mLinkParser.getInternalLinks());
         page.setExternalLinks(mLinkParser.getExternalLinks());
+        page.setHeaders(wrapper.getHeaders());
+        page.setResponseCode(wrapper.getResponseCode());
+
         mSiteMap.addPage(page);
 
         if (document != null)//if this was a parse-able document, then add the html data
         {
-            page.getDocumentInfo().processDocument(document);
+            try {
+                page.getDocumentInfo().processDocument(document);
+            } catch (IndexOutOfBoundsException e)
+            {
+                e.printStackTrace();
+            }
         } else {
-            System.out.println(url + " gives us a null document");
+//            System.out.println(url + " gives us a null document");
         }
     }
 
