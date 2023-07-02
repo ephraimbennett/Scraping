@@ -73,7 +73,7 @@ public class Visitor {
         List<List<String>> res = new ArrayList<>();
         codes = new ArrayList<>();
         //the executor
-        Executor executor = Executors.newCachedThreadPool();
+        Executor executor = Executors.newFixedThreadPool(256);
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url

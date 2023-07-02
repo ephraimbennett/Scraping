@@ -74,7 +74,7 @@ public class Fetcher {
 
         try {
             var connection = Jsoup.connect(mUrl);
-            connection.timeout(10 * 1000);
+            connection.timeout(20 * 1000);
             connection.ignoreContentType(true);
             Connection.Response response = connection.execute();
 
