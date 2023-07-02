@@ -31,6 +31,9 @@ public class Page
     ///the response code for this page
     private int mResponseCode;
 
+    ///the size in bytes
+    private int mSize;
+
     ///association to the document info
     private DocumentInfo mDocumentInfo;
 
@@ -69,6 +72,7 @@ public class Page
         mDocumentInfo = new DocumentInfo();
         mHeaders = new HashMap<>();
         mResponseCode = 0;
+        mSize = 0;
 
         //create the path
         Matcher matcher = Patterns.pathPattern.matcher(mUrl);
@@ -210,6 +214,18 @@ public class Page
      * @return
      */
     public int getResponseCode() {return mResponseCode;}
+
+    /**
+     * Setter for the size
+     * @param size
+     */
+    public void setSize(int size) {mSize = size;}
+
+    /**
+     * Getter for the size
+     * @return
+     */
+    public int getSize() {return mSize;}
 
     /**
      * Getter for the document info

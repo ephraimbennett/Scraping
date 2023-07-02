@@ -56,6 +56,7 @@ public class Scraper
         page.setExternalLinks(mLinkParser.getExternalLinks());
         page.setHeaders(wrapper.getHeaders());
         page.setResponseCode(wrapper.getResponseCode());
+        page.setSize(wrapper.getSize());
 
         mSiteMap.addPage(page);
 

@@ -5,6 +5,7 @@ import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
+import org.jsoup.helper.ValidationException;
 import org.jsoup.nodes.Document;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -71,6 +72,7 @@ public class Fetcher {
         HashMap<String, String> responseHeaders = new HashMap<>();
         int responseCode = 2000;
         String type = "";
+        int size = 0;
 
         try {
             var connection = Jsoup.connect(mUrl);
@@ -83,6 +85,13 @@ public class Fetcher {
             responseHeaders = new HashMap<>(response.headers());
             responseCode = response.statusCode();
             document = response.parse();
+
+            //try to get the size in bytes
+            try {
+                size = response.bodyAsBytes().length;
+            } catch (ValidationException e)
+            {
+            }
 
 //            System.out.println(mUrl + " done!");
             updateObservers();
@@ -117,7 +126,7 @@ public class Fetcher {
             e.printStackTrace();
         }
         finally {
-            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode, type);
+            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode, type, size);
             return wrapper;
         }
     }
