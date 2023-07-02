@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class Visitor {
         List<List<String>> res = new ArrayList<>();
         codes = new ArrayList<>();
         //the executor
-        Executor executor = Executors.newCachedThreadPool();
+        Executor executor = Executors.newFixedThreadPool(256);
 
         //list of futures that we are going to combine into one later
         //the loop will populate this list with a request to each url
@@ -97,29 +98,35 @@ public class Visitor {
         CompletableFuture<List<ResponseWrapper>> combinedFuture = combinedFutureVoid.thenApply(
                 t -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
         try {
-            combinedFuture.get();
+            var responses = combinedFuture.get();
             System.out.println("Fetching done!");
 
-            for (int i = 0; i < codes.size(); i++) {
-                var response = codes.get(i);
 
-                //check if this is a 400 error
-                if (response.getResponseCode() > 299)
-                {
-                    mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
-                }
-                else
-                {
+            HashSet<ResponseWrapper> total = new HashSet<>();
+            total.addAll(codes);
+            total.addAll(responses);
+
+            try {
+
+                for (var response : total) {
+                    //check if this is a 400 error
+                    if (response.getResponseCode() > 299) {
+                        mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+                    }
                     //scrape the document
-                    var document = response.getDocument();
                     var url = response.getUrl();
-                    mScraper.setParentUrl(url);
-                    mScraper.scrapePage(document, url);
-                    res.add(mScraper.getInternalLinks());
-                }
 
-                //store the headers
-                mScraper.getHeaders().addResponseHeader(response.getUrl(), response.getHeaders());
+                    mScraper.setParentUrl(url);
+                    mScraper.scrapePage(response);
+                    res.add(mScraper.getInternalLinks());
+
+
+                    //store the headers
+                    mScraper.getHeaders().addResponseHeader(response.getUrl(), response.getHeaders());
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

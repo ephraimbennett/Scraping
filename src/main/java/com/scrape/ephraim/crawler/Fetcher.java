@@ -5,10 +5,10 @@ import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
+import org.jsoup.helper.ValidationException;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -70,15 +70,29 @@ public class Fetcher {
     {
         Document document = null;
         HashMap<String, String> responseHeaders = new HashMap<>();
-        int responseCode = 0;
+        int responseCode = 2000;
+        String type = "";
+        int size = 0;
+
         try {
             var connection = Jsoup.connect(mUrl);
-            connection.timeout(10 * 1000);
+            connection.timeout(20 * 1000);
             connection.ignoreContentType(true);
             Connection.Response response = connection.execute();
+
+            //update the info variables
+            type = response.contentType();
             responseHeaders = new HashMap<>(response.headers());
             responseCode = response.statusCode();
             document = response.parse();
+
+            //try to get the size in bytes
+            try {
+                size = response.bodyAsBytes().length;
+            } catch (ValidationException e)
+            {
+            }
+
 //            System.out.println(mUrl + " done!");
             updateObservers();
         } catch (HttpStatusException e)
@@ -96,17 +110,23 @@ public class Fetcher {
         catch (SocketTimeoutException e)
         {
             System.out.println("the socket timed out! " + mUrl);
+            responseCode = -1;
         }
         catch (ConnectException e)
         {
             System.out.println("Connection timed out! " + mUrl);
+        }
+        catch (SSLHandshakeException e)
+        {
+            System.out.println("Handshake exception! " + mUrl);
+            responseCode = 525;//this is a 525
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
         finally {
-            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode);
+            ResponseWrapper wrapper = new ResponseWrapper(document, responseHeaders, mUrl, responseCode, type, size);
             return wrapper;
         }
     }

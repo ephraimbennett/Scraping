@@ -67,7 +67,9 @@ public class SiteMap implements Iterable<Page>
             }
             else
             {
-                mExternals.put(externalLink, new ExternalSite(externalLink));
+                ExternalSite obj = new ExternalSite(externalLink);
+                obj.addOccurrance(page.getUrl());
+                mExternals.put(externalLink, obj);
             }
         }
     }

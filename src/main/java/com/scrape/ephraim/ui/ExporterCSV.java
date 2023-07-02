@@ -9,13 +9,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 public class ExporterCSV
 {
     ///the file to export to
-    File mFile;
+    private File mFile;
 
     /**
      * Constructor
@@ -38,46 +39,28 @@ public class ExporterCSV
             CSVWriter writer = new CSVWriter(outputFile);
 
             //head for the internal links section
-            String[] internalLinksHead = {"url", "inlinks", "internal outlinks", "external links", "title",
-            "meta description", "h1's", "h2's", "headers"};
+            String[] internalLinksHead = {"url", "response code", "content type", "inlinks", "internal outlinks", "external links",
+                    "title", "meta description", "h1's", "h2's", "headers"};
             writer.writeNext(internalLinksHead);
             //populate it with the internal links
             for (Page page : scraper.getSiteMap())
             {
+                if (page.getResponseCode() == 0)
+                {
+                    System.out.println("huh " + page.getUrl());
+                }
+
                 //grab the list from the page
                 List<String> pageLine = page.saveCSV();
 
-                //grab the headers and add it
-                var headers = scraper.getHeaders().get(page.getUrl());
-                if (headers != null)
-                    pageLine.add(mapToString(headers));
-
-                //convert to basic array and then add
+                //convert to basic array and then write it
                 writer.writeNext(pageLine.toArray(new String[0]));
             }
             writer.close();
         }
         catch(IOException e)
         {
-
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * Converts a map into a csv item
-     * @param map
-     * @return
-     */
-    private String mapToString(Map<String, String> map)
-    {
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> item : map.entrySet())
-        {
-            builder.append(item.getKey()).append("=").append(item.getValue()).append(",");
-        }
-        if (builder.length() > 0)
-            builder.deleteCharAt(builder.length() - 1);
-
-        return builder.toString();
     }
 }

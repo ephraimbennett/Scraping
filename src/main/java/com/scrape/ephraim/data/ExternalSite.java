@@ -15,7 +15,6 @@ public class ExternalSite
     {
         mUrl = url;
         mInLinks = new HashMap<>();
-        addOccurrance(url);
     }
 
     public void addOccurrance(String url)

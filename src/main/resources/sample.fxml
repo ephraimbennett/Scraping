@@ -26,6 +26,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#onExportCSV" text="Export to CSV" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportJSON" text="Export to JSON" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
             </items>
           </Menu>
@@ -41,11 +42,27 @@
           </Menu>
         </menus>
       </MenuBar>
+      <HBox prefHeight="30.0" prefWidth="902.0">
+         <children>
+            <Label text="Enter Url:">
+               <padding>
+                  <Insets right="10.0" />
+               </padding></Label>
+            <TextField fx:id="urlField">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></TextField>
+            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
+         </children>
+         <VBox.margin>
+            <Insets top="4.0" />
+         </VBox.margin>
+      </HBox>
       <SplitPane dividerPositions="0.36444444444444446" prefHeight="340.0" prefWidth="600.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="328.0">
                <children>
-                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="300.0" prefWidth="248.0">
+                  <TreeView fx:id="treeView" layoutX="25.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" onMouseClicked="#siteMapClicked" prefHeight="300.0" prefWidth="248.0">
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor></TreeView>
@@ -78,22 +95,6 @@
                </children></AnchorPane>
         </items>
       </SplitPane>
-      <HBox prefHeight="51.0" prefWidth="902.0">
-         <children>
-            <Label text="Enter Url:">
-               <padding>
-                  <Insets right="10.0" />
-               </padding></Label>
-            <TextField fx:id="urlField">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin></TextField>
-            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
-         </children>
-         <VBox.margin>
-            <Insets top="4.0" />
-         </VBox.margin>
-      </HBox>
-       <TitledPane fx:id="descriptorBox" />
+       <TitledPane fx:id="descriptorBox" text="(Empty Selection)" />
    </children>
 </VBox>

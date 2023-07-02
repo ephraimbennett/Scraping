@@ -126,9 +126,23 @@ public class LinkParser {
         }
 
         CheckA();
+        CheckImg();
     }
 
     //private functions
+
+    /**
+     * Grabs img elements
+     */
+    private void CheckImg()
+    {
+        var imgElements = mDocument.getElementsByTag("img");
+        for (var img : imgElements)
+        {
+            String url = img.attr("src");
+            processUrl(url);
+        }
+    }
 
     /**
      * Grabs A elements specifically.

@@ -18,12 +18,20 @@ public class ResponseWrapper
     ///the response code we're given
     private int mResponseCode;
 
-    public ResponseWrapper(Document doc, HashMap<String, String> headers, String url, int code)
+    ///the type of the content
+    private String mType;
+
+    ///the size in bytes
+    private int mSize;
+
+    public ResponseWrapper(Document doc, HashMap<String, String> headers, String url, int code, String type, int size)
     {
         mDocument = doc;
         mHeaders = headers;
         mUrl = url;
         mResponseCode = code;
+        mType = type;
+        mSize = size;
     }
 
     /**
@@ -49,4 +57,16 @@ public class ResponseWrapper
      * @return
      */
     public int getResponseCode() {return mResponseCode;}
+
+    /**
+     * Getter for the type
+     * @return
+     */
+    public String getType() {return mType;}
+
+    /**
+     * Getter for the size
+     * @return
+     */
+    public int getSize() {return mSize;}
 }
