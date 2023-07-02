@@ -9,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
@@ -124,6 +123,10 @@ public class Descriptor
         nodes.getChildren().add(new VBox(new Label("External Links"), externalLinksView));
         nodes.getChildren().add(new VBox(new Label("Headers"), headersView));
         nodes.getChildren().add(titleSection);
+
+        //add the type
+        nodes2.getChildren().add(new VBox(new Label("Type"), new Label(page.getType())));
+
         descriptorBox.setContent(new VBox(nodes, nodes2));
     }
 
@@ -182,6 +185,15 @@ public class Descriptor
 
         nodes.getChildren().add(inLinks);
         descriptorBox.setContent(nodes);
+    }
+
+    /**
+     * Resets the descriptor
+     */
+    public void clear()
+    {
+        descriptorBox.setText("(Empty Selection)");
+        descriptorBox.setContent(new HBox());
     }
 
     /**

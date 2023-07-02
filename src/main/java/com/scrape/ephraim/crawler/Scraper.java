@@ -51,7 +51,7 @@ public class Scraper
         mLinkParser.parse(document);
 
         //make a page object for this specific url
-        Page page = new Page(url);
+        Page page = new Page(url, wrapper.getType());
         page.setOutLinks(mLinkParser.getInternalLinks());
         page.setExternalLinks(mLinkParser.getExternalLinks());
         page.setHeaders(wrapper.getHeaders());

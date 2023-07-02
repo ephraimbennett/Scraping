@@ -39,7 +39,7 @@ public class ExporterCSV
             CSVWriter writer = new CSVWriter(outputFile);
 
             //head for the internal links section
-            String[] internalLinksHead = {"url", "response code", "inlinks", "internal outlinks", "external links",
+            String[] internalLinksHead = {"url", "response code", "content type", "inlinks", "internal outlinks", "external links",
                     "title", "meta description", "h1's", "h2's", "headers"};
             writer.writeNext(internalLinksHead);
             //populate it with the internal links

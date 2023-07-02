@@ -1,13 +1,13 @@
 package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Crawler;
-import com.scrape.ephraim.crawler.Patterns;
 import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -210,6 +210,41 @@ public class Controller implements Initializable
     }
 
     /**
+     * If the sitemap is double-clicked, display the selected item
+     * @param e
+     */
+    @FXML
+    public void siteMapClicked(MouseEvent e)
+    {
+        if (e.getClickCount() == 1)
+        {
+            //set up shop
+            StringBuilder urlBuilder = new StringBuilder();
+            TreeItem<String> currentItem = (TreeItem<String>) treeView.getSelectionModel().getSelectedItem();
+
+            //if no item is selected, just stop!
+            if (currentItem == null) return;
+
+            //keep adding the item's value until we get to the root
+            while (currentItem.getParent() != null)
+            {
+                urlBuilder.insert(0, currentItem.getValue()).insert(0, "/");
+                currentItem = currentItem.getParent();
+            }
+
+            //add the https://
+            //since we are always adding a trailing "/" we only need to add http:/
+            urlBuilder.insert(0, "https:/");
+
+            Page selectedPage = scraper.getSiteMap().getMap().get(urlBuilder.toString());
+            if (selectedPage != null)
+                descriptorController.populateDescriptorPage(selectedPage, scraper);
+            else
+                descriptorController.clear();
+        }
+    }
+
+    /**
      * Places the page somewhere on the tree
      * Depth first search algorithm
      * @param page
@@ -304,9 +339,8 @@ public class Controller implements Initializable
         urlColumn.setPrefWidth(200);
         externalLinks.getColumns().add(urlColumn);
 
-        TableColumn<ExternalSite, String> occurrences = new TableColumn<>("# of occurrences");
-        occurrences.setCellValueFactory(ext -> new ReadOnlyStringWrapper(
-                String.valueOf(ext.getValue().getOccurrences())));
+        TableColumn<ExternalSite, Integer> occurrences = new TableColumn<>("# of occurrences");
+        occurrences.setCellValueFactory(ext -> new ReadOnlyObjectWrapper<>(ext.getValue().getOccurrences()));
         occurrences.setPrefWidth(70);
         externalLinks.getColumns().add(occurrences);
     }
@@ -322,17 +356,17 @@ public class Controller implements Initializable
         urlColumn.setPrefWidth(200);
         internalLinks.getColumns().add(urlColumn);
 
-        TableColumn<Page, String> inLinkNumColumn = new TableColumn<>("# of in links");
-        inLinkNumColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(
-                String.valueOf(page.getValue().getInLinks().size())));
+        TableColumn<Page, Integer> inLinkNumColumn = new TableColumn<>("# of in links");
+        inLinkNumColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getInLinks().size()));
         inLinkNumColumn.setPrefWidth(70);
         internalLinks.getColumns().add(inLinkNumColumn);
 
-        TableColumn<Page, String> outLinkNumColumn = new TableColumn<>("# of out links");
-        outLinkNumColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(
-                String.valueOf(page.getValue().getOutLinks().size())));
+        TableColumn<Page, Integer> outLinkNumColumn = new TableColumn<>("# of out links");
+        outLinkNumColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getOutLinks().size()));
         outLinkNumColumn.setPrefWidth(80);
         internalLinks.getColumns().add(outLinkNumColumn);
+
+//        outLinkNumColumn.o
     }
 
     /**

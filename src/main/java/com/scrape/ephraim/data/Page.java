@@ -231,6 +231,9 @@ public class Page
         //add the response code
         line.add(String.valueOf(mResponseCode));
 
+        //add the content type
+        line.add(mType);
+
         //add the inlinks
         line.add(listToString(mInLinks));
 
