@@ -147,6 +147,7 @@ public class Fetcher {
                 .build();
 
         OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(15, TimeUnit.SECONDS);
 
         Call call = client.newCall(request);
         try {

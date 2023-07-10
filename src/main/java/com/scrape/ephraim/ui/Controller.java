@@ -222,9 +222,14 @@ public class Controller implements Initializable
                 treeView.getRoot().getChildren().add(newRoot);
                 roots.put(wholeDomain, newRoot);
             }
-            if (page.getPath().size() > 1)//if we have more than just a /
+            try {
+                if (page.getPath().size() > 1)//if we have more than just a /
+                {
+                    populateTreeView(page, roots.get(wholeDomain), 1);
+                }
+            } catch (NullPointerException e)
             {
-                populateTreeView(page, roots.get(wholeDomain), 1);
+                e.printStackTrace();
             }
         }
     }
