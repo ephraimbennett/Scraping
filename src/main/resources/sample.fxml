@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -16,10 +17,13 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="page" maxHeight="1.7976931348623157E308" prefHeight="438.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
+<VBox fx:id="page" maxHeight="1.7976931348623157E308" prefHeight="438.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.Controller">
    <children>
       <MenuBar fx:id="menuBar" prefHeight="15.0" prefWidth="846.0">
         <menus>
@@ -42,17 +46,38 @@
           </Menu>
         </menus>
       </MenuBar>
-      <HBox prefHeight="30.0" prefWidth="902.0">
+      <HBox prefHeight="30.0" prefWidth="1200.0">
          <children>
             <Label text="Enter Url:">
                <padding>
                   <Insets right="10.0" />
-               </padding></Label>
+               </padding>
+               <HBox.margin>
+                  <Insets left="3.0" top="2.0" />
+               </HBox.margin></Label>
             <TextField fx:id="urlField">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin></TextField>
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
+            <Label text="Search Url:">
+               <HBox.margin>
+                  <Insets left="100.0" />
+               </HBox.margin>
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </Label>
+            <TextField>
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </TextField>
+            <Button mnemonicParsing="false" text="Search!">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </Button>
          </children>
          <VBox.margin>
             <Insets top="4.0" />
@@ -69,11 +94,48 @@
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="251.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <TabPane prefHeight="300.0" prefWidth="521.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane prefHeight="300.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="Visited Links">
                            <content>
                               <ListView fx:id="visitedLinks" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                        </Tab>
+                        <Tab text="Overview">
+                           <content>
+                              <ScrollPane fitToWidth="true" fitToHeight="true">
+                                 <content>
+                                    <VBox fx:id="overview" prefHeight="200.0" prefWidth="100.0">
+                                       <children>
+                                           <GridPane fx:id="overviewGrid">
+                                               <columnConstraints>
+                                                   <ColumnConstraints percentWidth="50" />
+                                                   <ColumnConstraints percentWidth="50" />
+                                               </columnConstraints>
+                                               <rowConstraints>
+                                                   <RowConstraints />
+                                                   <RowConstraints />
+                                                   <RowConstraints />
+                                                   <RowConstraints />
+                                                   <RowConstraints percentHeight="20" />
+                                               </rowConstraints>
+      
+                                               <Label text="Total Urls found" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                               <Label text="Total Internal Urls" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                               <Label text="Total External Urls" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                               <Label text="Total Broken Links " GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                               <Label text="Site Data" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+      
+                                               <Label text="" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                               <Label text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                               <Label text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                               <Label text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                               <Label text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                           </GridPane>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
                            </content>
                         </Tab>
                         <Tab text="Issues">
@@ -96,5 +158,6 @@
         </items>
       </SplitPane>
        <TitledPane fx:id="descriptorBox" text="(Empty Selection)" />
+      <TitledPane text="Search Results" />
    </children>
 </VBox>

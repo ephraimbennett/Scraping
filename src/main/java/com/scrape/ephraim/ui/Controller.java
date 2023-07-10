@@ -10,8 +10,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,7 +27,6 @@ public class Controller implements Initializable
 {
     @FXML
     public VBox page;
-
     @FXML
     public Button submitButton;
 
@@ -51,6 +52,8 @@ public class Controller implements Initializable
 
     @FXML MenuBar menuBar;
 
+    @FXML GridPane overviewGrid;
+
     ///controller for the descriptorBox
     Descriptor descriptorController;
 
@@ -59,6 +62,10 @@ public class Controller implements Initializable
 
     ///controller for the lists that contain links and errors
     VisitedListController visitedController;
+
+    ///controller for the overview
+    OverviewController overviewController;
+
 
     ///the scraper
     private Scraper scraper;
@@ -131,16 +138,29 @@ public class Controller implements Initializable
             Platform.runLater(() -> {
                 createTreeView(scraper);
 
+                createOverview();
+
                 populateInternalLinks(scraper);
                 populateExternalLinks(scraper);
                 populateIssues(scraper);
             });
         });
 
-
-
     }
 
+    /**
+     * Updates info about the site
+     */
+    private void createOverview()
+    {
+        overviewController.createOverview(scraper);
+    }
+
+
+    /**
+     * kinda obvious
+     * @param scraper
+     */
     private void populateIssues(Scraper scraper)
     {
         for (var issue : scraper.getIssues())
@@ -237,10 +257,17 @@ public class Controller implements Initializable
             urlBuilder.insert(0, "https:/");
 
             Page selectedPage = scraper.getSiteMap().getMap().get(urlBuilder.toString());
-            if (selectedPage != null)
-                descriptorController.populateDescriptorPage(selectedPage, scraper);
-            else
-                descriptorController.clear();
+            //if the selected page was null, try adding a slash at the end of the url
+            if (selectedPage == null) {
+                urlBuilder.append("/");
+                selectedPage = scraper.getSiteMap().getMap().get(urlBuilder.toString());
+                if (selectedPage == null) {
+                    //but if that doesn't work then clear it
+                    descriptorController.clear();
+                    return;
+                }
+            }
+            descriptorController.populateDescriptorPage(selectedPage, scraper);
         }
     }
 
@@ -321,6 +348,7 @@ public class Controller implements Initializable
         descriptorController = new Descriptor(descriptorBox);
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
+        overviewController = new OverviewController(overviewGrid);
 
         //initialize table columns
         initInternalLinks();
@@ -365,6 +393,16 @@ public class Controller implements Initializable
         outLinkNumColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getOutLinks().size()));
         outLinkNumColumn.setPrefWidth(80);
         internalLinks.getColumns().add(outLinkNumColumn);
+
+        TableColumn<Page, String> typeColumn = new TableColumn<>("content type");
+        typeColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(page.getValue().getType()));
+        typeColumn.setPrefWidth(80);
+        internalLinks.getColumns().add(typeColumn);
+
+        TableColumn<Page, Integer> sizeColumn = new TableColumn<>("size");
+        sizeColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getSize()));
+        sizeColumn.setPrefWidth(70);
+        internalLinks.getColumns().add(sizeColumn);
 
 //        outLinkNumColumn.o
     }

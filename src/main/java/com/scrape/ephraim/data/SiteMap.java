@@ -3,6 +3,7 @@ package com.scrape.ephraim.data;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class SiteMap implements Iterable<Page>
 {
@@ -12,6 +13,17 @@ public class SiteMap implements Iterable<Page>
     ///the map of the external sites
     private HashMap<String, ExternalSite> mExternals;
 
+    ///pattern used to determine what type of content the page is (for categorizing purposes)
+    private Pattern mTypePattern;
+
+    ///total number of html pages
+    private int mHtml;
+
+    ///total number of image pages
+    private int mImages;
+
+    ///total number of pdf pages
+    private int mPdf;
     /**
      * Default constructor
      */
@@ -19,6 +31,7 @@ public class SiteMap implements Iterable<Page>
     {
         mMap = new HashMap<>();
         mExternals = new HashMap<>();
+
     }
 
     @Override
@@ -85,5 +98,6 @@ public class SiteMap implements Iterable<Page>
      * @return
      */
     public HashMap<String, ExternalSite> getExternals() {return mExternals;}
+
 
 }

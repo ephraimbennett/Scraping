@@ -12,7 +12,7 @@ import java.util.List;
 public class TestRun {
     public static void main(String[] args)
     {
-        TestSaveJSON();
+        TestCrawler();
         System.out.println("Done!");
     }
 
@@ -22,8 +22,8 @@ public class TestRun {
         long beginTime = System.currentTimeMillis();
 
         //creates a crawler
-//        Crawler crawler = new Crawler("https://jsoup.com/");
-        Crawler crawler = new Crawler("https://unclejulios.com/");
+        Crawler crawler = new Crawler("https://jsoup.com/");
+//        Crawler crawler = new Crawler("https://unclejulios.com/");
         List<String> urls = new ArrayList<>();
 
         urls.add(crawler.getUrl());

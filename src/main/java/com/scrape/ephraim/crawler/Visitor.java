@@ -85,7 +85,7 @@ public class Visitor {
                 {
                     observer.setFetcher(fetcher);
                 }
-                ResponseWrapper response = fetcher.fetch();
+                ResponseWrapper response = fetcher.ok();
                 codes.add(response);
                 return response;
             }, executor);
