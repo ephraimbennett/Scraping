@@ -13,8 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
@@ -27,25 +27,28 @@ public class Controller implements Initializable
     public VBox page;
 
     @FXML
-    public TreeView treeView;
+    public TreeView<String> treeView;
 
     @FXML
     TextField urlField;
 
     @FXML
-    TextField searchField;
+    TextField urlSearch;
 
     @FXML
-    TableView internalLinks;
+    TextField typeSearch;
 
     @FXML
-    TableView externalLinks;
+    TableView<Page> internalLinks;
 
     @FXML
-    TableView issues;
+    TableView<ExternalSite> externalLinks;
 
     @FXML
-    ListView visitedLinks;
+    TableView<Issue> issues;
+
+    @FXML
+    ListView<String> visitedLinks;
 
     @FXML
     TitledPane descriptorBox;
@@ -90,7 +93,7 @@ public class Controller implements Initializable
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", ".csv"));
-        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        File path = chooser.showSaveDialog(page.getScene().getWindow());
         ExporterCSV exporter = new ExporterCSV(path);
         exporter.export(scraper);
     }
@@ -104,7 +107,7 @@ public class Controller implements Initializable
         chooser.setTitle("Save");
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON File", ".json")
         , new FileChooser.ExtensionFilter("All file types", "."));
-        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        File path = chooser.showSaveDialog(page.getScene().getWindow());
         ExporterJSON exporter = new ExporterJSON(path);
         exporter.export(scraper);
     }
@@ -138,7 +141,7 @@ public class Controller implements Initializable
             return scraper;
         });
 
-        futureScraper.thenAccept((scraper)-> {
+        futureScraper.thenAccept((scraper)->
             Platform.runLater(() -> {
                 createTreeView(scraper);
 
@@ -147,8 +150,8 @@ public class Controller implements Initializable
                 populateInternalLinks(scraper);
                 populateExternalLinks(scraper);
                 populateIssues(scraper);
-            });
-        });
+            })
+        );
 
     }
 
@@ -163,7 +166,7 @@ public class Controller implements Initializable
 
     /**
      * kinda obvious
-     * @param scraper
+     * @param scraper should be filled
      */
     private void populateIssues(Scraper scraper)
     {
@@ -172,7 +175,7 @@ public class Controller implements Initializable
 
     /**
      * Creates the table view for the internal links
-     * @param scraper
+     * @param scraper should be filled
      */
     private void populateInternalLinks(Scraper scraper)
     {
@@ -181,7 +184,7 @@ public class Controller implements Initializable
 
     /**
      * Creates the table for the external links
-     * @param scraper
+     * @param scraper should be filled
      */
     private void populateExternalLinks(Scraper scraper)
     {
@@ -190,26 +193,21 @@ public class Controller implements Initializable
 
     /**
      * Creates the tree view that has the sitemap.
-     * @param scraper
+     * @param scraper should be filled
      */
     private void createTreeView(Scraper scraper)
     {
         //create most basic root
-        treeView.setRoot(new TreeItem<String>("Site Map"));
+        treeView.setRoot(new TreeItem<>("Site Map"));
 
         //map of the roots. Synonymous for the different types of domains.
-        HashMap<String, TreeItem> roots = new HashMap<>();
+        HashMap<String, TreeItem<String>> roots = new HashMap<>();
 
-        //the basic domain name from the user. Not including subdomains.
-        String domain = scraper.getDomain() + "/";
-
-        //add it as the first root. Add it to the map of known roots.
-        TreeItem<String> basicRoot = new TreeItem(domain);
-        roots.put(domain, basicRoot);
-        treeView.getRoot().getChildren().add(basicRoot);
-
+        //add each page to the map
+        //first we are checking if it's domain is unique, then we are adding it into the map
         for (Page page : scraper.getSiteMap())
         {
+            //grab this url's entire domain, so including subdomains
             String wholeDomain = page.getWholeDomain();
             if (!roots.containsKey(wholeDomain))//if this whole domain isn't added yet, add it.
             {
@@ -217,21 +215,18 @@ public class Controller implements Initializable
                 treeView.getRoot().getChildren().add(newRoot);
                 roots.put(wholeDomain, newRoot);
             }
-            try {
-                if (page.getPath().size() > 1)//if we have more than just a /
-                {
-                    populateTreeView(page, roots.get(wholeDomain), 1);
-                }
-            } catch (NullPointerException e)
+
+            //now if this url has a path other than just the domain, we need to recursively add each section
+            if (page.getPath().size() > 1)//if we have more than just a /
             {
-                e.printStackTrace();
+                populateTreeView(page, roots.get(wholeDomain), 1);
             }
         }
     }
 
     /**
      * If the sitemap is double-clicked, display the selected item
-     * @param e
+     * @param e the mouse event
      */
     @FXML
     public void siteMapClicked(MouseEvent e)
@@ -240,7 +235,7 @@ public class Controller implements Initializable
         {
             //set up shop
             StringBuilder urlBuilder = new StringBuilder();
-            TreeItem<String> currentItem = (TreeItem<String>) treeView.getSelectionModel().getSelectedItem();
+            TreeItem<String> currentItem = treeView.getSelectionModel().getSelectedItem();
 
             //if no item is selected, just stop!
             if (currentItem == null) return;
@@ -274,9 +269,9 @@ public class Controller implements Initializable
     /**
      * Places the page somewhere on the tree
      * Depth first search algorithm
-     * @param page
-     * @param root
-     * @param level
+     * @param page the page we are trying to set
+     * @param root the item we are placing it inside
+     * @param level the number of steps away from the most basic root
      */
     void populateTreeView(Page page, TreeItem<String> root, int level)
     {
@@ -314,26 +309,26 @@ public class Controller implements Initializable
     }
 
     @FXML
-    public void clickItemInternalLinks(MouseEvent event)
+    public void clickItemInternalLinks(MouseEvent ignoredEvent)
     {
-        Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
+        Page selectedPage = internalLinks.getSelectionModel().getSelectedItem();
         if (selectedPage == null) return;
         descriptorController.populateDescriptorPage(selectedPage, scraper);
     }
 
     @FXML
-    public void clickItemExternalLinks(MouseEvent event)
+    public void clickItemExternalLinks(MouseEvent ignoredEvent)
     {
-        ExternalSite selectedSite = (ExternalSite) externalLinks.getSelectionModel().getSelectedItem();
+        ExternalSite selectedSite = externalLinks.getSelectionModel().getSelectedItem();
         if (selectedSite == null) return;
         descriptorController.populateExternalSite(selectedSite, scraper);
     }
 
 
     @FXML
-    public void clickItemIssue(MouseEvent event)
+    public void clickItemIssue(MouseEvent ignoredEvent)
     {
-        Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
+        Issue selectedIssue = issues.getSelectionModel().getSelectedItem();
         if (selectedIssue == null) return;
         descriptorController.populateDescriptorIssue(selectedIssue, scraper);
     }
@@ -349,7 +344,7 @@ public class Controller implements Initializable
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
         overviewController = new OverviewController(overviewGrid);
-        searchController = new SearchController(searchField);
+        searchController = new SearchController(urlSearch, typeSearch);
 
         //initialize table columns
         initInternalLinks();
@@ -405,7 +400,6 @@ public class Controller implements Initializable
         sizeColumn.setPrefWidth(70);
         internalLinks.getColumns().add(sizeColumn);
 
-//        outLinkNumColumn.o
     }
 
     /**

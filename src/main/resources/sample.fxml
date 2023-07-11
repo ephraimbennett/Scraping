@@ -68,14 +68,27 @@
                   <Insets top="2.0" />
                </padding>
             </Label>
-            <TextField fx:id="searchField">
+            <TextField fx:id="urlSearch">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </TextField>
+            <Label text="Filter by Content Type">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+               <padding>
+                  <Insets top="3.0" />
+               </padding>
+            </Label>
+            <TextField fx:id="typeSearch">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
             </TextField>
          </children>
          <VBox.margin>
-            <Insets top="4.0" />
+            <Insets bottom="3.0" top="4.0" />
          </VBox.margin>
       </HBox>
       <SplitPane dividerPositions="0.36444444444444446" prefHeight="340.0" prefWidth="600.0">
@@ -87,7 +100,7 @@
                         <Cursor fx:constant="DEFAULT" />
                      </cursor></TreeView>
                </children></AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="251.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TabPane prefHeight="300.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>

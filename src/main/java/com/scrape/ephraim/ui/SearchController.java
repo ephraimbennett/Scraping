@@ -14,19 +14,23 @@ import javafx.scene.control.TextField;
 public class SearchController
 {
     ///the text where we get the search input from
-    TextField searchBox;
+    TextField urlBox;
 
-    public SearchController(TextField searchBox)
+    ///the content type search box
+    TextField contentBox;
+
+    public SearchController(TextField urlBox, TextField contentBox)
     {
-        this.searchBox = searchBox;
+        this.urlBox = urlBox;
+        this.contentBox = contentBox;
     }
 
     /**
      * Adds listeners and set predicates for sorting a table of pages
-     * @param table
-     * @param scraper
+     * @param table should be the internal links table
+     * @param scraper ...
      */
-    public void bindPage(TableView table, Scraper scraper)
+    public void bindPage(TableView<Page> table, Scraper scraper)
     {
         //turn the pages into an observable list
         ObservableList<Page> dataList = FXCollections.observableArrayList();
@@ -40,7 +44,8 @@ public class SearchController
         FilteredList<Page> filteredData = new FilteredList<>(dataList, b -> true);
 
         //set the filter predicate when the filter text changes
-        searchBox.textProperty().addListener((observable, oldVal, newVal) -> {
+        //first the url box
+        urlBox.textProperty().addListener((observable, oldVal, newVal) ->
             filteredData.setPredicate((page) -> {
 
                 //case insensitive search
@@ -50,8 +55,20 @@ public class SearchController
                 }
                 return false;
 
-            });
-        });
+            })
+        );
+
+        //second the content box
+        contentBox.textProperty().addListener((observable, oldVal, newVal) ->
+            filteredData.setPredicate((page) -> {
+                //case insensitive search
+                if (page.getType().toLowerCase().indexOf(newVal.toLowerCase()) != -1)
+                {
+                    return true;
+                }
+                return false;
+            })
+        );
 
         //wrap the data in a sorted list
         //then bind this sorted list to the tableview comparator (otherwise the sort wouldn't do anything?)
@@ -64,8 +81,8 @@ public class SearchController
 
     /**
      * Adds listeners and set predicates for sorting a table of pages
-     * @param table
-     * @param scraper
+     * @param table should be the issues table
+     * @param scraper ...
      */
     public void bindIssue(TableView table, Scraper scraper)
     {
@@ -81,7 +98,7 @@ public class SearchController
         FilteredList<Issue> filteredData = new FilteredList<>(dataList, b -> true);
 
         //set the filter predicate when the filter text changes
-        searchBox.textProperty().addListener((observable, oldVal, newVal) -> {
+        urlBox.textProperty().addListener((observable, oldVal, newVal) -> {
             filteredData.setPredicate((issue) -> {
 
                 //case insensitive search
@@ -105,8 +122,8 @@ public class SearchController
 
     /**
      * Adds listeners and set predicates for sorting a table of pages
-     * @param table
-     * @param scraper
+     * @param table should be the external links table
+     * @param scraper ...
      */
     public void bindExternal(TableView table, Scraper scraper)
     {
@@ -122,7 +139,7 @@ public class SearchController
         FilteredList<ExternalSite> filteredData = new FilteredList<>(dataList, b -> true);
 
         //set the filter predicate when the filter text changes
-        searchBox.textProperty().addListener((observable, oldVal, newVal) -> {
+        urlBox.textProperty().addListener((observable, oldVal, newVal) -> {
             filteredData.setPredicate((site) -> {
 
                 //case insensitive search
