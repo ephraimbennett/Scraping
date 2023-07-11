@@ -126,7 +126,7 @@ public class LinkParser {
         }
 
         CheckA();
-        CheckImg();
+//        CheckImg();
     }
 
     //private functions

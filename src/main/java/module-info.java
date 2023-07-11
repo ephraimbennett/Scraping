@@ -4,6 +4,7 @@ module Scraping
     requires javafx.fxml;
     opens com.scrape.ephraim.ui to javafx.fxml;
     requires org.jsoup;
+    requires okhttp;
     requires opencsv;
     requires com.google.gson;
     opens com.scrape.ephraim.data to com.google.gson;

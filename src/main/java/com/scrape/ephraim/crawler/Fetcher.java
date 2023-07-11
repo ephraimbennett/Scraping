@@ -1,6 +1,7 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.ui.FetcherObserver;
+import com.squareup.okhttp.*;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -130,6 +131,60 @@ public class Fetcher {
             return wrapper;
         }
     }
+
+    public ResponseWrapper ok()
+    {
+        //set up shop
+        Document document = null;
+        HashMap<String, String> responseHeaders = new HashMap<>();
+        int responseCode = 2000;
+        String type = "";
+        int size = 0;
+
+        //make a basic get request
+        Request request = new Request.Builder()
+                .url(mUrl)
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(15, TimeUnit.SECONDS);
+
+        Call call = client.newCall(request);
+        try {
+            Response response = call.execute();
+
+            if (mUrl.equals("https://jsoup.org/apidocs/org/jsoup/nodes/class-use/Attributes.html"))
+                System.out.println("");
+
+            //store necessary data
+            var body = response.body();
+            document = Jsoup.parse(body.string());
+            for (String name : response.headers().names())
+            {
+                responseHeaders.put(name, response.header(name));
+            }
+            responseCode = response.code();
+            size = (int)body.contentLength();
+            if (responseHeaders.containsKey("Content-Type")) {
+                type = responseHeaders.get("Content-Type");
+            }
+
+            System.out.println(mUrl + " done!");
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            updateObservers();
+            return new ResponseWrapper(document, responseHeaders, mUrl, responseCode, type, size);
+        }
+    }
+
 
     /**
      * Adds an observer

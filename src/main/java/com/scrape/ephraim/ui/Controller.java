@@ -6,15 +6,15 @@ import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
@@ -27,29 +27,37 @@ public class Controller implements Initializable
     public VBox page;
 
     @FXML
-    public Button submitButton;
-
-    @FXML
-    public TreeView treeView;
+    public TreeView<String> treeView;
 
     @FXML
     TextField urlField;
 
     @FXML
-    TableView internalLinks;
+    TextField urlSearch;
 
     @FXML
-    TableView externalLinks;
+    TextField typeSearch;
 
     @FXML
-    TableView issues;
+    TableView<Page> internalLinks;
 
     @FXML
-    ListView visitedLinks;
+    TableView<ExternalSite> externalLinks;
 
-    @FXML TitledPane descriptorBox;
+    @FXML
+    TableView<Issue> issues;
 
-    @FXML MenuBar menuBar;
+    @FXML
+    ListView<String> visitedLinks;
+
+    @FXML
+    TitledPane descriptorBox;
+
+    @FXML
+    MenuBar menuBar;
+
+    @FXML
+    GridPane overviewGrid;
 
     ///controller for the descriptorBox
     Descriptor descriptorController;
@@ -59,6 +67,12 @@ public class Controller implements Initializable
 
     ///controller for the lists that contain links and errors
     VisitedListController visitedController;
+
+    ///controller for the overview
+    OverviewController overviewController;
+
+    ///controller for the search box
+    SearchController searchController;
 
     ///the scraper
     private Scraper scraper;
@@ -79,7 +93,7 @@ public class Controller implements Initializable
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", ".csv"));
-        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        File path = chooser.showSaveDialog(page.getScene().getWindow());
         ExporterCSV exporter = new ExporterCSV(path);
         exporter.export(scraper);
     }
@@ -93,7 +107,7 @@ public class Controller implements Initializable
         chooser.setTitle("Save");
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON File", ".json")
         , new FileChooser.ExtensionFilter("All file types", "."));
-        File path = chooser.showSaveDialog((Stage) page.getScene().getWindow());
+        File path = chooser.showSaveDialog(page.getScene().getWindow());
         ExporterJSON exporter = new ExporterJSON(path);
         exporter.export(scraper);
     }
@@ -127,74 +141,73 @@ public class Controller implements Initializable
             return scraper;
         });
 
-        futureScraper.thenAccept((scraper)-> {
+        futureScraper.thenAccept((scraper)->
             Platform.runLater(() -> {
                 createTreeView(scraper);
+
+                createOverview();
 
                 populateInternalLinks(scraper);
                 populateExternalLinks(scraper);
                 populateIssues(scraper);
-            });
-        });
-
-
+            })
+        );
 
     }
 
+    /**
+     * Updates info about the site
+     */
+    private void createOverview()
+    {
+        overviewController.createOverview(scraper);
+    }
+
+
+    /**
+     * kinda obvious
+     * @param scraper should be filled
+     */
     private void populateIssues(Scraper scraper)
     {
-        for (var issue : scraper.getIssues())
-        {
-            issues.getItems().add(issue);
-        }
+        searchController.bindIssue(issues, scraper);
     }
 
     /**
      * Creates the table view for the internal links
-     * @param scraper
+     * @param scraper should be filled
      */
     private void populateInternalLinks(Scraper scraper)
     {
-        for (var page : scraper.getSiteMap())
-        {
-            internalLinks.getItems().add(page);
-        }
+        searchController.bindPage(internalLinks, scraper);
     }
 
     /**
      * Creates the table for the external links
-     * @param scraper
+     * @param scraper should be filled
      */
     private void populateExternalLinks(Scraper scraper)
     {
-        for (ExternalSite site : scraper.getSiteMap().getExternals().values())
-        {
-            externalLinks.getItems().add(site);
-        }
+        searchController.bindExternal(externalLinks, scraper);
     }
 
     /**
      * Creates the tree view that has the sitemap.
-     * @param scraper
+     * @param scraper should be filled
      */
     private void createTreeView(Scraper scraper)
     {
         //create most basic root
-        treeView.setRoot(new TreeItem<String>("Site Map"));
+        treeView.setRoot(new TreeItem<>("Site Map"));
 
         //map of the roots. Synonymous for the different types of domains.
-        HashMap<String, TreeItem> roots = new HashMap<>();
+        HashMap<String, TreeItem<String>> roots = new HashMap<>();
 
-        //the basic domain name from the user. Not including subdomains.
-        String domain = scraper.getDomain() + "/";
-
-        //add it as the first root. Add it to the map of known roots.
-        TreeItem<String> basicRoot = new TreeItem(domain);
-        roots.put(domain, basicRoot);
-        treeView.getRoot().getChildren().add(basicRoot);
-
+        //add each page to the map
+        //first we are checking if it's domain is unique, then we are adding it into the map
         for (Page page : scraper.getSiteMap())
         {
+            //grab this url's entire domain, so including subdomains
             String wholeDomain = page.getWholeDomain();
             if (!roots.containsKey(wholeDomain))//if this whole domain isn't added yet, add it.
             {
@@ -202,6 +215,8 @@ public class Controller implements Initializable
                 treeView.getRoot().getChildren().add(newRoot);
                 roots.put(wholeDomain, newRoot);
             }
+
+            //now if this url has a path other than just the domain, we need to recursively add each section
             if (page.getPath().size() > 1)//if we have more than just a /
             {
                 populateTreeView(page, roots.get(wholeDomain), 1);
@@ -211,7 +226,7 @@ public class Controller implements Initializable
 
     /**
      * If the sitemap is double-clicked, display the selected item
-     * @param e
+     * @param e the mouse event
      */
     @FXML
     public void siteMapClicked(MouseEvent e)
@@ -220,7 +235,7 @@ public class Controller implements Initializable
         {
             //set up shop
             StringBuilder urlBuilder = new StringBuilder();
-            TreeItem<String> currentItem = (TreeItem<String>) treeView.getSelectionModel().getSelectedItem();
+            TreeItem<String> currentItem = treeView.getSelectionModel().getSelectedItem();
 
             //if no item is selected, just stop!
             if (currentItem == null) return;
@@ -237,19 +252,26 @@ public class Controller implements Initializable
             urlBuilder.insert(0, "https:/");
 
             Page selectedPage = scraper.getSiteMap().getMap().get(urlBuilder.toString());
-            if (selectedPage != null)
-                descriptorController.populateDescriptorPage(selectedPage, scraper);
-            else
-                descriptorController.clear();
+            //if the selected page was null, try adding a slash at the end of the url
+            if (selectedPage == null) {
+                urlBuilder.append("/");
+                selectedPage = scraper.getSiteMap().getMap().get(urlBuilder.toString());
+                if (selectedPage == null) {
+                    //but if that doesn't work then clear it
+                    descriptorController.clear();
+                    return;
+                }
+            }
+            descriptorController.populateDescriptorPage(selectedPage, scraper);
         }
     }
 
     /**
      * Places the page somewhere on the tree
      * Depth first search algorithm
-     * @param page
-     * @param root
-     * @param level
+     * @param page the page we are trying to set
+     * @param root the item we are placing it inside
+     * @param level the number of steps away from the most basic root
      */
     void populateTreeView(Page page, TreeItem<String> root, int level)
     {
@@ -287,26 +309,26 @@ public class Controller implements Initializable
     }
 
     @FXML
-    public void clickItemInternalLinks(MouseEvent event)
+    public void clickItemInternalLinks(MouseEvent ignoredEvent)
     {
-        Page selectedPage = (Page) internalLinks.getSelectionModel().getSelectedItem();
+        Page selectedPage = internalLinks.getSelectionModel().getSelectedItem();
         if (selectedPage == null) return;
         descriptorController.populateDescriptorPage(selectedPage, scraper);
     }
 
     @FXML
-    public void clickItemExternalLinks(MouseEvent event)
+    public void clickItemExternalLinks(MouseEvent ignoredEvent)
     {
-        ExternalSite selectedSite = (ExternalSite) externalLinks.getSelectionModel().getSelectedItem();
+        ExternalSite selectedSite = externalLinks.getSelectionModel().getSelectedItem();
         if (selectedSite == null) return;
         descriptorController.populateExternalSite(selectedSite, scraper);
     }
 
 
     @FXML
-    public void clickItemIssue(MouseEvent event)
+    public void clickItemIssue(MouseEvent ignoredEvent)
     {
-        Issue selectedIssue = (Issue) issues.getSelectionModel().getSelectedItem();
+        Issue selectedIssue = issues.getSelectionModel().getSelectedItem();
         if (selectedIssue == null) return;
         descriptorController.populateDescriptorIssue(selectedIssue, scraper);
     }
@@ -321,6 +343,8 @@ public class Controller implements Initializable
         descriptorController = new Descriptor(descriptorBox);
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
+        overviewController = new OverviewController(overviewGrid);
+        searchController = new SearchController(urlSearch, typeSearch);
 
         //initialize table columns
         initInternalLinks();
@@ -366,7 +390,16 @@ public class Controller implements Initializable
         outLinkNumColumn.setPrefWidth(80);
         internalLinks.getColumns().add(outLinkNumColumn);
 
-//        outLinkNumColumn.o
+        TableColumn<Page, String> typeColumn = new TableColumn<>("content type");
+        typeColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(page.getValue().getType()));
+        typeColumn.setPrefWidth(80);
+        internalLinks.getColumns().add(typeColumn);
+
+        TableColumn<Page, Integer> sizeColumn = new TableColumn<>("size");
+        sizeColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getSize()));
+        sizeColumn.setPrefWidth(70);
+        internalLinks.getColumns().add(sizeColumn);
+
     }
 
     /**

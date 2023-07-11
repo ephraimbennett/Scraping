@@ -17,7 +17,7 @@ public class Patterns {
     public static Pattern onPagePattern = Pattern.compile("^(.*)(#[^/]*)$");
 
     ///grabs the path from the url
-    public static Pattern pathPattern = Pattern.compile("^https?://([\\w.]+)(.*)$");
+    public static Pattern pathPattern = Pattern.compile("^https?://([\\w.]+)?(.*)$");
 
     ///determines if the link is relative or not
     public static Pattern relativePattern = Pattern.compile("([a-z]+)?://");

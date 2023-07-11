@@ -8,7 +8,7 @@ import com.scrape.ephraim.crawler.Patterns;
 public class Page
 {
     ///this page's url
-    private final String mUrl;
+    private String mUrl;
 
     ///this page's type
     private String mType;
@@ -80,7 +80,46 @@ public class Page
         {
             String totalPath = matcher.group(2);
             mPath = new ArrayList<String>(List.of(totalPath.split("/")));
+        } else {
+            mUrl = ignoreEscapeCharacters(mUrl);
+            matcher = Patterns.pathPattern.matcher(mUrl);
+            if (matcher.find())
+            {
+                String totalPath = matcher.group(2);
+                mPath = new ArrayList<String>(List.of(totalPath.split("/")));
+            }
         }
+    }
+
+    /**
+     * Checks if there are escape characters in the url and turns them off
+     * @return the safe string
+     */
+    private String ignoreEscapeCharacters(String url)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        HashSet<Character> escapeCharacters = new HashSet<>();
+        escapeCharacters.addAll(Arrays.asList('\t', '\b', '\n', '\r', '\f', '\'', '\"'));
+
+        for (int i = 0; i < url.length(); i++)
+        {
+            Character c = url.charAt(i);
+            if (escapeCharacters.contains(c))
+            {
+                String nonEscape = String.valueOf(c)
+                        .replace("\\", "\\\\")
+                        .replace("\n", "\\n")
+                        .replace("\t", "\\t")
+                        .replace("\r", "\\r")
+                        .replace("\b", "\\b")
+                        .replace("\f", "\\f");
+                builder.append(nonEscape);
+            } else {
+                builder.append(c);
+            }
+        }
+        return builder.toString();
     }
 
 
