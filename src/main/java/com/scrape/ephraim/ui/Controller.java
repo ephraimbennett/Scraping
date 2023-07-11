@@ -6,11 +6,9 @@ import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -27,14 +25,15 @@ public class Controller implements Initializable
 {
     @FXML
     public VBox page;
-    @FXML
-    public Button submitButton;
 
     @FXML
     public TreeView treeView;
 
     @FXML
     TextField urlField;
+
+    @FXML
+    TextField searchField;
 
     @FXML
     TableView internalLinks;
@@ -48,11 +47,14 @@ public class Controller implements Initializable
     @FXML
     ListView visitedLinks;
 
-    @FXML TitledPane descriptorBox;
+    @FXML
+    TitledPane descriptorBox;
 
-    @FXML MenuBar menuBar;
+    @FXML
+    MenuBar menuBar;
 
-    @FXML GridPane overviewGrid;
+    @FXML
+    GridPane overviewGrid;
 
     ///controller for the descriptorBox
     Descriptor descriptorController;
@@ -66,6 +68,8 @@ public class Controller implements Initializable
     ///controller for the overview
     OverviewController overviewController;
 
+    ///controller for the search box
+    SearchController searchController;
 
     ///the scraper
     private Scraper scraper;
@@ -163,10 +167,7 @@ public class Controller implements Initializable
      */
     private void populateIssues(Scraper scraper)
     {
-        for (var issue : scraper.getIssues())
-        {
-            issues.getItems().add(issue);
-        }
+        searchController.bindIssue(issues, scraper);
     }
 
     /**
@@ -175,10 +176,7 @@ public class Controller implements Initializable
      */
     private void populateInternalLinks(Scraper scraper)
     {
-        for (var page : scraper.getSiteMap())
-        {
-            internalLinks.getItems().add(page);
-        }
+        searchController.bindPage(internalLinks, scraper);
     }
 
     /**
@@ -187,10 +185,7 @@ public class Controller implements Initializable
      */
     private void populateExternalLinks(Scraper scraper)
     {
-        for (ExternalSite site : scraper.getSiteMap().getExternals().values())
-        {
-            externalLinks.getItems().add(site);
-        }
+        searchController.bindExternal(externalLinks, scraper);
     }
 
     /**
@@ -354,6 +349,7 @@ public class Controller implements Initializable
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
         overviewController = new OverviewController(overviewGrid);
+        searchController = new SearchController(searchField);
 
         //initialize table columns
         initInternalLinks();

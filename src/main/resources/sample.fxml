@@ -60,7 +60,7 @@
                   <Insets right="10.0" />
                </HBox.margin></TextField>
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
-            <Label text="Search Url:">
+            <Label text="Filter by Url">
                <HBox.margin>
                   <Insets left="100.0" />
                </HBox.margin>
@@ -68,16 +68,11 @@
                   <Insets top="2.0" />
                </padding>
             </Label>
-            <TextField>
+            <TextField fx:id="searchField">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
             </TextField>
-            <Button mnemonicParsing="false" text="Search!">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </Button>
          </children>
          <VBox.margin>
             <Insets top="4.0" />
@@ -103,7 +98,7 @@
                         </Tab>
                         <Tab text="Overview">
                            <content>
-                              <ScrollPane fitToWidth="true" fitToHeight="true">
+                              <ScrollPane fitToHeight="true" fitToWidth="true">
                                  <content>
                                     <VBox fx:id="overview" prefHeight="200.0" prefWidth="100.0">
                                        <children>
@@ -158,6 +153,5 @@
         </items>
       </SplitPane>
        <TitledPane fx:id="descriptorBox" text="(Empty Selection)" />
-      <TitledPane text="Search Results" />
    </children>
 </VBox>
