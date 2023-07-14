@@ -1,7 +1,9 @@
 package com.scrape.ephraim.ui;
 
+import com.scrape.ephraim.crawler.Configuration;
 import com.scrape.ephraim.crawler.Crawler;
 import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.crawler.Spider;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
@@ -77,6 +79,9 @@ public class Controller implements Initializable
     ///the scraper
     private Scraper scraper;
 
+    ///the configuration settings
+    private Configuration configuration;
+
     /**
      * handler for exit on menu bar
      */
@@ -121,20 +126,16 @@ public class Controller implements Initializable
             //set up a timer for performance
             long beginTime = System.currentTimeMillis();
 
-            //creates a crawler
-            Crawler crawler = new Crawler(urlField.getText());
-            List<String> urls = new ArrayList<>();
-            urls.add(crawler.getUrl());
+            scraper = new Scraper(urlField.getText());
+            Spider spider = new Spider(scraper, configuration);
 
             //add observers
-            crawler.addObserver(visitedController);
+            spider.addFetcherObserver(visitedController);
 
-            //now create a scraper
-            scraper = new Scraper(crawler.getDomain());
-            crawler.setScraper(scraper);
+            spider.crawl(scraper.getDomain());
 
-            crawler.crawl(urls);
-            System.out.println("total links visited: " + crawler.getVisitedLinks().size());
+            //performance stuff
+            System.out.println("total links visited: " + spider.getVisitedLinks().size());
 
             long endTime = System.currentTimeMillis();
             System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
@@ -338,6 +339,8 @@ public class Controller implements Initializable
     {
         //make an empty scraper
         scraper = null;
+        //set configruation
+        configuration = new Configuration(10, true, true);
 
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox);
@@ -367,6 +370,21 @@ public class Controller implements Initializable
         occurrences.setCellValueFactory(ext -> new ReadOnlyObjectWrapper<>(ext.getValue().getOccurrences()));
         occurrences.setPrefWidth(70);
         externalLinks.getColumns().add(occurrences);
+
+        TableColumn<ExternalSite, Integer> codeColumn = new TableColumn("response code");
+        codeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getResponseCode()));
+        codeColumn.setPrefWidth(90);
+        externalLinks.getColumns().add(codeColumn);
+
+        TableColumn<ExternalSite, String> typeColumn = new TableColumn<>("content type");
+        typeColumn.setCellValueFactory(site -> new ReadOnlyStringWrapper(site.getValue().getType()));
+        typeColumn.setPrefWidth(90);
+        externalLinks.getColumns().add(typeColumn);
+
+        TableColumn<ExternalSite, Integer> sizeColumn = new TableColumn<>("size");
+        sizeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getSize()));
+        sizeColumn.setPrefWidth(70);
+        externalLinks.getColumns().add(sizeColumn);
     }
 
 

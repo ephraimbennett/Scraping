@@ -1,9 +1,12 @@
 package com.scrape.ephraim.crawler;
 
-import java.util.HashSet;
+import com.scrape.ephraim.data.StatusIssue;
+import com.scrape.ephraim.ui.FetcherObserver;
+
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
+import java.util.regex.Matcher;
 
 public class Grabber
 {
@@ -25,6 +28,9 @@ public class Grabber
     ///association to the spider
     private Spider mSpider;
 
+    ///association to fetcher observer
+    private ArrayList<FetcherObserver> mFetcherObservers;
+
 
     /**
      * Constructor
@@ -36,6 +42,7 @@ public class Grabber
         mScraper = scraper;
         mVisitedLinks = visitedLinks;
         mRunning = true;
+        mFetcherObservers = new ArrayList<>();
     }
 
     /**
@@ -60,26 +67,47 @@ public class Grabber
                     Fetcher fetcher = new Fetcher(url);
                     ResponseWrapper response = fetcher.ok();
 
+                    boolean newLinks = false;
+
                     synchronized (mScraper) {
                         //scrape the response
-                        mScraper.setParentUrl(url);
-                        mScraper.scrapePage(response);
-                        //store the headers
-                        mScraper.getHeaders().addResponseHeader(response.getUrl(), response.getHeaders());
-                    }
-
-                    boolean newLinks = false;
-                    for (String internalLink : mScraper.getInternalLinks())
-                    {
-                        if (!mVisitedLinks.containsKey(internalLink))
-                        {
-                            mVisitedLinks.put(internalLink, true);
-                            mToVisit.put(internalLink);
-                            newLinks = true;
+                        //first check for response code issue
+                        if (response.getResponseCode() > 299) {
+                            mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
                         }
+
+                        //now check if this url was external
+                        if (mScraper.getSiteMap().getExternals().containsKey(url))
+                        {
+                            mScraper.getSiteMap().getExternals().get(url).processResponse(response);
+                        } else {
+
+                            //grab the other stuff
+                            mScraper.setParentUrl(url);
+                            mScraper.scrapePage(response);
+                            //store the headers
+                            mScraper.getHeaders().addResponseHeader(response.getUrl(), response.getHeaders());
+
+                            //get the links from the scraper
+                            for (String crawlLink : mScraper.getCrawlLinks())
+                            {
+                                if (!mVisitedLinks.containsKey(crawlLink))
+                                {
+                                    mVisitedLinks.put(crawlLink, true);
+                                    mToVisit.put(crawlLink);
+                                    newLinks = true;
+                                }
+                            }
+                        }
+
+
                     }
 
-                    if (mToVisit.isEmpty() && !newLinks)
+                    //update fetcher observers
+                    for (var observer : mFetcherObservers)
+                        observer.update(url);
+
+                    if (!newLinks && mToVisit.isEmpty())
                         break;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -96,6 +124,11 @@ public class Grabber
     {
         mThread.join();
     }
+
+    /**
+     * Sets association to fetcher observer
+     */
+    public void setFetcherObservers(ArrayList<FetcherObserver> observers) {mFetcherObservers = observers;}
 
 
 }

@@ -20,6 +20,9 @@ public class LinkParser {
     ///list of the external links we find
     private List<String> mExternalLinks;
 
+    ///list of the links we are going to crawl
+    private List<String> mCrawlLinks;
+
     ///the domain name
     private String mDomainName;
 
@@ -32,6 +35,9 @@ public class LinkParser {
     ///regex pattern to check if the default domain name exists in the url
     private Pattern mDefaultPattern;
 
+    ///association to the crawl's configuration
+    private Configuration mConfiguration;
+
     /**
      * only constructor cause fuck that
      */
@@ -39,8 +45,15 @@ public class LinkParser {
     {
         mInternalLinks = new ArrayList<String>();
         mExternalLinks = new ArrayList<String>();
+        mCrawlLinks = new ArrayList<>();
         mDomainName = "%";
     }
+
+    /**
+     * Setter for the config association
+     * @param configuration
+     */
+    public void setConfiguration(Configuration configuration) {mConfiguration = configuration;}
 
     /**
      * Setter for the parent url
@@ -89,10 +102,16 @@ public class LinkParser {
     public List<String> getInternalLinks() {return mInternalLinks;}
 
     /**
-     * Getter for th external links
+     * Getter for the external links
      * @return
      */
     public List<String> getExternalLinks() {return mExternalLinks;}
+
+    /**
+     * Getter for the crawl links
+     * @return links we are going to visit
+     */
+    public List<String> getCrawlLinks() {return mCrawlLinks;}
 
     /**
      * Resets the list of internal and external links
@@ -126,7 +145,7 @@ public class LinkParser {
         }
 
         CheckA();
-//        CheckImg();
+        CheckImg();
     }
 
     //private functions
@@ -140,7 +159,7 @@ public class LinkParser {
         for (var img : imgElements)
         {
             String url = img.attr("src");
-            processUrl(url);
+            processUrl(url, mConfiguration.testImages());
         }
     }
 
@@ -154,15 +173,16 @@ public class LinkParser {
         for (var a : elementsA)
         {
             String url = a.attr("href");
-            processUrl(url);
+            processUrl(url, true);
         }
     }
 
     /**
      * Processes a valid url into a link object
      * @param url
+     * @param crawl - indicates if this url should be added to the crawl list
      */
-    private void processUrl(String url)
+    private void processUrl(String url, boolean crawl)
     {
         String res = "";
 
@@ -195,6 +215,7 @@ public class LinkParser {
             res = "https://" + mDomainName + url;
 
             mInternalLinks.add(res);
+            if (crawl) mCrawlLinks.add(res);
             return;
         }
 
@@ -205,6 +226,7 @@ public class LinkParser {
             res = url;
 
             mInternalLinks.add(res);
+            if (crawl) mCrawlLinks.add(res);
             return;
         }
 
@@ -215,6 +237,7 @@ public class LinkParser {
             res = url;
 
             mInternalLinks.add(res);
+            if (crawl) mCrawlLinks.add(res);
             return;
         }
 
@@ -224,6 +247,8 @@ public class LinkParser {
 //            System.out.println(url);
 //        }
         mExternalLinks.add(url);
+        if (mConfiguration.testExternals())
+            mCrawlLinks.add(url);
     }
 
 

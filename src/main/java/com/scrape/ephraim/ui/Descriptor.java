@@ -12,8 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -149,8 +148,15 @@ public class Descriptor
         nodes.getChildren().add(new VBox(new Label("Url Associated"), new Label(issue.getUrl())));
         //get the inlinks
         ListView<String> inLinks = new ListView<>();
+
+        Set<String> inLinksSet;
         var issuePage = scraper.getSiteMap().getMap().get(issue.getUrl());
-        ObservableList<String> observableInLinks = FXCollections.observableArrayList(issuePage.getInLinks());
+        if (issuePage == null) {//if the url can't be found in the internal links, check the external
+            inLinksSet = scraper.getSiteMap().getExternals().get(issue.getUrl()).getInLinks().keySet();
+        } else {
+            inLinksSet = issuePage.getInLinks();
+        }
+        ObservableList<String> observableInLinks = FXCollections.observableArrayList(inLinksSet);
         inLinks.setItems(observableInLinks);
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinks));
 
@@ -183,7 +189,27 @@ public class Descriptor
             inLinks.getItems().add(entry);
         }
 
+        //display the http headers
+        //display the headers
+        TableView headersView = new TableView();
+        TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>("Name");
+        nameCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getName()));
+        TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>("Value");
+        valueCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getValue()));
+        headersView.getColumns().add(nameCol);
+        headersView.getColumns().add(valueCol);
+        var headers = site.getHeaders();
+        if (headers != null)
+        {
+            //populate the table
+            for (Map.Entry<String, String> entry : headers.entrySet())
+            {
+                headersView.getItems().add(new HeaderWrapper(entry.getKey(), entry.getValue()));
+            }
+        }
+
         nodes.getChildren().add(inLinks);
+        nodes.getChildren().add(headersView);
         descriptorBox.setContent(nodes);
     }
 

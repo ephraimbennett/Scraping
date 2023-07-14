@@ -1,5 +1,7 @@
 package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.ui.FetcherObserver;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,17 +27,28 @@ public class Spider
     ///association to the scraper
     private Scraper mScraper;
 
+    ///association to fetcher observer
+    private ArrayList<FetcherObserver> mFetcherObservers;
+
+    ///association to the configuration settings
+    private Configuration mConfiguration;
+
     /**
      * Default constructor
      */
-    public Spider(Scraper scraper, int threadCount)
+    public Spider(Scraper scraper, Configuration configuration)
     {
-        mThreadCount = threadCount;
+        mConfiguration = configuration;
+        mThreadCount = configuration.getThreadCount();
         mScraper = scraper;
         mToVisit = new LinkedBlockingQueue<>();
         mWorkers = new ArrayList<>();
         mVisitedLinks = new ConcurrentHashMap<>();
         mNoTasks = 0;
+        mFetcherObservers = new ArrayList<>();
+
+        //set the configuration for the scraper
+        mScraper.setConfiguration(configuration);
     }
 
     public void crawl(String url)
@@ -52,9 +65,12 @@ public class Spider
         {
             Grabber grabber = new Grabber(mToVisit, mScraper, mVisitedLinks);
             grabber.setSpider(this);
+            grabber.setFetcherObservers(mFetcherObservers);
             mWorkers.add(grabber);
             grabber.start();
         }
+
+        System.out.println("Waiting...");
 
         try {
             for (Grabber worker : mWorkers)
@@ -62,6 +78,7 @@ public class Spider
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 
 
@@ -71,4 +88,10 @@ public class Spider
      * @return the concurrent hashmap
      */
     public ConcurrentHashMap<String, Boolean> getVisitedLinks() {return mVisitedLinks;}
+
+    /**
+     * Creates association for a fetcher observer
+     */
+    public void addFetcherObserver(FetcherObserver observer) {mFetcherObservers.add(observer);}
+
 }

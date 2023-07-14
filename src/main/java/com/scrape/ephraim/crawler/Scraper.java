@@ -21,6 +21,9 @@ public class Scraper
     ///association to the issues storage
     private Issues mIssues;
 
+    ///association to the configurations class
+    private Configuration mConfiguration;
+
     ///the domain name
     private String mDomain;
 
@@ -137,6 +140,17 @@ public class Scraper
      * @return
      */
     public Issues getIssues() {return mIssues;}
+
+    public List<String> getCrawlLinks() {return mLinkParser.getCrawlLinks();}
+
+    /**
+     * Sets the configuration for the scraper and its link parser
+     * @param configuration
+     */
+    public void setConfiguration(Configuration configuration) {
+        mConfiguration = configuration;
+        mLinkParser.setConfiguration(configuration);
+    }
 
 
 }
