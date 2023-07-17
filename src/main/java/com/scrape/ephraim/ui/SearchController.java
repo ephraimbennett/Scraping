@@ -61,7 +61,11 @@ public class SearchController
         //second the content box
         contentBox.textProperty().addListener((observable, oldVal, newVal) ->
             filteredData.setPredicate((page) -> {
-                //case insensitive search
+
+                if (page.getType() == null)
+                    return false;
+
+                //case in sensitive search
                 if (page.getType().toLowerCase().indexOf(newVal.toLowerCase()) != -1)
                 {
                     return true;

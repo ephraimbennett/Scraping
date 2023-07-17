@@ -10,15 +10,21 @@ import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -116,6 +122,24 @@ public class Controller implements Initializable
         ExporterJSON exporter = new ExporterJSON(path);
         exporter.export(scraper);
     }
+
+    /**
+     * Opens configuration window
+     */
+    public void onConfiguration() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/configuration.fxml"));
+        Stage configurationStage = new Stage();
+        configurationStage.setTitle("Crawl Configuration");
+        Scene configScene = new Scene(root);
+        configScene.setUserData(configuration);
+        configurationStage.setScene(configScene);
+        configurationStage.initModality(Modality.APPLICATION_MODAL);
+        configurationStage.show();
+        configurationStage.setOnCloseRequest((par) -> {
+            System.out.println(configuration.getThreadCount());
+        });
+    }
+
 
     /**
      * Asynchronously crawl

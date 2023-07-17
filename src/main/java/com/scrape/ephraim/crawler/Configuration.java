@@ -25,14 +25,32 @@ public class Configuration
     public boolean testImages() {return testImages;}
 
     /**
+     * Setter for testing images
+     * @param testImages bool
+     */
+    public void setTestImages(boolean testImages) {this.testImages = testImages;}
+
+    /**
      * Getter for testing external links
-     * @return
+     * @return bool
      */
     public boolean testExternals() {return testExternals;}
+
+    /**
+     * Setter for testing the externals
+     * @param testExternals bool
+     */
+    public void setTestExternals(boolean testExternals) {this.testExternals = testExternals;}
 
     /**
      * Getter for the thread count
      * @return number of threads this crawl should use.
      */
     public int getThreadCount() {return threadCount;}
+
+    /**
+     * Setter for the thread count
+     * @param threadCount int
+     */
+    public void setThreadCount(int threadCount) {this.threadCount = threadCount;}
 }

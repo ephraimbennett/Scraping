@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.ConfigurationController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Max Thread Count: ">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="threadCountField" text="10">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Test Images: ">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <CheckBox fx:id="testImagesBox" mnemonicParsing="false">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </CheckBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Test External Links: ">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <CheckBox fx:id="testExternalsBox" mnemonicParsing="false">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </CheckBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#apply" text="Apply" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

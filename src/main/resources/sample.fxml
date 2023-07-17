@@ -35,9 +35,10 @@
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onConfiguration" text="Configuration" />
+                  <MenuItem mnemonicParsing="false" text="Key Words" />
+               </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
@@ -125,7 +126,7 @@
                                                    <RowConstraints />
                                                    <RowConstraints />
                                                    <RowConstraints />
-                                                   <RowConstraints percentHeight="20" />
+                                                   <RowConstraints prefHeight="35" />
                                                </rowConstraints>
       
                                                <Label text="Total Urls found" GridPane.columnIndex="0" GridPane.rowIndex="0" />
