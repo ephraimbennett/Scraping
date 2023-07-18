@@ -22,8 +22,8 @@ public class Patterns {
     public static Pattern pathPattern = Pattern.compile("^https?://([\\w.]+)?(.*)$");
 
     ///determines if the link is relative or not
-    public static Pattern relativePattern = Pattern.compile("([a-z]+)?://");
+    public static Pattern relativePattern = Pattern.compile("^([a-z]+)?://");
 
-    ///determines if the url is an http request
+    ///determines if the url is a http request
     public static Pattern httpPattern = Pattern.compile("^http");
 }

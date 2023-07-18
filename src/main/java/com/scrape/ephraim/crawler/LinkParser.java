@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.squareup.okhttp.HttpUrl;
 import org.jsoup.nodes.Document;
 
 import java.net.MalformedURLException;
@@ -197,6 +198,9 @@ public class LinkParser {
            url = mJump.group(1);
 //           System.out.println(url + " removed: " + mJump.group(2));
         }
+
+        if (url.equals("//facebook.com/sharer/sharer.php?u=https://www.spartanblockchain.org/challenge-page/938af51f-d589-4dd5-9589-ee8ae8603786&quote=Come join Analyst!"))
+            System.out.println(" ");
 
         //determine if it's a relative path
         Matcher relative = Patterns.relativePattern.matcher(url);

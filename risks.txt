@@ -7,3 +7,4 @@ When dealing with relative links, we are simply adding the first domain name giv
 subdomains. *fixed;
 Need to add a composite get method to SiteMap, in order to account for "close enough" urls.
 out links to a different subdomain are considered external links *fixed;
+external links that have the same domain name are considered internal.

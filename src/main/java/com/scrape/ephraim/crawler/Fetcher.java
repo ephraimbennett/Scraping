@@ -153,9 +153,6 @@ public class Fetcher {
         try {
             Response response = call.execute();
 
-            if (mUrl.equals("https://jsoup.org/apidocs/org/jsoup/nodes/class-use/Attributes.html"))
-                System.out.println("");
-
             //store necessary data
             var body = response.body();
             document = Jsoup.parse(body.string());

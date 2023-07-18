@@ -1,9 +1,9 @@
 package com.scrape.ephraim.data;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.regex.Pattern;
+
+import javafx.scene.control.TableView;
 
 public class SiteMap implements Iterable<Page>
 {
@@ -13,17 +13,12 @@ public class SiteMap implements Iterable<Page>
     ///the map of the external sites
     private HashMap<String, ExternalSite> mExternals;
 
-    ///pattern used to determine what type of content the page is (for categorizing purposes)
-    private Pattern mTypePattern;
+    ///association to the inLinks observer
+    private TableView<Page> mObserverInternalLinks;
 
-    ///total number of html pages
-    private int mHtml;
+    ///association to the external sites observer
+    private TableView<ExternalSite> mObserverExternals;
 
-    ///total number of image pages
-    private int mImages;
-
-    ///total number of pdf pages
-    private int mPdf;
     /**
      * Default constructor
      */
@@ -71,6 +66,8 @@ public class SiteMap implements Iterable<Page>
         }
         mMap.put(url, page);
 
+        mObserverInternalLinks.getItems().add(page);
+
         //now we have to keep the running total of the external links
         for (String externalLink : page.getExternalLinks())
         {
@@ -81,6 +78,7 @@ public class SiteMap implements Iterable<Page>
             else
             {
                 ExternalSite obj = new ExternalSite(externalLink);
+                obj.setObserverExternals(mObserverExternals);
                 obj.addOccurrance(page.getUrl());
                 mExternals.put(externalLink, obj);
             }
@@ -98,6 +96,18 @@ public class SiteMap implements Iterable<Page>
      * @return
      */
     public HashMap<String, ExternalSite> getExternals() {return mExternals;}
+
+    /**
+     * Setter for the internal links observer association
+     * @param inLinks a table
+     */
+    public void setObserverInternalLinks(TableView<Page> inLinks) {mObserverInternalLinks = inLinks;}
+
+    /**
+     * Setter for the external observer association
+     * @param externals a table
+     */
+    public void setObserverExternals(TableView<ExternalSite> externals) {mObserverExternals = externals;}
 
 
 }

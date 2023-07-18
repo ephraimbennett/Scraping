@@ -1,8 +1,10 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.data.*;
+import javafx.scene.control.TableView;
 import org.jsoup.nodes.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,8 +73,6 @@ public class Scraper
             {
                 e.printStackTrace();
             }
-        } else {
-//            System.out.println(url + " gives us a null document");
         }
     }
 
@@ -141,6 +141,10 @@ public class Scraper
      */
     public Issues getIssues() {return mIssues;}
 
+    /**
+     * Gets the links that the spider should be crawling
+     * @return a list of strings that should be added to the visit queue
+     */
     public List<String> getCrawlLinks() {return mLinkParser.getCrawlLinks();}
 
     /**

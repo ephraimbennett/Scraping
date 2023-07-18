@@ -45,7 +45,6 @@ public class Page
     public Page(String url)
     {
         mUrl = url;
-
         init();
     }
 
@@ -89,6 +88,7 @@ public class Page
                 mPath = new ArrayList<String>(List.of(totalPath.split("/")));
             }
         }
+        if (mPath == null) mPath = new ArrayList<>();
     }
 
     /**

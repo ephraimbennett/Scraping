@@ -61,9 +61,14 @@
                   <Insets right="10.0" />
                </HBox.margin></TextField>
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#onSubmit" text="Submit!" />
+            <Button mnemonicParsing="false" onAction="#onClear" text="Clear">
+               <HBox.margin>
+                  <Insets left="15.0" />
+               </HBox.margin>
+            </Button>
             <Label text="Filter by Url">
                <HBox.margin>
-                  <Insets left="100.0" />
+                  <Insets left="50.0" />
                </HBox.margin>
                <padding>
                   <Insets top="2.0" />
@@ -103,16 +108,16 @@
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <TabPane prefHeight="300.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane prefHeight="338.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="Visited Links">
                            <content>
-                              <ListView fx:id="visitedLinks" prefHeight="200.0" prefWidth="200.0" />
+                              <ListView fx:id="visitedLinks" prefHeight="300.0" prefWidth="700.0" />
                            </content>
                         </Tab>
                         <Tab text="Overview">
                            <content>
-                              <ScrollPane fitToHeight="true" fitToWidth="true">
+                              <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="300.0">
                                  <content>
                                     <VBox fx:id="overview" prefHeight="200.0" prefWidth="100.0">
                                        <children>
@@ -149,7 +154,7 @@
                         </Tab>
                         <Tab text="Issues">
                            <content>
-                              <TableView fx:id="issues" onMouseClicked="#clickItemIssue" prefHeight="200.0" prefWidth="200.0" />
+                              <TableView fx:id="issues" onMouseClicked="#clickItemIssue" prefHeight="300.0" prefWidth="200.0" />
                            </content>
                         </Tab>
                       <Tab text="Internal Links">
@@ -158,7 +163,7 @@
                            </content></Tab>
                       <Tab text="External Links">
                            <content>
-                              <TableView fx:id="externalLinks" onMouseClicked="#clickItemExternalLinks" prefHeight="200.0" prefWidth="200.0" />
+                              <TableView fx:id="externalLinks" onMouseClicked="#clickItemExternalLinks" prefHeight="300.0" prefWidth="200.0" />
                            </content>
                       </Tab>
                     </tabs>

@@ -1,5 +1,7 @@
 package com.scrape.ephraim.data;
 
+import javafx.scene.control.TableView;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -7,6 +9,9 @@ public class Issues implements Iterable<Issue>
 {
     ///the list of issues
     private ArrayList<Issue> mIssues;
+
+    ///association to the issues observer
+    private TableView<Issue> mObserverIssues;
 
     /**
      * Default constructor
@@ -22,11 +27,13 @@ public class Issues implements Iterable<Issue>
     }
 
     /**
-     * Adds an issue
+     * Adds an issue and updates the observer
      * @param issue
      */
     public void addIssue(Issue issue)
     {
+        var list = mObserverIssues.getItems();
+        list.add(issue);
         mIssues.add(issue);
     }
 
@@ -47,4 +54,19 @@ public class Issues implements Iterable<Issue>
         }
         return res;
     }
+
+    /**
+     * Setter for the observer issues association
+     * @param issues a table
+     */
+    public void setObserverIssues(TableView<Issue> issues) {mObserverIssues = issues;}
+
+    /**
+     * Empties out the list
+     */
+    public void clear()
+    {
+        mIssues.clear();
+    }
+
 }

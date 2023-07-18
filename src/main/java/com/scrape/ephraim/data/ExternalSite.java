@@ -1,6 +1,7 @@
 package com.scrape.ephraim.data;
 
 import com.scrape.ephraim.crawler.ResponseWrapper;
+import javafx.scene.control.TableView;
 import org.jsoup.Connection;
 
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public class ExternalSite
 
     ///size of the site
     private int mSize;
+
+    ///association to the external sites observer
+    private TableView<ExternalSite> mObserverExternals;
 
     /**
      * Constructor
@@ -58,6 +62,7 @@ public class ExternalSite
         mHeaders = response.getHeaders();
         mContentType = response.getType();
         mSize = response.getSize();
+        mObserverExternals.getItems().add(this);
     }
 
     /**
@@ -104,6 +109,12 @@ public class ExternalSite
      * @return the size
      */
     public int getSize() {return mSize;}
+
+    /**
+     * Setter for the external observer association
+     * @param externals a table
+     */
+    public void setObserverExternals(TableView<ExternalSite> externals) {mObserverExternals = externals;}
 
 
 }

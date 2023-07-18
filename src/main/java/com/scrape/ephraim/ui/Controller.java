@@ -1,7 +1,6 @@
 package com.scrape.ephraim.ui;
 
 import com.scrape.ephraim.crawler.Configuration;
-import com.scrape.ephraim.crawler.Crawler;
 import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.crawler.Spider;
 import com.scrape.ephraim.data.ExternalSite;
@@ -9,6 +8,7 @@ import com.scrape.ephraim.data.Issue;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,7 +18,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -140,6 +139,30 @@ public class Controller implements Initializable
         });
     }
 
+    /**
+     * Handles clearing the scraper and tables
+     */
+    public void onClear()
+    {
+        //empty the scraper
+        if (scraper == null) return;
+        scraper.getSiteMap().getMap().clear();
+        scraper.getIssues().clear();
+        scraper.getSiteMap().getExternals().clear();
+        scraper = null;
+
+        //clear out ui
+        internalLinks.setItems(FXCollections.observableArrayList());
+        externalLinks.setItems(FXCollections.observableArrayList());
+        visitedLinks.setItems(FXCollections.observableArrayList());
+        issues.setItems(FXCollections.observableArrayList());
+        overviewController.clear();
+        descriptorController.clear();
+        treeView.getRoot().getChildren().clear();
+        treeView.refresh();
+
+    }
+
 
     /**
      * Asynchronously crawl
@@ -147,6 +170,7 @@ public class Controller implements Initializable
     public void onSubmit()
     {
         CompletableFuture<Scraper> futureScraper = CompletableFuture.supplyAsync(() -> {
+
             //set up a timer for performance
             long beginTime = System.currentTimeMillis();
 
@@ -155,6 +179,9 @@ public class Controller implements Initializable
 
             //add observers
             spider.addFetcherObserver(visitedController);
+            scraper.getSiteMap().setObserverInternalLinks(internalLinks);
+            scraper.getSiteMap().setObserverExternals(externalLinks);
+            scraper.getIssues().setObserverIssues(issues);
 
             spider.crawl(scraper.getDomain());
 
@@ -264,6 +291,8 @@ public class Controller implements Initializable
 
             //if no item is selected, just stop!
             if (currentItem == null) return;
+            //if the scraper is null, just stop!
+            if (scraper == null) return;
 
             //keep adding the item's value until we get to the root
             while (currentItem.getParent() != null)
@@ -364,7 +393,7 @@ public class Controller implements Initializable
         //make an empty scraper
         scraper = null;
         //set configruation
-        configuration = new Configuration(10, true, true, true);
+        configuration = new Configuration(50, true, true, false);
 
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox);
