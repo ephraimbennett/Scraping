@@ -67,15 +67,28 @@ public class LinkParser {
      * @params url, defaultDomain
      */
     public void setDomainName(String url, String defaultDomain) {
-        Matcher matcher = Patterns.domainPattern.matcher(url);
-        if (matcher.find())
-        {
-            mDomainName = matcher.group(1);
+
+        //do all this work to account for subdomains
+        if (mConfiguration.crawlSubdomains()) {
+            Matcher matcher = Patterns.domainPattern.matcher(url);
+            if (matcher.find()) {
+                mDomainName = matcher.group(1);
+            } else {
+                mDomainName = defaultDomain;
+            }
+
+            //check if the domain name has a www.
+            Matcher wwwMatcher = Patterns.noWWWPattern.matcher(mDomainName);
+            if (wwwMatcher.find()) {
+                mDomainName = wwwMatcher.group(2);
+            }
+
+            mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
         } else {
-            mDomainName = defaultDomain;
+            mDomainPattern = Pattern.compile(defaultDomain);
         }
-        mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
-        mDefaultPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + defaultDomain);
+
+        mDefaultPattern = Pattern.compile(defaultDomain);
         mParentUrl = url;
     }
 
@@ -86,7 +99,7 @@ public class LinkParser {
     public String getDomainName(){return mDomainName;}
 
 
-    /**
+    /**i
      * Setter for document
      * @param doc
      */
@@ -114,16 +127,6 @@ public class LinkParser {
     public List<String> getCrawlLinks() {return mCrawlLinks;}
 
     /**
-     * Resets the list of internal and external links
-     */
-    public void reset()
-    {
-        mInternalLinks.clear();
-        mExternalLinks.clear();
-        mDomainName = "";
-    }
-
-    /**
      * Clears this parser, so it can parse another web page
      * Clears the link lists and the document.
      */
@@ -131,6 +134,7 @@ public class LinkParser {
     {
         mInternalLinks = new ArrayList<>();
         mExternalLinks = new ArrayList<>();
+        mCrawlLinks = new ArrayList<>();
         mDocument = null;
     }
 
@@ -209,15 +213,15 @@ public class LinkParser {
         }
 
         //if it begins with a slash it's gotta be internal & relative
-        Matcher m1 = Patterns.slashPattern.matcher(url);
-        if (m1.find())
-        {
-            res = "https://" + mDomainName + url;
-
-            mInternalLinks.add(res);
-            if (crawl) mCrawlLinks.add(res);
-            return;
-        }
+//        Matcher m1 = Patterns.slashPattern.matcher(url);
+//        if (m1.find())
+//        {
+//            res = "https://" + mDomainName + url;
+//
+//            mInternalLinks.add(res);
+//            if (crawl) mCrawlLinks.add(res);
+//            return;
+//        }
 
         //if it matches the parentUrl's domain name
         Matcher m2 = mDomainPattern.matcher(url);
@@ -241,14 +245,16 @@ public class LinkParser {
             return;
         }
 
-        //at this point it's external (and therefore not relative)
-//        if (url.contains("https://order.unclejulios.com"))
-//        {
-//            System.out.println(url);
-//        }
-        mExternalLinks.add(url);
-        if (mConfiguration.testExternals())
-            mCrawlLinks.add(url);
+        Matcher httpMatcher = Patterns.httpPattern.matcher(url);
+        if (httpMatcher.find()) //make sure it isn't a mail link or something
+        {
+            //at this point it's external (and therefore not relative)
+            mExternalLinks.add(url);
+            if (mConfiguration.testExternals())
+                mCrawlLinks.add(url);
+
+        }
+
     }
 
 

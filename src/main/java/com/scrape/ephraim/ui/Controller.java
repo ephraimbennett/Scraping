@@ -364,7 +364,7 @@ public class Controller implements Initializable
         //make an empty scraper
         scraper = null;
         //set configruation
-        configuration = new Configuration(10, true, true);
+        configuration = new Configuration(10, true, true, true);
 
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox);

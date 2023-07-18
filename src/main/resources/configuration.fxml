@@ -10,7 +10,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.ConfigurationController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
          <children>
             <Label text="Max Thread Count: ">
                <HBox.margin>
@@ -24,7 +24,7 @@
             </TextField>
          </children>
       </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
          <children>
             <Label text="Test Images: ">
                <HBox.margin>
@@ -38,7 +38,7 @@
             </CheckBox>
          </children>
       </HBox>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
          <children>
             <Label text="Test External Links: ">
                <HBox.margin>
@@ -46,6 +46,20 @@
                </HBox.margin>
             </Label>
             <CheckBox fx:id="testExternalsBox" mnemonicParsing="false">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </CheckBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
+         <children>
+            <Label text="Crawl Subdomains:">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <CheckBox fx:id="crawlSubdomainsBox" mnemonicParsing="false">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>

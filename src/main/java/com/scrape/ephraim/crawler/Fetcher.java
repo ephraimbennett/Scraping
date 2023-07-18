@@ -170,7 +170,13 @@ public class Fetcher {
             }
 
             System.out.println(mUrl + " done!");
-        } catch (IOException e)
+        }
+        catch (SSLHandshakeException e)
+        {
+            System.out.println("Handshake exception! " + mUrl);
+            responseCode = 525;
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }

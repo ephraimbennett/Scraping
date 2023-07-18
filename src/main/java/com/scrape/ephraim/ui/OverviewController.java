@@ -55,6 +55,9 @@ public class OverviewController
         //iterate through each page. If the page's content is on the map, increase the count
         for (Page page : scraper.getSiteMap())
         {
+            //check for illegal values
+            if (page.getType() == null || page.getType().length() == 0) continue;
+
             if (typesMap.containsKey(page.getType()))
             {
                 typesMap.put(page.getType(), typesMap.get(page.getType()) + 1);

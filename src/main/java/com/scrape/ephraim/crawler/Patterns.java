@@ -13,6 +13,8 @@ public class Patterns {
     ///grabs the domain name from the url
     public static Pattern domainPattern = Pattern.compile("^https?://([\\w.]+)");
 
+    public static Pattern noWWWPattern = Pattern.compile("^(www.)(.*)$");
+
     ///determines if the link is an on page jump
     public static Pattern onPagePattern = Pattern.compile("^(.*)(#[^/]*)$");
 
@@ -21,4 +23,7 @@ public class Patterns {
 
     ///determines if the link is relative or not
     public static Pattern relativePattern = Pattern.compile("([a-z]+)?://");
+
+    ///determines if the url is an http request
+    public static Pattern httpPattern = Pattern.compile("^http");
 }

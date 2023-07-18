@@ -8,14 +8,18 @@ public class Configuration
     ///whether or not we should test images
     private boolean testImages;
 
+    ///whether or not we should crawl subdomains
+    private boolean crawlSubdomains;
+
     ///the number of threads
     private int threadCount;
 
-    public Configuration(int threadCount, boolean testImages, boolean testExternals)
+    public Configuration(int threadCount, boolean testImages, boolean testExternals, boolean crawlSubdomains)
     {
         this.threadCount = threadCount;
         this.testImages = testImages;
         this.testExternals = testExternals;
+        this.crawlSubdomains = crawlSubdomains;
     }
 
     /**
@@ -53,4 +57,17 @@ public class Configuration
      * @param threadCount int
      */
     public void setThreadCount(int threadCount) {this.threadCount = threadCount;}
+
+    /**
+     * Setter for crawling subdomains
+     * @param crawlSubdomains bool
+     */
+    public void setCrawlSubdomains(boolean crawlSubdomains) {this.crawlSubdomains = crawlSubdomains;}
+
+    /**
+     * Getter for crawling subdomains
+     * @return bool
+     */
+    public boolean crawlSubdomains() {return crawlSubdomains;}
+
 }

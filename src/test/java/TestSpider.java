@@ -11,7 +11,7 @@ public class TestSpider
 
         Scraper scraper = new Scraper("https://jsoup.org/");
 //        Scraper scraper = new Scraper("https://unclejulios.com/");
-        Spider spider = new Spider(scraper, new Configuration(20, true, true));
+        Spider spider = new Spider(scraper, new Configuration(20, true, true, true));
         spider.crawl(scraper.getDomain());
 
         //performance stuff
