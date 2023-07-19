@@ -29,6 +29,9 @@ public class Scraper
     ///the domain name
     private String mDomain;
 
+    ///the keywords to look for
+    private List<Keyword> mKeywords;
+
     /**
      * Constructor
      */
@@ -39,6 +42,7 @@ public class Scraper
         mSiteMap = new SiteMap();
         mHeaders = new Headers();
         mIssues = new Issues();
+        mKeywords = new ArrayList<>();
     }
 
     /**
@@ -68,7 +72,7 @@ public class Scraper
         if (document != null)//if this was a parse-able document, then add the html data
         {
             try {
-                page.getDocumentInfo().processDocument(document);
+                page.getDocumentInfo().processDocument(document, mKeywords);
             } catch (IndexOutOfBoundsException e)
             {
                 e.printStackTrace();
@@ -155,6 +159,18 @@ public class Scraper
         mConfiguration = configuration;
         mLinkParser.setConfiguration(configuration);
     }
+
+    /**
+     * Setter for the keywords
+     * @param keywords a list
+     */
+    public void setKeywords(List<Keyword> keywords) {mKeywords = keywords;}
+
+    /**
+     * Getter for the keywords
+     * @return a list
+     */
+    public List<Keyword> getKeywords() {return mKeywords;}
 
 
 }

@@ -13,6 +13,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
@@ -172,6 +173,11 @@ public class Fetcher {
         {
             System.out.println("Handshake exception! " + mUrl);
             responseCode = 525;
+        }
+        catch (ProtocolException e)
+        {
+            e.printStackTrace();
+            responseCode = -5;
         }
         catch (IOException e)
         {

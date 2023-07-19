@@ -73,13 +73,13 @@ public class SiteMap implements Iterable<Page>
         {
             if (mExternals.containsKey(externalLink))
             {
-                mExternals.get(externalLink).addOccurrance(url);
+                mExternals.get(externalLink).addOccurrence(url);
             }
             else
             {
                 ExternalSite obj = new ExternalSite(externalLink);
                 obj.setObserverExternals(mObserverExternals);
-                obj.addOccurrance(page.getUrl());
+                obj.addOccurrence(page.getUrl());
                 mExternals.put(externalLink, obj);
             }
         }

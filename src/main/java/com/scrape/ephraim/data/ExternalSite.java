@@ -2,12 +2,11 @@ package com.scrape.ephraim.data;
 
 import com.scrape.ephraim.crawler.ResponseWrapper;
 import javafx.scene.control.TableView;
-import org.jsoup.Connection;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
-public class ExternalSite
+public class ExternalSite implements DocumentHolder
 {
     ///the url of the external site
     private String mUrl;
@@ -27,6 +26,9 @@ public class ExternalSite
     ///size of the site
     private int mSize;
 
+    ///document info to hold stuff about this site
+    private DocumentInfo mDocumentInfo;
+
     ///association to the external sites observer
     private TableView<ExternalSite> mObserverExternals;
 
@@ -38,9 +40,10 @@ public class ExternalSite
     {
         mUrl = url;
         mInLinks = new HashMap<>();
+        mDocumentInfo = new DocumentInfo(this);
     }
 
-    public void addOccurrance(String url)
+    public void addOccurrence(String url)
     {
         if (mInLinks.containsKey(url))
         {
@@ -56,13 +59,16 @@ public class ExternalSite
      * Store the data after this page is visited.
      * @param response
      */
-    public void processResponse(ResponseWrapper response)
+    public void processResponse(ResponseWrapper response, List<Keyword> keywords)
     {
         mResponseCode = response.getResponseCode();
         mHeaders = response.getHeaders();
         mContentType = response.getType();
         mSize = response.getSize();
         mObserverExternals.getItems().add(this);
+
+        if (response.getDocument() != null)
+            mDocumentInfo.processDocument(response.getDocument(), keywords);
     }
 
     /**

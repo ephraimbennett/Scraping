@@ -8,3 +8,4 @@ subdomains. *fixed;
 Need to add a composite get method to SiteMap, in order to account for "close enough" urls.
 out links to a different subdomain are considered external links *fixed;
 external links that have the same domain name are considered internal.
+if you hit clear when the sitemap is empty there's an error

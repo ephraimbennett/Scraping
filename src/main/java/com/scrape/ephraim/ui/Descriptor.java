@@ -3,7 +3,9 @@ package com.scrape.ephraim.ui;
 import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
+import com.scrape.ephraim.data.Keyword;
 import com.scrape.ephraim.data.Page;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -210,6 +212,42 @@ public class Descriptor
 
         nodes.getChildren().add(inLinks);
         nodes.getChildren().add(headersView);
+        descriptorBox.setContent(nodes);
+    }
+
+    /**
+     * Provides description for a keyword
+     * @param keyword the keyword we are displaying
+     * @param scraper just because
+     */
+    public void populateDescriptorKeyword(Keyword keyword, Scraper scraper)
+    {
+        descriptorBox.setText("Viewing Keyword: " + keyword.getWord());
+
+        //set up shop
+        HBox nodes = new HBox();
+        TableView locationsTable = new TableView();
+        locationsTable.setPrefWidth(500);
+
+        //the location column
+        TableColumn<Map.Entry<String, Integer>, String> locationCol = new TableColumn<>("location");
+        locationCol.setCellValueFactory(entry -> new ReadOnlyStringWrapper(entry.getValue().getKey()));
+        locationCol.setPrefWidth(350);
+        locationsTable.getColumns().add(locationCol);
+
+        //the occurrences per page column
+        TableColumn<Map.Entry<String, Integer>, Integer> occurrencesCol = new TableColumn<>("occurrences");
+        occurrencesCol.setCellValueFactory(entry -> new ReadOnlyObjectWrapper<>(entry.getValue().getValue()));
+        occurrencesCol.setPrefWidth(90);
+        locationsTable.getColumns().add(occurrencesCol);
+
+        for (Map.Entry<String, Integer> entry : keyword.getLocations().entrySet())
+        {
+            locationsTable.getItems().add(entry);
+        }
+
+        //add all to nodes and then set that as the box's content
+        nodes.getChildren().add(locationsTable);
         descriptorBox.setContent(nodes);
     }
 

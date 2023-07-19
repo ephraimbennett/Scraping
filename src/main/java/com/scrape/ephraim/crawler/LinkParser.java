@@ -86,10 +86,10 @@ public class LinkParser {
 
             mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
         } else {
-            mDomainPattern = Pattern.compile(defaultDomain);
+            mDomainPattern = Pattern.compile("^" + defaultDomain);
         }
 
-        mDefaultPattern = Pattern.compile(defaultDomain);
+        mDefaultPattern = Pattern.compile("^" + defaultDomain);
         mParentUrl = url;
     }
 

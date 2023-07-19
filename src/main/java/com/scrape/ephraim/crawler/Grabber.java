@@ -79,7 +79,8 @@ public class Grabber
                         //now check if this url was external
                         if (mScraper.getSiteMap().getExternals().containsKey(url))
                         {
-                            mScraper.getSiteMap().getExternals().get(url).processResponse(response);
+                            mScraper.getSiteMap().getExternals().get(url).processResponse(response,
+                                    mScraper.getKeywords());
                         } else {
 
                             //grab the other stuff

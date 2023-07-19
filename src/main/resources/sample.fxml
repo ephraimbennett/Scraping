@@ -166,6 +166,11 @@
                               <TableView fx:id="externalLinks" onMouseClicked="#clickItemExternalLinks" prefHeight="300.0" prefWidth="200.0" />
                            </content>
                       </Tab>
+                        <Tab text="Keywords">
+                           <content>
+                              <TableView fx:id="keywordsTable" onMouseClicked="#clickItemKeyword" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                        </Tab>
                     </tabs>
                   </TabPane>
                </children></AnchorPane>

@@ -20,26 +20,36 @@ public class DocumentInfo
     ///the h2 tags
     private List<String> mH2;
 
+    ///the keywords found on this page
+    private List<String> mKeywords;
+
     ///indicates if it has been processed or not
     private boolean mProcessed;
 
+    ///association to either the page or external site being held
+    private DocumentHolder mPage;
+
     /**
      * Default constructor
+     * @param page the page this document belongs to
      */
-    public DocumentInfo()
+    public DocumentInfo(DocumentHolder page)
     {
         mTitle = "";
         mMeta = "";
         mH1 = new ArrayList<>();
         mH2 = new ArrayList<>();
         mProcessed = false;
+        mKeywords = new ArrayList<>();
+        mPage = page;
     }
 
     /**
      * Processes a document
-     * @param doc
+     * @param doc jsoup object
+     * @param keywords the words to look for in this document
      */
-    public void processDocument(Document doc)
+    public void processDocument(Document doc, List<Keyword> keywords)
     {
         //grab the title
         Elements titles = doc.getElementsByTag("title");
@@ -63,6 +73,17 @@ public class DocumentInfo
         for (var h2 : doc.getElementsByTag("h2"))
         {
             mH2.add(h2.text());
+        }
+
+        //check for keywords
+        for (Keyword keyword : keywords)
+        {
+            String whole = doc.toString();
+            int occurrences = whole.split(keyword.getWord(), -1).length-1;
+            if (occurrences > 0) {
+                keyword.addOccurrence(mPage.getUrl(), occurrences);
+                mKeywords.add(keyword.getWord());
+            }
         }
     }
 
@@ -90,6 +111,23 @@ public class DocumentInfo
      */
     public List<String> getH2() {return mH2;}
 
+    /**
+     * Sets the list of keywords
+     * @param keywords list of strings
+     */
+    public void setKeywords(List<String> keywords) {mKeywords = keywords;}
+
+    /**
+     * Adds a keyword
+     * @param keyword string
+     */
+    public void addKeyword(String keyword) {mKeywords.add(keyword);}
+
+
+    /**
+     * Returns csv elements for the document
+     * @return list of strings
+     */
     public List<String> saveCSV()
     {
         ArrayList<String> line = new ArrayList<>();

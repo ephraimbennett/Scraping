@@ -5,6 +5,7 @@ import com.scrape.ephraim.crawler.Scraper;
 import com.scrape.ephraim.crawler.Spider;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
+import com.scrape.ephraim.data.Keyword;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -65,6 +66,9 @@ public class Controller implements Initializable
 
     @FXML
     GridPane overviewGrid;
+
+    @FXML
+    TableView<Keyword> keywordsTable;
 
     ///controller for the descriptorBox
     Descriptor descriptorController;
@@ -176,6 +180,16 @@ public class Controller implements Initializable
 
             scraper = new Scraper(urlField.getText());
             Spider spider = new Spider(scraper, configuration);
+
+            //add keywords
+            List<Keyword> keywords = new ArrayList<>();
+            keywords.add(new Keyword("tree"));
+            for (Keyword keyword : keywords)
+            {
+                keyword.setObserverKeywords(keywordsTable);
+                keywordsTable.getItems().add(keyword);
+            }
+            scraper.setKeywords(keywords);
 
             //add observers
             spider.addFetcherObserver(visitedController);
@@ -387,6 +401,14 @@ public class Controller implements Initializable
         descriptorController.populateDescriptorIssue(selectedIssue, scraper);
     }
 
+    @FXML
+    public void clickItemKeyword(MouseEvent ignoredEvent)
+    {
+        Keyword keyword = keywordsTable.getSelectionModel().getSelectedItem();
+        if (keyword == null) return;
+        descriptorController.populateDescriptorKeyword(keyword, scraper);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
@@ -406,6 +428,7 @@ public class Controller implements Initializable
         initInternalLinks();
         initExternalLinks();
         initIssues();
+        initKeywords();
 
     }
 
@@ -491,5 +514,24 @@ public class Controller implements Initializable
         TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
+    }
+
+    private void initKeywords()
+    {
+        TableColumn<Keyword, String> wordCol = new TableColumn<>("search text");
+        wordCol.setCellValueFactory(keyword -> new ReadOnlyStringWrapper(keyword.getValue().getWord()));
+        wordCol.setPrefWidth(150);
+        keywordsTable.getColumns().add(wordCol);
+
+        TableColumn<Keyword, Integer> occurrenceCol = new TableColumn<>("total occurrences");
+        occurrenceCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(keyword.getValue().getOccurrences()));
+        occurrenceCol.setPrefWidth(110);
+        keywordsTable.getColumns().add(occurrenceCol);
+
+        TableColumn<Keyword, Integer> pageTotalCol = new TableColumn<>("total pages found");
+        pageTotalCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(
+                keyword.getValue().getTotalLocations()));
+        pageTotalCol.setPrefWidth(110);
+        keywordsTable.getColumns().add(pageTotalCol);
     }
 }
