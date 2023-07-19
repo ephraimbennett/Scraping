@@ -199,9 +199,6 @@ public class LinkParser {
 //           System.out.println(url + " removed: " + mJump.group(2));
         }
 
-        if (url.equals("//facebook.com/sharer/sharer.php?u=https://www.spartanblockchain.org/challenge-page/938af51f-d589-4dd5-9589-ee8ae8603786&quote=Come join Analyst!"))
-            System.out.println(" ");
-
         //determine if it's a relative path
         Matcher relative = Patterns.relativePattern.matcher(url);
         if (!relative.find())
@@ -215,17 +212,6 @@ public class LinkParser {
                 return;
             }
         }
-
-        //if it begins with a slash it's gotta be internal & relative
-//        Matcher m1 = Patterns.slashPattern.matcher(url);
-//        if (m1.find())
-//        {
-//            res = "https://" + mDomainName + url;
-//
-//            mInternalLinks.add(res);
-//            if (crawl) mCrawlLinks.add(res);
-//            return;
-//        }
 
         //if it matches the parentUrl's domain name
         Matcher m2 = mDomainPattern.matcher(url);

@@ -91,6 +91,9 @@ public class Controller implements Initializable
     ///the configuration settings
     private Configuration configuration;
 
+    ///the keywords to look for
+    private List<Keyword> keywords;
+
     /**
      * handler for exit on menu bar
      */
@@ -144,6 +147,27 @@ public class Controller implements Initializable
     }
 
     /**
+     * Opens the keywords setting page
+     * @throws IOException e
+     */
+    public void onKeywords() throws IOException
+    {
+        Parent root = FXMLLoader.load(getClass().getResource("/keywords.fxml"));
+        Stage keywordsStage = new Stage();
+        keywordsStage.setTitle("Add / Delete Keywords");
+
+        Scene keywordsScene = new Scene(root);
+        keywordsScene.setUserData(keywords);
+        keywordsStage.setScene(keywordsScene);
+
+        keywordsStage.initModality(Modality.APPLICATION_MODAL);
+        keywordsStage.show();
+        keywordsStage.setOnCloseRequest(par-> {
+            keywordsTable.setItems(FXCollections.observableArrayList(keywords));
+        });
+    }
+
+    /**
      * Handles clearing the scraper and tables
      */
     public void onClear()
@@ -174,7 +198,6 @@ public class Controller implements Initializable
     public void onSubmit()
     {
         CompletableFuture<Scraper> futureScraper = CompletableFuture.supplyAsync(() -> {
-
             //set up a timer for performance
             long beginTime = System.currentTimeMillis();
 
@@ -182,12 +205,9 @@ public class Controller implements Initializable
             Spider spider = new Spider(scraper, configuration);
 
             //add keywords
-            List<Keyword> keywords = new ArrayList<>();
-            keywords.add(new Keyword("tree"));
             for (Keyword keyword : keywords)
             {
                 keyword.setObserverKeywords(keywordsTable);
-                keywordsTable.getItems().add(keyword);
             }
             scraper.setKeywords(keywords);
 
@@ -211,11 +231,13 @@ public class Controller implements Initializable
             Platform.runLater(() -> {
                 createTreeView(scraper);
 
-                createOverview();
-
                 populateInternalLinks(scraper);
                 populateExternalLinks(scraper);
                 populateIssues(scraper);
+
+                createOverview();
+
+
             })
         );
 
@@ -416,6 +438,9 @@ public class Controller implements Initializable
         scraper = null;
         //set configruation
         configuration = new Configuration(50, true, true, false);
+        //set the keywords
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("Tree"));
 
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox);
