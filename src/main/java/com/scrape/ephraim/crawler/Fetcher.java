@@ -13,6 +13,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
@@ -153,9 +154,6 @@ public class Fetcher {
         try {
             Response response = call.execute();
 
-            if (mUrl.equals("https://jsoup.org/apidocs/org/jsoup/nodes/class-use/Attributes.html"))
-                System.out.println("");
-
             //store necessary data
             var body = response.body();
             document = Jsoup.parse(body.string());
@@ -170,7 +168,22 @@ public class Fetcher {
             }
 
             System.out.println(mUrl + " done!");
-        } catch (IOException e)
+        }
+        catch (SSLHandshakeException e)
+        {
+            System.out.println("Handshake exception! " + mUrl);
+            responseCode = 525;
+        }
+        catch (ProtocolException e)
+        {
+            e.printStackTrace();
+            responseCode = -5;
+        }
+        catch (SocketTimeoutException e)
+        {
+            responseCode = -1;
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.squareup.okhttp.HttpUrl;
 import org.jsoup.nodes.Document;
 
 import java.net.MalformedURLException;
@@ -20,6 +21,9 @@ public class LinkParser {
     ///list of the external links we find
     private List<String> mExternalLinks;
 
+    ///list of the links we are going to crawl
+    private List<String> mCrawlLinks;
+
     ///the domain name
     private String mDomainName;
 
@@ -32,6 +36,9 @@ public class LinkParser {
     ///regex pattern to check if the default domain name exists in the url
     private Pattern mDefaultPattern;
 
+    ///association to the crawl's configuration
+    private Configuration mConfiguration;
+
     /**
      * only constructor cause fuck that
      */
@@ -39,8 +46,15 @@ public class LinkParser {
     {
         mInternalLinks = new ArrayList<String>();
         mExternalLinks = new ArrayList<String>();
+        mCrawlLinks = new ArrayList<>();
         mDomainName = "%";
     }
+
+    /**
+     * Setter for the config association
+     * @param configuration
+     */
+    public void setConfiguration(Configuration configuration) {mConfiguration = configuration;}
 
     /**
      * Setter for the parent url
@@ -54,15 +68,28 @@ public class LinkParser {
      * @params url, defaultDomain
      */
     public void setDomainName(String url, String defaultDomain) {
-        Matcher matcher = Patterns.domainPattern.matcher(url);
-        if (matcher.find())
-        {
-            mDomainName = matcher.group(1);
+
+        //do all this work to account for subdomains
+        if (mConfiguration.crawlSubdomains()) {
+            Matcher matcher = Patterns.domainPattern.matcher(url);
+            if (matcher.find()) {
+                mDomainName = matcher.group(1);
+            } else {
+                mDomainName = defaultDomain;
+            }
+
+            //check if the domain name has a www.
+            Matcher wwwMatcher = Patterns.noWWWPattern.matcher(mDomainName);
+            if (wwwMatcher.find()) {
+                mDomainName = wwwMatcher.group(2);
+            }
+
+            mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
         } else {
-            mDomainName = defaultDomain;
+            mDomainPattern = Pattern.compile("^" + defaultDomain);
         }
-        mDomainPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + mDomainName);
-        mDefaultPattern = Pattern.compile("^https?://(www.)?([\\w]+\\.)?" + defaultDomain);
+
+        mDefaultPattern = Pattern.compile("^" + defaultDomain);
         mParentUrl = url;
     }
 
@@ -73,7 +100,7 @@ public class LinkParser {
     public String getDomainName(){return mDomainName;}
 
 
-    /**
+    /**i
      * Setter for document
      * @param doc
      */
@@ -89,20 +116,16 @@ public class LinkParser {
     public List<String> getInternalLinks() {return mInternalLinks;}
 
     /**
-     * Getter for th external links
+     * Getter for the external links
      * @return
      */
     public List<String> getExternalLinks() {return mExternalLinks;}
 
     /**
-     * Resets the list of internal and external links
+     * Getter for the crawl links
+     * @return links we are going to visit
      */
-    public void reset()
-    {
-        mInternalLinks.clear();
-        mExternalLinks.clear();
-        mDomainName = "";
-    }
+    public List<String> getCrawlLinks() {return mCrawlLinks;}
 
     /**
      * Clears this parser, so it can parse another web page
@@ -112,6 +135,7 @@ public class LinkParser {
     {
         mInternalLinks = new ArrayList<>();
         mExternalLinks = new ArrayList<>();
+        mCrawlLinks = new ArrayList<>();
         mDocument = null;
     }
 
@@ -126,7 +150,7 @@ public class LinkParser {
         }
 
         CheckA();
-//        CheckImg();
+        CheckImg();
     }
 
     //private functions
@@ -140,7 +164,7 @@ public class LinkParser {
         for (var img : imgElements)
         {
             String url = img.attr("src");
-            processUrl(url);
+            processUrl(url, mConfiguration.testImages());
         }
     }
 
@@ -154,15 +178,16 @@ public class LinkParser {
         for (var a : elementsA)
         {
             String url = a.attr("href");
-            processUrl(url);
+            processUrl(url, true);
         }
     }
 
     /**
      * Processes a valid url into a link object
      * @param url
+     * @param crawl - indicates if this url should be added to the crawl list
      */
-    private void processUrl(String url)
+    private void processUrl(String url, boolean crawl)
     {
         String res = "";
 
@@ -188,16 +213,6 @@ public class LinkParser {
             }
         }
 
-        //if it begins with a slash it's gotta be internal & relative
-        Matcher m1 = Patterns.slashPattern.matcher(url);
-        if (m1.find())
-        {
-            res = "https://" + mDomainName + url;
-
-            mInternalLinks.add(res);
-            return;
-        }
-
         //if it matches the parentUrl's domain name
         Matcher m2 = mDomainPattern.matcher(url);
         if (m2.find())
@@ -205,6 +220,7 @@ public class LinkParser {
             res = url;
 
             mInternalLinks.add(res);
+            if (crawl) mCrawlLinks.add(res);
             return;
         }
 
@@ -215,15 +231,20 @@ public class LinkParser {
             res = url;
 
             mInternalLinks.add(res);
+            if (crawl) mCrawlLinks.add(res);
             return;
         }
 
-        //at this point it's external (and therefore not relative)
-//        if (url.contains("https://order.unclejulios.com"))
-//        {
-//            System.out.println(url);
-//        }
-        mExternalLinks.add(url);
+        Matcher httpMatcher = Patterns.httpPattern.matcher(url);
+        if (httpMatcher.find()) //make sure it isn't a mail link or something
+        {
+            //at this point it's external (and therefore not relative)
+            mExternalLinks.add(url);
+            if (mConfiguration.testExternals())
+                mCrawlLinks.add(url);
+
+        }
+
     }
 
 

@@ -55,6 +55,9 @@ public class OverviewController
         //iterate through each page. If the page's content is on the map, increase the count
         for (Page page : scraper.getSiteMap())
         {
+            //check for illegal values
+            if (page.getType() == null || page.getType().length() == 0) continue;
+
             if (typesMap.containsKey(page.getType()))
             {
                 typesMap.put(page.getType(), typesMap.get(page.getType()) + 1);
@@ -69,5 +72,25 @@ public class OverviewController
             gridPane.addRow(gridPane.getRowCount(), new Label(entry.getKey()),
                     new Label(String.valueOf(entry.getValue())));
         }
+    }
+
+    /**
+     * Clears the overview
+     */
+    public void clear()
+    {
+        //for the rows describing the site data, go through and remove them
+        int totalRows = gridPane.getRowCount() - 1;
+        int stopRow = 4;
+
+        for (int i = totalRows; i > stopRow; i--)
+        {
+            gridPane.getChildren().remove(i * 2 + 1);
+            gridPane.getChildren().remove(i * 2);
+        }
+
+        //repopulate the grid with empty data
+        createOverview(new Scraper(""));
+
     }
 }

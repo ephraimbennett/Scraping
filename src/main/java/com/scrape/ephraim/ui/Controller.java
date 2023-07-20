@@ -1,22 +1,30 @@
 package com.scrape.ephraim.ui;
 
-import com.scrape.ephraim.crawler.Crawler;
+import com.scrape.ephraim.crawler.Configuration;
 import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.crawler.Spider;
 import com.scrape.ephraim.data.ExternalSite;
 import com.scrape.ephraim.data.Issue;
+import com.scrape.ephraim.data.Keyword;
 import com.scrape.ephraim.data.Page;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -59,6 +67,18 @@ public class Controller implements Initializable
     @FXML
     GridPane overviewGrid;
 
+    @FXML
+    TableView<Keyword> keywordsTable;
+
+    @FXML
+    MenuItem copyItem;
+
+    @FXML
+    Label queueLabel;
+
+    @FXML
+    Label requestLabel;
+
     ///controller for the descriptorBox
     Descriptor descriptorController;
 
@@ -74,8 +94,17 @@ public class Controller implements Initializable
     ///controller for the search box
     SearchController searchController;
 
+    ///controller for copy & paste
+    CopyController copyController;
+
     ///the scraper
     private Scraper scraper;
+
+    ///the configuration settings
+    private Configuration configuration;
+
+    ///the keywords to look for
+    private List<Keyword> keywords;
 
     /**
      * handler for exit on menu bar
@@ -113,6 +142,69 @@ public class Controller implements Initializable
     }
 
     /**
+     * Opens configuration window
+     */
+    public void onConfiguration() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/configuration.fxml"));
+        Stage configurationStage = new Stage();
+        configurationStage.setTitle("Crawl Configuration");
+        Scene configScene = new Scene(root);
+        configScene.setUserData(configuration);
+        configurationStage.setScene(configScene);
+        configurationStage.initModality(Modality.APPLICATION_MODAL);
+        configurationStage.show();
+        configurationStage.setOnCloseRequest((par) -> {
+            System.out.println(configuration.getThreadCount());
+        });
+    }
+
+    /**
+     * Opens the keywords setting page
+     * @throws IOException e
+     */
+    public void onKeywords() throws IOException
+    {
+        Parent root = FXMLLoader.load(getClass().getResource("/keywords.fxml"));
+        Stage keywordsStage = new Stage();
+        keywordsStage.setTitle("Add / Delete Keywords");
+
+        Scene keywordsScene = new Scene(root);
+        keywordsScene.setUserData(keywords);
+        keywordsStage.setScene(keywordsScene);
+
+        keywordsStage.initModality(Modality.APPLICATION_MODAL);
+        keywordsStage.show();
+        keywordsStage.setOnCloseRequest(par-> {
+            keywordsTable.setItems(FXCollections.observableArrayList(keywords));
+        });
+    }
+
+    /**
+     * Handles clearing the scraper and tables
+     */
+    public void onClear()
+    {
+        //empty the scraper
+        if (scraper == null) return;
+        scraper.getSiteMap().getMap().clear();
+        scraper.getIssues().clear();
+        scraper.getSiteMap().getExternals().clear();
+        scraper = null;
+
+        //clear out ui
+        internalLinks.setItems(FXCollections.observableArrayList());
+        externalLinks.setItems(FXCollections.observableArrayList());
+        visitedLinks.setItems(FXCollections.observableArrayList());
+        issues.setItems(FXCollections.observableArrayList());
+        overviewController.clear();
+        descriptorController.clear();
+        treeView.getRoot().getChildren().clear();
+        treeView.refresh();
+
+    }
+
+
+    /**
      * Asynchronously crawl
      */
     public void onSubmit()
@@ -121,20 +213,28 @@ public class Controller implements Initializable
             //set up a timer for performance
             long beginTime = System.currentTimeMillis();
 
-            //creates a crawler
-            Crawler crawler = new Crawler(urlField.getText());
-            List<String> urls = new ArrayList<>();
-            urls.add(crawler.getUrl());
+            scraper = new Scraper(urlField.getText());
+            Spider spider = new Spider(scraper, configuration);
+
+
+            //add keywords
+            for (Keyword keyword : keywords)
+            {
+                keyword.setObserverKeywords(keywordsTable);
+            }
+            scraper.setKeywords(keywords);
 
             //add observers
-            crawler.addObserver(visitedController);
+            spider.addFetcherObserver(visitedController);
+            spider.setLabelObservers(queueLabel, requestLabel);
+            scraper.getSiteMap().setObserverInternalLinks(internalLinks);
+            scraper.getSiteMap().setObserverExternals(externalLinks);
+            scraper.getIssues().setObserverIssues(issues);
 
-            //now create a scraper
-            scraper = new Scraper(crawler.getDomain());
-            crawler.setScraper(scraper);
+            spider.crawl(scraper.getDomain());
 
-            crawler.crawl(urls);
-            System.out.println("total links visited: " + crawler.getVisitedLinks().size());
+            //performance stuff
+            System.out.println("total links visited: " + spider.getVisitedLinks().size());
 
             long endTime = System.currentTimeMillis();
             System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
@@ -145,11 +245,13 @@ public class Controller implements Initializable
             Platform.runLater(() -> {
                 createTreeView(scraper);
 
-                createOverview();
-
                 populateInternalLinks(scraper);
                 populateExternalLinks(scraper);
                 populateIssues(scraper);
+
+                createOverview();
+
+
             })
         );
 
@@ -198,7 +300,9 @@ public class Controller implements Initializable
     private void createTreeView(Scraper scraper)
     {
         //create most basic root
-        treeView.setRoot(new TreeItem<>("Site Map"));
+        TreeItem<String> baseRoot = new TreeItem("Site Map");
+        baseRoot.setExpanded(true);
+        treeView.setRoot(baseRoot);
 
         //map of the roots. Synonymous for the different types of domains.
         HashMap<String, TreeItem<String>> roots = new HashMap<>();
@@ -239,6 +343,8 @@ public class Controller implements Initializable
 
             //if no item is selected, just stop!
             if (currentItem == null) return;
+            //if the scraper is null, just stop!
+            if (scraper == null) return;
 
             //keep adding the item's value until we get to the root
             while (currentItem.getParent() != null)
@@ -333,14 +439,31 @@ public class Controller implements Initializable
         descriptorController.populateDescriptorIssue(selectedIssue, scraper);
     }
 
+    @FXML
+    public void clickItemKeyword(MouseEvent ignoredEvent)
+    {
+        Keyword keyword = keywordsTable.getSelectionModel().getSelectedItem();
+        if (keyword == null) return;
+        descriptorController.populateDescriptorKeyword(keyword, scraper);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
         //make an empty scraper
         scraper = null;
+        //set configruation
+        configuration = new Configuration(10, true, true, false);
+        //set the keywords
+        keywords = new ArrayList<>();
+        keywords.add(new Keyword("Tree"));
+
+        //set up the copy stuff
+        copyController = new CopyController(copyItem);
+        copyController.addList(visitedLinks);
 
         //assign the elements to the proper controllers
-        descriptorController = new Descriptor(descriptorBox);
+        descriptorController = new Descriptor(descriptorBox, copyController);
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
         overviewController = new OverviewController(overviewGrid);
@@ -350,6 +473,7 @@ public class Controller implements Initializable
         initInternalLinks();
         initExternalLinks();
         initIssues();
+        initKeywords();
 
     }
 
@@ -367,6 +491,24 @@ public class Controller implements Initializable
         occurrences.setCellValueFactory(ext -> new ReadOnlyObjectWrapper<>(ext.getValue().getOccurrences()));
         occurrences.setPrefWidth(70);
         externalLinks.getColumns().add(occurrences);
+
+        TableColumn<ExternalSite, Integer> codeColumn = new TableColumn("response code");
+        codeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getResponseCode()));
+        codeColumn.setPrefWidth(90);
+        externalLinks.getColumns().add(codeColumn);
+
+        TableColumn<ExternalSite, String> typeColumn = new TableColumn<>("content type");
+        typeColumn.setCellValueFactory(site -> new ReadOnlyStringWrapper(site.getValue().getType()));
+        typeColumn.setPrefWidth(90);
+        externalLinks.getColumns().add(typeColumn);
+
+        TableColumn<ExternalSite, Integer> sizeColumn = new TableColumn<>("size");
+        sizeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getSize()));
+        sizeColumn.setPrefWidth(70);
+        externalLinks.getColumns().add(sizeColumn);
+
+        externalLinks.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(externalLinks);
     }
 
 
@@ -400,6 +542,8 @@ public class Controller implements Initializable
         sizeColumn.setPrefWidth(70);
         internalLinks.getColumns().add(sizeColumn);
 
+        internalLinks.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(internalLinks);
     }
 
     /**
@@ -420,5 +564,31 @@ public class Controller implements Initializable
         TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
+
+        issues.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(issues);
+    }
+
+    private void initKeywords()
+    {
+        TableColumn<Keyword, String> wordCol = new TableColumn<>("search text");
+        wordCol.setCellValueFactory(keyword -> new ReadOnlyStringWrapper(keyword.getValue().getWord()));
+        wordCol.setPrefWidth(150);
+        keywordsTable.getColumns().add(wordCol);
+
+        TableColumn<Keyword, Integer> occurrenceCol = new TableColumn<>("total occurrences");
+        occurrenceCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(keyword.getValue().getOccurrences()));
+        occurrenceCol.setPrefWidth(110);
+        keywordsTable.getColumns().add(occurrenceCol);
+
+        TableColumn<Keyword, Integer> pageTotalCol = new TableColumn<>("total pages found");
+        pageTotalCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(
+                keyword.getValue().getTotalLocations()));
+        pageTotalCol.setPrefWidth(110);
+        keywordsTable.getColumns().add(pageTotalCol);
+
+        //handle copy stuff
+        keywordsTable.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(keywordsTable);
     }
 }

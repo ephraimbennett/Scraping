@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 
 import com.scrape.ephraim.crawler.Patterns;
 
-public class Page
+public class Page implements DocumentHolder
 {
     ///this page's url
     private String mUrl;
@@ -45,7 +45,6 @@ public class Page
     public Page(String url)
     {
         mUrl = url;
-
         init();
     }
 
@@ -69,7 +68,7 @@ public class Page
         mInLinks = new HashSet<>();
         mOutLinks = new HashSet<>();
         mExternalLinks = new HashSet<>();
-        mDocumentInfo = new DocumentInfo();
+        mDocumentInfo = new DocumentInfo(this);
         mHeaders = new HashMap<>();
         mResponseCode = 0;
         mSize = 0;
@@ -89,6 +88,7 @@ public class Page
                 mPath = new ArrayList<String>(List.of(totalPath.split("/")));
             }
         }
+        if (mPath == null) mPath = new ArrayList<>();
     }
 
     /**

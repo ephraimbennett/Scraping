@@ -6,3 +6,6 @@ need to account for subdomains*fixed;
 When dealing with relative links, we are simply adding the first domain name given, this doesn't account for any
 subdomains. *fixed;
 Need to add a composite get method to SiteMap, in order to account for "close enough" urls.
+out links to a different subdomain are considered external links *fixed;
+external links that have the same domain name are considered internal.
+if you hit clear when the sitemap is empty there's an error

@@ -61,7 +61,11 @@ public class SearchController
         //second the content box
         contentBox.textProperty().addListener((observable, oldVal, newVal) ->
             filteredData.setPredicate((page) -> {
-                //case insensitive search
+
+                if (page.getType() == null)
+                    return false;
+
+                //case in sensitive search
                 if (page.getType().toLowerCase().indexOf(newVal.toLowerCase()) != -1)
                 {
                     return true;
@@ -151,6 +155,22 @@ public class SearchController
 
             });
         });
+
+        //second the content box
+        contentBox.textProperty().addListener((observable, oldVal, newVal) ->
+                filteredData.setPredicate((site) -> {
+
+                    if (site.getType() == null)
+                        return false;
+
+                    //case in sensitive search
+                    if (site.getType().toLowerCase().indexOf(newVal.toLowerCase()) != -1)
+                    {
+                        return true;
+                    }
+                    return false;
+                })
+        );
 
         //wrap the data in a sorted list
         //then bind this sorted list to the tableview comparator (otherwise the sort wouldn't do anything?)

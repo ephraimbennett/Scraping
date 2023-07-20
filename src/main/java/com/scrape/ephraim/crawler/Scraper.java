@@ -1,8 +1,10 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.data.*;
+import javafx.scene.control.TableView;
 import org.jsoup.nodes.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,8 +23,14 @@ public class Scraper
     ///association to the issues storage
     private Issues mIssues;
 
+    ///association to the configurations class
+    private Configuration mConfiguration;
+
     ///the domain name
     private String mDomain;
+
+    ///the keywords to look for
+    private List<Keyword> mKeywords;
 
     /**
      * Constructor
@@ -34,6 +42,7 @@ public class Scraper
         mSiteMap = new SiteMap();
         mHeaders = new Headers();
         mIssues = new Issues();
+        mKeywords = new ArrayList<>();
     }
 
     /**
@@ -63,13 +72,11 @@ public class Scraper
         if (document != null)//if this was a parse-able document, then add the html data
         {
             try {
-                page.getDocumentInfo().processDocument(document);
+                page.getDocumentInfo().processDocument(document, mKeywords);
             } catch (IndexOutOfBoundsException e)
             {
                 e.printStackTrace();
             }
-        } else {
-//            System.out.println(url + " gives us a null document");
         }
     }
 
@@ -137,6 +144,33 @@ public class Scraper
      * @return
      */
     public Issues getIssues() {return mIssues;}
+
+    /**
+     * Gets the links that the spider should be crawling
+     * @return a list of strings that should be added to the visit queue
+     */
+    public List<String> getCrawlLinks() {return mLinkParser.getCrawlLinks();}
+
+    /**
+     * Sets the configuration for the scraper and its link parser
+     * @param configuration
+     */
+    public void setConfiguration(Configuration configuration) {
+        mConfiguration = configuration;
+        mLinkParser.setConfiguration(configuration);
+    }
+
+    /**
+     * Setter for the keywords
+     * @param keywords a list
+     */
+    public void setKeywords(List<Keyword> keywords) {mKeywords = keywords;}
+
+    /**
+     * Getter for the keywords
+     * @return a list
+     */
+    public List<Keyword> getKeywords() {return mKeywords;}
 
 
 }
