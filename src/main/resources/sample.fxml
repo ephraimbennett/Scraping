@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -36,6 +37,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
                <items>
+                  <MenuItem fx:id="copyItem" mnemonicParsing="false" text="Copy" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#onConfiguration" text="Configuration" />
                   <MenuItem mnemonicParsing="false" onAction="#onKeywords" text="Key Words" />
                </items>

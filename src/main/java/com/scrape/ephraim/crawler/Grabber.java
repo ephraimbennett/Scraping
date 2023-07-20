@@ -1,6 +1,7 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.data.StatusIssue;
+import com.scrape.ephraim.data.TimeoutIssue;
 import com.scrape.ephraim.ui.FetcherObserver;
 
 import java.util.ArrayList;
@@ -73,8 +74,11 @@ public class Grabber
                         //scrape the response
                         //first check for response code issue
                         if (response.getResponseCode() > 299) {
-                            mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(), response.getUrl()));
+                            mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(),
+                                    response.getUrl()));
                         }
+                        if (response.getResponseCode() == -1)//socket timeout
+                            mScraper.getIssues().addIssue(new TimeoutIssue(response.getUrl()));
 
                         //now check if this url was external
                         if (mScraper.getSiteMap().getExternals().containsKey(url))

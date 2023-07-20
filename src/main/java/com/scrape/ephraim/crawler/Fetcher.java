@@ -179,6 +179,10 @@ public class Fetcher {
             e.printStackTrace();
             responseCode = -5;
         }
+        catch (SocketTimeoutException e)
+        {
+            responseCode = -1;
+        }
         catch (IOException e)
         {
             e.printStackTrace();

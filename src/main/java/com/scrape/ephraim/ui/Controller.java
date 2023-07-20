@@ -70,6 +70,9 @@ public class Controller implements Initializable
     @FXML
     TableView<Keyword> keywordsTable;
 
+    @FXML
+    MenuItem copyItem;
+
     ///controller for the descriptorBox
     Descriptor descriptorController;
 
@@ -84,6 +87,9 @@ public class Controller implements Initializable
 
     ///controller for the search box
     SearchController searchController;
+
+    ///controller for copy & paste
+    CopyController copyController;
 
     ///the scraper
     private Scraper scraper;
@@ -442,8 +448,12 @@ public class Controller implements Initializable
         keywords = new ArrayList<>();
         keywords.add(new Keyword("Tree"));
 
+        //set up the copy stuff
+        copyController = new CopyController(copyItem);
+        copyController.addList(visitedLinks);
+
         //assign the elements to the proper controllers
-        descriptorController = new Descriptor(descriptorBox);
+        descriptorController = new Descriptor(descriptorBox, copyController);
         menuBarController = new MenuBarController(menuBar);
         visitedController = new VisitedListController(visitedLinks);
         overviewController = new OverviewController(overviewGrid);
@@ -486,6 +496,9 @@ public class Controller implements Initializable
         sizeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getSize()));
         sizeColumn.setPrefWidth(70);
         externalLinks.getColumns().add(sizeColumn);
+
+        externalLinks.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(externalLinks);
     }
 
 
@@ -519,6 +532,8 @@ public class Controller implements Initializable
         sizeColumn.setPrefWidth(70);
         internalLinks.getColumns().add(sizeColumn);
 
+        internalLinks.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(internalLinks);
     }
 
     /**
@@ -539,6 +554,9 @@ public class Controller implements Initializable
         TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
+
+        issues.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(issues);
     }
 
     private void initKeywords()
@@ -558,5 +576,9 @@ public class Controller implements Initializable
                 keyword.getValue().getTotalLocations()));
         pageTotalCol.setPrefWidth(110);
         keywordsTable.getColumns().add(pageTotalCol);
+
+        //handle copy stuff
+        keywordsTable.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(keywordsTable);
     }
 }

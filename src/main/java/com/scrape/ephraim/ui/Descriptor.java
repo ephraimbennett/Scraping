@@ -24,9 +24,13 @@ public class Descriptor
     ///the descriptor box we are controlling
     private TitledPane descriptorBox;
 
-    public Descriptor(TitledPane descriptorBox)
+    ///the copy controller so stuff the descriptor makes can be copied
+    private CopyController copyController;
+
+    public Descriptor(TitledPane descriptorBox, CopyController copyController)
     {
         this.descriptorBox = descriptorBox;
+        this.copyController = copyController;
         descriptorBox.setPrefHeight(USE_COMPUTED_SIZE);
         descriptorBox.setPrefWidth(USE_COMPUTED_SIZE);
         descriptorBox.setMaxHeight(450);
@@ -44,16 +48,19 @@ public class Descriptor
         ListView<String> inLinksView = new ListView<>();
         ObservableList<String> inLinksObservable = FXCollections.observableArrayList(page.getInLinks());
         inLinksView.setItems(inLinksObservable);
+        copyController.addList(inLinksView);
 
         //create the outlinks list
         ListView<String> outLinksView = new ListView<>();
         ObservableList<String> x = FXCollections.observableArrayList(page.getOutLinks());
         outLinksView.setItems(x);
+        copyController.addList(outLinksView);
 
         //create the external links list
         ListView<String> externalLinksView = new ListView<>();
         ObservableList<String> ext = FXCollections.observableArrayList(page.getExternalLinks());
         externalLinksView.setItems(ext);
+        copyController.addList(externalLinksView);
 
         //display the headers
         TableView headersView = new TableView();
@@ -72,6 +79,8 @@ public class Descriptor
                 headersView.getItems().add(new HeaderWrapper(entry.getKey(), entry.getValue()));
             }
         }
+        headersView.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(headersView);
 
 
         //display the titles
@@ -110,6 +119,9 @@ public class Descriptor
         descriptionCol.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getDescription()));
         issues.getColumns().addAll(categoryCol, summaryCol, descriptionCol);
         nodes2.getChildren().add(new VBox(new Label("Issues"), issues));//add it to the row
+
+        issues.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(issues);
 
         //fill out the issues table
         List<Issue> associatedIssues = scraper.getIssues().findIssues(page.getUrl());
@@ -161,6 +173,7 @@ public class Descriptor
         ObservableList<String> observableInLinks = FXCollections.observableArrayList(inLinksSet);
         inLinks.setItems(observableInLinks);
         nodes.getChildren().add(new VBox(new Label("In Links"), inLinks));
+        copyController.addList(inLinks);
 
         descriptorBox.setContent(nodes);
     }
@@ -190,6 +203,8 @@ public class Descriptor
         {
             inLinks.getItems().add(entry);
         }
+        inLinks.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(inLinks);
 
         //display the http headers
         //display the headers
@@ -209,6 +224,8 @@ public class Descriptor
                 headersView.getItems().add(new HeaderWrapper(entry.getKey(), entry.getValue()));
             }
         }
+        headersView.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(headersView);
 
         nodes.getChildren().add(inLinks);
         nodes.getChildren().add(headersView);
@@ -245,6 +262,8 @@ public class Descriptor
         {
             locationsTable.getItems().add(entry);
         }
+        locationsTable.getSelectionModel().setCellSelectionEnabled(true);
+        copyController.addTable(locationsTable);
 
         //add all to nodes and then set that as the box's content
         nodes.getChildren().add(locationsTable);
