@@ -9,7 +9,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -37,8 +36,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem fx:id="copyItem" mnemonicParsing="false" text="Copy" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="copyItem" mnemonicParsing="false" text="Edit" />
                   <MenuItem mnemonicParsing="false" onAction="#onConfiguration" text="Configuration" />
                   <MenuItem mnemonicParsing="false" onAction="#onKeywords" text="Key Words" />
                </items>
@@ -100,7 +98,7 @@
             <Insets bottom="3.0" top="4.0" />
          </VBox.margin>
       </HBox>
-      <SplitPane dividerPositions="0.36444444444444446" prefHeight="340.0" prefWidth="600.0">
+      <SplitPane dividerPositions="0.5" prefHeight="340.0" prefWidth="600.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="328.0">
                <children>
@@ -108,6 +106,10 @@
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor></TreeView>
+                  <Label layoutX="392.0" layoutY="25.0" text="In Queue:" />
+                  <Label fx:id="queueLabel" layoutX="411.0" layoutY="42.0" text="0" />
+                  <Label layoutX="392.0" layoutY="98.0" text="Requesting:" />
+                  <Label fx:id="requestLabel" layoutX="411.0" layoutY="115.0" text="0" />
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>

@@ -73,6 +73,12 @@ public class Controller implements Initializable
     @FXML
     MenuItem copyItem;
 
+    @FXML
+    Label queueLabel;
+
+    @FXML
+    Label requestLabel;
+
     ///controller for the descriptorBox
     Descriptor descriptorController;
 
@@ -210,6 +216,7 @@ public class Controller implements Initializable
             scraper = new Scraper(urlField.getText());
             Spider spider = new Spider(scraper, configuration);
 
+
             //add keywords
             for (Keyword keyword : keywords)
             {
@@ -219,6 +226,7 @@ public class Controller implements Initializable
 
             //add observers
             spider.addFetcherObserver(visitedController);
+            spider.setLabelObservers(queueLabel, requestLabel);
             scraper.getSiteMap().setObserverInternalLinks(internalLinks);
             scraper.getSiteMap().setObserverExternals(externalLinks);
             scraper.getIssues().setObserverIssues(issues);
@@ -292,7 +300,9 @@ public class Controller implements Initializable
     private void createTreeView(Scraper scraper)
     {
         //create most basic root
-        treeView.setRoot(new TreeItem<>("Site Map"));
+        TreeItem<String> baseRoot = new TreeItem("Site Map");
+        baseRoot.setExpanded(true);
+        treeView.setRoot(baseRoot);
 
         //map of the roots. Synonymous for the different types of domains.
         HashMap<String, TreeItem<String>> roots = new HashMap<>();
@@ -443,7 +453,7 @@ public class Controller implements Initializable
         //make an empty scraper
         scraper = null;
         //set configruation
-        configuration = new Configuration(50, true, true, false);
+        configuration = new Configuration(10, true, true, false);
         //set the keywords
         keywords = new ArrayList<>();
         keywords.add(new Keyword("Tree"));

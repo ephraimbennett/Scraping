@@ -1,11 +1,13 @@
 package com.scrape.ephraim.crawler;
 
 import com.scrape.ephraim.ui.FetcherObserver;
+import javafx.scene.control.Label;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Spider
 {
@@ -33,6 +35,15 @@ public class Spider
     ///association to the configuration settings
     private Configuration mConfiguration;
 
+    ///the label that we are updating with the queue size
+    private Label mQueueSize;
+
+    ///the label that we are updating with the requesting size
+    private Label mRequestSize;
+
+    ///the integer value of requests
+    private AtomicInteger mRequestsAtomic;
+
     /**
      * Default constructor
      */
@@ -46,6 +57,7 @@ public class Spider
         mVisitedLinks = new ConcurrentHashMap<>();
         mNoTasks = 0;
         mFetcherObservers = new ArrayList<>();
+        mRequestsAtomic = new AtomicInteger(0);
 
         //set the configuration for the scraper
         mScraper.setConfiguration(configuration);
@@ -66,6 +78,7 @@ public class Spider
             Grabber grabber = new Grabber(mToVisit, mScraper, mVisitedLinks);
             grabber.setSpider(this);
             grabber.setFetcherObservers(mFetcherObservers);
+            grabber.setLabelObservers(mQueueSize, mRequestSize);
             mWorkers.add(grabber);
             grabber.start();
         }
@@ -81,6 +94,14 @@ public class Spider
 
     }
 
+    public void closeAll()
+    {
+        for (Grabber worker : mWorkers)
+        {
+            worker.stop();
+            worker.getThread().interrupt();
+        }
+   }
 
 
     /**
@@ -93,5 +114,32 @@ public class Spider
      * Creates association for a fetcher observer
      */
     public void addFetcherObserver(FetcherObserver observer) {mFetcherObservers.add(observer);}
+
+    /**
+     * Setter for the label observers
+     * @param queueLabel queue size
+     * @param requestLabel request size
+     */
+    public void setLabelObservers(Label queueLabel, Label requestLabel)
+    {
+        mQueueSize = queueLabel;
+        mRequestSize = requestLabel;
+    }
+
+    public int addRequesting()
+    {
+        return mRequestsAtomic.incrementAndGet();
+    }
+
+    public int removeRequesting()
+    {
+        return mRequestsAtomic.decrementAndGet();
+    }
+
+    public int getRequesting()
+    {
+        return mRequestsAtomic.get();
+    }
+
 
 }
