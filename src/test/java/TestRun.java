@@ -12,7 +12,7 @@ import java.util.List;
 public class TestRun {
     public static void main(String[] args)
     {
-        TestCrawler();
+        TestSaveCSV();
         System.out.println("Done!");
     }
 
@@ -89,7 +89,7 @@ public class TestRun {
         System.out.println("Elapsed time: " + (endTime - beginTime) / 1000);
 
         ExporterCSV exporterCSV = new ExporterCSV(new File("C:/Users/Patri/Documents/shoo.csv/"));
-        exporterCSV.export(scraper);
+        exporterCSV.exportPage(scraper);
     }
 
 

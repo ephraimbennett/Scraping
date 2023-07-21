@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
@@ -64,6 +65,7 @@ public class Descriptor
 
         //display the headers
         TableView headersView = new TableView();
+
         TableColumn<HeaderWrapper, String> nameCol = new TableColumn<>("Name");
         nameCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getName()));
         TableColumn<HeaderWrapper, String> valueCol = new TableColumn<>("Value");
@@ -84,15 +86,12 @@ public class Descriptor
 
 
         //display the titles
-        VBox titleSection = new VBox(new Label("Title"), new Label(page.getDocumentInfo().getTitle()));
-        titleSection.getChildren().add(new Label("\n Meta Description"));
-        Label metaDescription = new Label(page.getDocumentInfo().getMetaDescription());
-        metaDescription.setWrapText(true);
-        metaDescription.setTextAlignment(TextAlignment.LEFT);
-        metaDescription.setMaxWidth(200);
-        metaDescription.setPrefHeight(USE_COMPUTED_SIZE);
+        VBox titleSection = new VBox(new Label("Title"), new TextLabel(page.getDocumentInfo().getTitle()));
+        titleSection.getChildren().add(new Label("Meta Description"));
+        TextLabel metaDescription = new TextLabel(page.getDocumentInfo().getMetaDescription());
         titleSection.getChildren().add(metaDescription);
         titleSection.setPrefHeight(500);
+        titleSection.setPrefWidth(240);
 
         //new row
         HBox nodes2 = new HBox();

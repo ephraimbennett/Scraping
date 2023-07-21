@@ -115,17 +115,29 @@ public class Controller implements Initializable
     }
 
     /**
-     * handler for hitting export to csv
+     * handler for hitting exportPage to csv
      */
-    public void onExportCSV()
+    public void onExportPages()
     {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", ".csv"));
-        File path = chooser.showSaveDialog(page.getScene().getWindow());
-        ExporterCSV exporter = new ExporterCSV(path);
-        exporter.export(scraper);
+        menuBarController.exportPages(scraper);
     }
+
+    /**
+     * Handler
+     */
+    public void onExportExternals()
+    {
+        menuBarController.exportExternals(scraper);
+    }
+
+    /**
+     * Handler
+     */
+    public void onExportIssues()
+    {
+        menuBarController.exportIssues(scraper);
+    }
+
 
     /**
      * Handler for hitting export to json
@@ -453,7 +465,7 @@ public class Controller implements Initializable
         //make an empty scraper
         scraper = null;
         //set configruation
-        configuration = new Configuration(10, true, true, false);
+        configuration = new Configuration(10, false, true, false);
         //set the keywords
         keywords = new ArrayList<>();
         keywords.add(new Keyword("Tree"));
@@ -461,6 +473,7 @@ public class Controller implements Initializable
         //set up the copy stuff
         copyController = new CopyController(copyItem);
         copyController.addList(visitedLinks);
+        copyController.addTree(treeView);
 
         //assign the elements to the proper controllers
         descriptorController = new Descriptor(descriptorBox, copyController);
@@ -482,27 +495,27 @@ public class Controller implements Initializable
      */
     private void initExternalLinks()
     {
-        TableColumn<ExternalSite, String> urlColumn = new TableColumn<>("url");
+        TableColumn<ExternalSite, String> urlColumn = new TableColumn<>("URL");
         urlColumn.setCellValueFactory(externalSite -> new ReadOnlyStringWrapper(externalSite.getValue().getUrl()));
         urlColumn.setPrefWidth(200);
         externalLinks.getColumns().add(urlColumn);
 
-        TableColumn<ExternalSite, Integer> occurrences = new TableColumn<>("# of occurrences");
+        TableColumn<ExternalSite, Integer> occurrences = new TableColumn<>("# of Occurrences");
         occurrences.setCellValueFactory(ext -> new ReadOnlyObjectWrapper<>(ext.getValue().getOccurrences()));
         occurrences.setPrefWidth(70);
         externalLinks.getColumns().add(occurrences);
 
-        TableColumn<ExternalSite, Integer> codeColumn = new TableColumn("response code");
+        TableColumn<ExternalSite, Integer> codeColumn = new TableColumn("Status Code");
         codeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getResponseCode()));
         codeColumn.setPrefWidth(90);
         externalLinks.getColumns().add(codeColumn);
 
-        TableColumn<ExternalSite, String> typeColumn = new TableColumn<>("content type");
+        TableColumn<ExternalSite, String> typeColumn = new TableColumn<>("Content Type");
         typeColumn.setCellValueFactory(site -> new ReadOnlyStringWrapper(site.getValue().getType()));
         typeColumn.setPrefWidth(90);
         externalLinks.getColumns().add(typeColumn);
 
-        TableColumn<ExternalSite, Integer> sizeColumn = new TableColumn<>("size");
+        TableColumn<ExternalSite, Integer> sizeColumn = new TableColumn<>("Size");
         sizeColumn.setCellValueFactory(site -> new ReadOnlyObjectWrapper<>(site.getValue().getSize()));
         sizeColumn.setPrefWidth(70);
         externalLinks.getColumns().add(sizeColumn);
@@ -517,27 +530,27 @@ public class Controller implements Initializable
      */
     private void initInternalLinks()
     {
-        TableColumn<Page, String> urlColumn = new TableColumn<>("url");
+        TableColumn<Page, String> urlColumn = new TableColumn<>("URL");
         urlColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(page.getValue().getUrl()));
         urlColumn.setPrefWidth(200);
         internalLinks.getColumns().add(urlColumn);
 
-        TableColumn<Page, Integer> inLinkNumColumn = new TableColumn<>("# of in links");
+        TableColumn<Page, Integer> inLinkNumColumn = new TableColumn<>("# of InLinks");
         inLinkNumColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getInLinks().size()));
         inLinkNumColumn.setPrefWidth(70);
         internalLinks.getColumns().add(inLinkNumColumn);
 
-        TableColumn<Page, Integer> outLinkNumColumn = new TableColumn<>("# of out links");
+        TableColumn<Page, Integer> outLinkNumColumn = new TableColumn<>("# of OutLinks");
         outLinkNumColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getOutLinks().size()));
         outLinkNumColumn.setPrefWidth(80);
         internalLinks.getColumns().add(outLinkNumColumn);
 
-        TableColumn<Page, String> typeColumn = new TableColumn<>("content type");
+        TableColumn<Page, String> typeColumn = new TableColumn<>("Content Type");
         typeColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(page.getValue().getType()));
         typeColumn.setPrefWidth(80);
         internalLinks.getColumns().add(typeColumn);
 
-        TableColumn<Page, Integer> sizeColumn = new TableColumn<>("size");
+        TableColumn<Page, Integer> sizeColumn = new TableColumn<>("Size");
         sizeColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getSize()));
         sizeColumn.setPrefWidth(70);
         internalLinks.getColumns().add(sizeColumn);
@@ -551,17 +564,17 @@ public class Controller implements Initializable
      */
     private void initIssues()
     {
-        TableColumn<Issue, String> categoryColumn = new TableColumn<>("category");
+        TableColumn<Issue, String> categoryColumn = new TableColumn<>("Category");
         categoryColumn.setCellValueFactory(statusIssue -> new ReadOnlyStringWrapper(
                 statusIssue.getValue().getCategory()));
         issues.getColumns().add(categoryColumn);
 
-        TableColumn<Issue, String> urlColumn = new TableColumn<>("url");
+        TableColumn<Issue, String> urlColumn = new TableColumn<>("URL");
         urlColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(
                 issue.getValue().getUrl()));
         issues.getColumns().add(urlColumn);
 
-        TableColumn<Issue, String> summaryColumn = new TableColumn<>("summary");
+        TableColumn<Issue, String> summaryColumn = new TableColumn<>("Summary");
         summaryColumn.setCellValueFactory(issue -> new ReadOnlyStringWrapper(issue.getValue().getSummary()));
         issues.getColumns().add(summaryColumn);
 
@@ -571,17 +584,17 @@ public class Controller implements Initializable
 
     private void initKeywords()
     {
-        TableColumn<Keyword, String> wordCol = new TableColumn<>("search text");
+        TableColumn<Keyword, String> wordCol = new TableColumn<>("Search Text");
         wordCol.setCellValueFactory(keyword -> new ReadOnlyStringWrapper(keyword.getValue().getWord()));
         wordCol.setPrefWidth(150);
         keywordsTable.getColumns().add(wordCol);
 
-        TableColumn<Keyword, Integer> occurrenceCol = new TableColumn<>("total occurrences");
+        TableColumn<Keyword, Integer> occurrenceCol = new TableColumn<>("Total Occurrences");
         occurrenceCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(keyword.getValue().getOccurrences()));
         occurrenceCol.setPrefWidth(110);
         keywordsTable.getColumns().add(occurrenceCol);
 
-        TableColumn<Keyword, Integer> pageTotalCol = new TableColumn<>("total pages found");
+        TableColumn<Keyword, Integer> pageTotalCol = new TableColumn<>("Total Pages Found");
         pageTotalCol.setCellValueFactory(keyword -> new ReadOnlyObjectWrapper<>(
                 keyword.getValue().getTotalLocations()));
         pageTotalCol.setPrefWidth(110);

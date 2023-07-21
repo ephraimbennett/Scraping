@@ -289,6 +289,9 @@ public class Page implements DocumentHolder
         //add the content type
         line.add(mType);
 
+        //add the size
+        line.add(String.valueOf(mSize));
+
         //add the inlinks
         line.add(listToString(mInLinks));
 
@@ -330,7 +333,7 @@ public class Page implements DocumentHolder
      * @param map
      * @return
      */
-    private String mapToString(Map<String, String> map)
+    public String mapToString(Map<String, String> map)
     {
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> item : map.entrySet())

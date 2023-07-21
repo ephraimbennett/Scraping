@@ -143,6 +143,9 @@ public class DocumentInfo
         //save the h2's
         line.add(listToString(mH2));
 
+        //save the keywords
+        line.add(listToString(mKeywords));
+
         return line;
     }
 

@@ -159,7 +159,6 @@ public class Grabber
                 } catch (InterruptedException e) {
                     if (mRunning)
                         e.printStackTrace();
-                    System.out.println("Closing thread.");
                 }
             }
         });

@@ -1,5 +1,8 @@
 package com.scrape.ephraim.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Issue
 {
     ///the description of the issue
@@ -59,4 +62,30 @@ public class Issue
      * @return
      */
     public String getSummary() {return mSummary;}
+
+    /**
+     * Returns an array of strings that represent this page object
+     * @return a list
+     */
+    public List<String> saveCSV()
+    {
+        ArrayList<String> line = new ArrayList<>();
+
+        //add the category
+        line.add(mCategory);
+
+        //add the url
+        line.add(mUrl);
+
+        //add the summary
+        line.add(mSummary);
+
+        //add the description
+        line.add(mDescription);
+
+        //add the severity
+        line.add(String.valueOf(mSeverity));
+
+        return line;
+    }
 }

@@ -3,8 +3,10 @@ package com.scrape.ephraim.data;
 import com.scrape.ephraim.crawler.ResponseWrapper;
 import javafx.scene.control.TableView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExternalSite implements DocumentHolder
 {
@@ -26,6 +28,9 @@ public class ExternalSite implements DocumentHolder
     ///size of the site
     private int mSize;
 
+    ///the content type
+    private String mType;
+
     ///document info to hold stuff about this site
     private DocumentInfo mDocumentInfo;
 
@@ -41,6 +46,11 @@ public class ExternalSite implements DocumentHolder
         mUrl = url;
         mInLinks = new HashMap<>();
         mDocumentInfo = new DocumentInfo(this);
+
+        mSize = -1;
+        mHeaders = null;
+        mResponseCode = -11;
+        mType = "";
     }
 
     public void addOccurrence(String url)
@@ -122,5 +132,75 @@ public class ExternalSite implements DocumentHolder
      */
     public void setObserverExternals(TableView<ExternalSite> externals) {mObserverExternals = externals;}
 
+    /**
+     * Returns an array of strings that represent this page object
+     * @return
+     */
+    public List<String> saveCSV()
+    {
+        ArrayList<String> line = new ArrayList<>();
+
+        //add the url
+        line.add(mUrl);
+
+        //add the response code
+        if (mResponseCode != -11)
+            line.add(String.valueOf(mResponseCode));
+        else
+            line.add(" ");
+
+        //add the content type
+        line.add(mType);
+
+        //add the size
+        line.add(String.valueOf(mSize));
+
+        //add the inlinks
+        line.add(listToString(mInLinks.keySet()));
+
+        //add the document info
+        line.addAll(mDocumentInfo.saveCSV());
+
+        //add the headers
+        if (mHeaders != null)
+            line.add(mapToString(mHeaders));
+
+        return line;
+    }
+
+    /**
+     * Converts a list of strings into a csv item
+     * @param list
+     * @return
+     */
+    private String listToString(Iterable<String> list)
+    {
+        StringBuilder links = new StringBuilder();
+        for (String link : list)
+        {
+            links.append(link).append(",");
+        }
+        if (links.length() > 0)//same as above
+            links.deleteCharAt(links.length() - 1);
+        return links.toString();
+    }
+
+    /**
+     * Converts a map into a csv item
+     * @param map
+     * @return
+     */
+    public String mapToString(Map<String, String> map)
+    {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, String> item : map.entrySet())
+        {
+            builder.append(item.getKey()).append("=").append(item.getValue()).append(",");
+        }
+        if (builder.length() > 0)
+            builder.deleteCharAt(builder.length() - 1);
+
+        return builder.toString();
+    }
 
 }

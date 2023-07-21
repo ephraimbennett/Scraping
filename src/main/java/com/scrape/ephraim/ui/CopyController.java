@@ -10,13 +10,16 @@ import java.util.List;
 public class CopyController
 {
     ///the copy button from the menu
-    MenuItem copyItem;
+    private MenuItem copyItem;
 
     //the table views
-    List<TableView> tables;
+    private List<TableView> tables;
 
     ///the list views
-    List<ListView> lists;
+    private List<ListView> lists;
+
+    ///the tree view for the site map
+    private TreeView<String> tree;
 
     /**
      * Constructor
@@ -37,6 +40,7 @@ public class CopyController
             {
                 copyListToClipBoard(list);
             }
+            copyTreeToClipBoard(tree);
         });
     }
 
@@ -67,6 +71,19 @@ public class CopyController
         list.setOnKeyPressed((event) -> {
             if (keyCodeCopy.match(event))
                 copyListToClipBoard(list);
+        });
+    }
+
+    /**
+     * Adds the site map
+     * @param tree view
+     */
+    public void addTree(TreeView<String> tree) {
+        this.tree = tree;
+        final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+        tree.setOnKeyPressed((event) -> {
+            if (keyCodeCopy.match(event))
+                copyTreeToClipBoard(tree);
         });
     }
 
@@ -110,5 +127,34 @@ public class CopyController
                 Clipboard.getSystemClipboard().setContent(clipboardContent);
             }
         }
+    }
+
+    /**
+     * Copies an item selected from the tree view
+     * @param treeView view
+     */
+    public void copyTreeToClipBoard(TreeView<String> treeView)
+    {
+        //set up shop
+        StringBuilder urlBuilder = new StringBuilder();
+        TreeItem<String> currentItem = treeView.getSelectionModel().getSelectedItem();
+
+        //if no item is selected, just stop!
+        if (currentItem == null) return;
+
+        //keep adding the item's value until we get to the root
+        while (currentItem.getParent() != null)
+        {
+            urlBuilder.insert(0, currentItem.getValue()).insert(0, "/");
+            currentItem = currentItem.getParent();
+        }
+
+        //add the https://
+        //since we are always adding a trailing "/" we only need to add http:/
+        urlBuilder.insert(0, "https:/");
+
+        final ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.putString(urlBuilder.toString());
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 }

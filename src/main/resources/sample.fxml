@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -29,8 +30,11 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onExportCSV" text="Export to CSV" />
-                  <MenuItem mnemonicParsing="false" onAction="#onExportJSON" text="Export to JSON" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportJSON" text="Save" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportPages" text="Export Internal Pages" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportExternals" text="Export External Pages" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportIssues" text="Export Issues" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
             </items>
           </Menu>
