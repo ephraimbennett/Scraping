@@ -35,12 +35,14 @@
                   <MenuItem mnemonicParsing="false" onAction="#onExportPages" text="Export Internal Pages" />
                   <MenuItem mnemonicParsing="false" onAction="#onExportExternals" text="Export External Pages" />
                   <MenuItem mnemonicParsing="false" onAction="#onExportIssues" text="Export Issues" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#onExit" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem fx:id="copyItem" mnemonicParsing="false" text="Edit" />
+                  <MenuItem fx:id="copyItem" mnemonicParsing="false" text="Copy" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#onConfiguration" text="Configuration" />
                   <MenuItem mnemonicParsing="false" onAction="#onKeywords" text="Key Words" />
                </items>

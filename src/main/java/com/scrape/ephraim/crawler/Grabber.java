@@ -113,7 +113,7 @@ public class Grabber
                     synchronized (mScraper) {
                         //scrape the response
                         //first check for response code issue
-                        if (response.getResponseCode() > 299) {
+                        if (response.getResponseCode() != 200 && response.getResponseCode() > 0) {
                             mScraper.getIssues().addIssue(new StatusIssue(response.getResponseCode(),
                                     response.getUrl()));
                         }

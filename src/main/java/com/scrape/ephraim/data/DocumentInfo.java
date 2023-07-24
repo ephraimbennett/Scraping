@@ -23,8 +23,8 @@ public class DocumentInfo
     ///the keywords found on this page
     private List<String> mKeywords;
 
-    ///indicates if it has been processed or not
-    private boolean mProcessed;
+    ///the meta setting for indexing
+    private boolean mIndexable;
 
     ///association to either the page or external site being held
     private DocumentHolder mPage;
@@ -39,7 +39,7 @@ public class DocumentInfo
         mMeta = "";
         mH1 = new ArrayList<>();
         mH2 = new ArrayList<>();
-        mProcessed = false;
+        mIndexable = true;
         mKeywords = new ArrayList<>();
         mPage = page;
     }
@@ -56,14 +56,19 @@ public class DocumentInfo
         if (titles.size() > 0)
             mTitle = titles.get(0).text();
 
-        //grab the meta description
+        //grab the meta description & indexibility
         var metas = doc.getElementsByTag("meta");
-        for (var meta : metas)
-        {
-            if (meta.attr("name").equals("description"))
-            {
+        for (var meta : metas) {
+            if (meta.attr("name").equals("description")) {
                 mMeta = meta.attr("content");
             }
+            else if (meta.attr("name").equals("robots") || meta.attr("name").equals("googlebot"))
+            {
+                //check the actual value
+                if (meta.attr("content").contains("noindex"))
+                    mIndexable = false;
+            }
+
         }
 
         //grab the headers
@@ -110,6 +115,12 @@ public class DocumentInfo
      * @return
      */
     public List<String> getH2() {return mH2;}
+
+    /**
+     * Getter for indexable
+     * @return true or false
+     */
+    public boolean getIndexable() {return mIndexable;}
 
     /**
      * Sets the list of keywords

@@ -114,6 +114,11 @@ public class Controller implements Initializable
         menuBarController.onExit();
     }
 
+    public void onEnd()
+    {
+
+    }
+
     /**
      * handler for hitting exportPage to csv
      */
@@ -554,6 +559,12 @@ public class Controller implements Initializable
         sizeColumn.setCellValueFactory(page -> new ReadOnlyObjectWrapper<>(page.getValue().getSize()));
         sizeColumn.setPrefWidth(70);
         internalLinks.getColumns().add(sizeColumn);
+
+        TableColumn<Page, String> indexColumn = new TableColumn<>("Indexable");
+        indexColumn.setCellValueFactory(page -> new ReadOnlyStringWrapper(
+                page.getValue().getDocumentInfo().getIndexable() ? "Indexable" : "Non-Indexable"));
+        indexColumn.setPrefWidth(95);
+        internalLinks.getColumns().add(indexColumn);
 
         internalLinks.getSelectionModel().setCellSelectionEnabled(true);
         copyController.addTable(internalLinks);

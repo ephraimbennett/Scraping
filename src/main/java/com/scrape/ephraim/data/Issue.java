@@ -28,6 +28,12 @@ public class Issue
         mSummary = "";
     }
 
+    /**
+     * Setter for the description
+     * @param description description
+     */
+    public void setDescription(String description) {mDescription = description;}
+
     public void setCategory(String category)
     {
         mCategory = category;
