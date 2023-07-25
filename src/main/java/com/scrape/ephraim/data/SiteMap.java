@@ -109,5 +109,11 @@ public class SiteMap implements Iterable<Page>
      */
     public void setObserverExternals(TableView<ExternalSite> externals) {mObserverExternals = externals;}
 
+    /**
+     * Gets the association
+     * @return a table
+     */
+    public TableView<ExternalSite> getObserverExternals() {return mObserverExternals;}
+
 
 }

@@ -27,7 +27,8 @@ public class DocumentInfo
     private boolean mIndexable;
 
     ///association to either the page or external site being held
-    private DocumentHolder mPage;
+    ///transient because this creates a json loop.
+    private transient DocumentHolder mPage;
 
     /**
      * Default constructor

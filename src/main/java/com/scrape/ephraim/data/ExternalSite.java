@@ -35,7 +35,8 @@ public class ExternalSite implements DocumentHolder
     private DocumentInfo mDocumentInfo;
 
     ///association to the external sites observer
-    private TableView<ExternalSite> mObserverExternals;
+    ///transient because we don't want to save this to a json file
+    private transient TableView<ExternalSite> mObserverExternals;
 
     /**
      * Constructor
@@ -75,7 +76,8 @@ public class ExternalSite implements DocumentHolder
         mHeaders = response.getHeaders();
         mContentType = response.getType();
         mSize = response.getSize();
-        mObserverExternals.getItems().add(this);
+
+        updateObserver();
 
         if (response.getDocument() != null)
             mDocumentInfo.processDocument(response.getDocument(), keywords);
@@ -131,6 +133,14 @@ public class ExternalSite implements DocumentHolder
      * @param externals a table
      */
     public void setObserverExternals(TableView<ExternalSite> externals) {mObserverExternals = externals;}
+
+    /**
+     * Updates the observers
+     */
+    public void updateObserver()
+    {
+        mObserverExternals.getItems().add(this);
+    }
 
     /**
      * Returns an array of strings that represent this page object

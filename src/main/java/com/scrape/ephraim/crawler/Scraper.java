@@ -129,9 +129,15 @@ public class Scraper
 
     /**
      * gets the domain name
-     * @return
+     * @return "http(s)?://..."
      */
     public String getDomain() {return mDomain;}
+
+    /**
+     * Sets the domain name
+     * @param domain name
+     */
+    public void setDomain(String domain) {mDomain = domain;}
 
     /**
      * Getter for the headers association
@@ -159,6 +165,12 @@ public class Scraper
         mConfiguration = configuration;
         mLinkParser.setConfiguration(configuration);
     }
+
+    /**
+     * Getter for the configuration
+     * @return configuration
+     */
+    public Configuration getConfiguration() {return mConfiguration;}
 
     /**
      * Setter for the keywords

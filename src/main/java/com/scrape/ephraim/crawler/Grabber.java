@@ -1,5 +1,6 @@
 package com.scrape.ephraim.crawler;
 
+import com.scrape.ephraim.data.ConnectionRefusedIssue;
 import com.scrape.ephraim.data.FollowupIssue;
 import com.scrape.ephraim.data.StatusIssue;
 import com.scrape.ephraim.data.TimeoutIssue;
@@ -10,7 +11,6 @@ import javafx.scene.control.Label;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
 
 public class Grabber
 {
@@ -42,6 +42,9 @@ public class Grabber
     private Label mRequestSize;
 
     private boolean mFirstTime;
+
+    ///fetcher object
+    private Fetcher mFetcher;
 
 
     /**
@@ -95,12 +98,9 @@ public class Grabber
                         mRequestSize.setText(String.valueOf(mSpider.getRequesting()));
                     });
 
-                    Fetcher fetcher = new Fetcher(url);
-                    ResponseWrapper response = fetcher.ok();
-
-                    int r = Integer.valueOf(mRequestSize.getText()) - 1;
-                    if (mToVisit.isEmpty() && r == 0 && !mFirstTime)
-                        System.out.println("d");
+                    mFetcher = new Fetcher(url);
+                    mFetcher.setTimeout(mScraper.getConfiguration().getTimeout());
+                    ResponseWrapper response = mFetcher.ok();
 
                     //after receiving the request, update the ui
                     mSpider.removeRequesting();
@@ -108,7 +108,6 @@ public class Grabber
                         mRequestSize.setText(String.valueOf(mSpider.getRequesting()));
                     });
 
-                    boolean newLinks = false;
 
                     synchronized (mScraper) {
                         //scrape the response
@@ -118,9 +117,12 @@ public class Grabber
                                     response.getUrl()));
                         }
                         if (response.getResponseCode() == -1)//socket timeout
-                            mScraper.getIssues().addIssue(new TimeoutIssue(response.getUrl()));
+                            mScraper.getIssues().addIssue(new TimeoutIssue(response.getUrl(),
+                                    mScraper.getConfiguration().getTimeout()));
                         if (response.getResponseCode() == -5)
                             mScraper.getIssues().addIssue(new FollowupIssue(response.getUrl()));
+                        if (response.getResponseCode() == -7)
+                            mScraper.getIssues().addIssue(new ConnectionRefusedIssue(response.getUrl()));
 
                         //now check if this url was external
                         if (mScraper.getSiteMap().getExternals().containsKey(url))
@@ -142,7 +144,6 @@ public class Grabber
                                 {
                                     mVisitedLinks.put(crawlLink, true);
                                     mToVisit.put(crawlLink);
-                                    newLinks = true;
                                 }
                             }
                         }
@@ -198,7 +199,11 @@ public class Grabber
     /**
      * Stops the thread gracefully
      */
-    public void stop() {mRunning = false;}
+    public void stop() {
+        mRunning = false;
+        if (mFetcher != null)
+            mFetcher.cancel();
+    }
 
 
 }

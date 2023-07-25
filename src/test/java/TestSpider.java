@@ -19,7 +19,7 @@ public class TestSpider
         keywords.add(new Keyword("Tree"));
         scraper.setKeywords(keywords);
 //        Scraper scraper = new Scraper("https://unclejulios.com/");
-        Spider spider = new Spider(scraper, new Configuration(20, true, true, true));
+        Spider spider = new Spider(scraper, new Configuration(20, 15, true, true, true));
         spider.crawl(scraper.getDomain());
 
         //performance stuff

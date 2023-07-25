@@ -14,9 +14,13 @@ public class Configuration
     ///the number of threads
     private int threadCount;
 
-    public Configuration(int threadCount, boolean testImages, boolean testExternals, boolean crawlSubdomains)
+    ///timeout limit
+    private int timeout;
+
+    public Configuration(int threadCount, int timeout, boolean testImages, boolean testExternals, boolean crawlSubdomains)
     {
         this.threadCount = threadCount;
+        this.timeout = timeout;
         this.testImages = testImages;
         this.testExternals = testExternals;
         this.crawlSubdomains = crawlSubdomains;
@@ -69,5 +73,17 @@ public class Configuration
      * @return bool
      */
     public boolean crawlSubdomains() {return crawlSubdomains;}
+
+    /**
+     * Getter for the timeout
+     * @return seconds
+     */
+    public int getTimeout() {return timeout;}
+
+    /**
+     * Setter for the timeout
+     * @param timeout seconds
+     */
+    public void setTimeout(int timeout) {this.timeout = timeout;}
 
 }

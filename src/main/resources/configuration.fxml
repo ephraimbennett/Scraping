@@ -1,75 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.ConfigurationController">
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scrape.ephraim.ui.ConfigurationController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-         <children>
-            <Label text="Max Thread Count: ">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <TextField fx:id="threadCountField" text="10">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </TextField>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-         <children>
-            <Label text="Test Images: ">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <CheckBox fx:id="testImagesBox" mnemonicParsing="false">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </CheckBox>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-         <children>
-            <Label text="Test External Links: ">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <CheckBox fx:id="testExternalsBox" mnemonicParsing="false">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </CheckBox>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_LEFT" prefWidth="200.0">
-         <children>
-            <Label text="Crawl Subdomains:">
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <CheckBox fx:id="crawlSubdomainsBox" mnemonicParsing="false">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </CheckBox>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#apply" text="Apply" />
-         </children>
-      </HBox>
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="237.0" text="Max Thread Count: " AnchorPane.topAnchor="14.0" />
+      <TextField fx:id="threadCountField" layoutX="133.0" layoutY="10.0" text="10" AnchorPane.leftAnchor="133.0" AnchorPane.topAnchor="10.0" />
+      <Label layoutX="14.0" layoutY="98.0" text="Test Images: " />
+      <CheckBox fx:id="testImagesBox" layoutX="133.0" layoutY="98.0" mnemonicParsing="false" />
+      <Label layoutX="14.0" layoutY="149.0" text="Test External Links: " />
+      <CheckBox fx:id="testExternalsBox" layoutX="133.0" layoutY="149.0" mnemonicParsing="false" />
+      <Label layoutX="15.0" layoutY="200.0" text="Crawl Subdomains:" />
+      <CheckBox fx:id="crawlSubdomainsBox" layoutX="133.0" layoutY="200.0" mnemonicParsing="false" />
+      <Button layoutX="277.0" layoutY="309.0" mnemonicParsing="false" onAction="#apply" text="Apply" />
+      <Label layoutX="15.0" layoutY="57.0" text="Socket Timeout:" />
+      <TextField fx:id="timeoutField" layoutX="133.0" layoutY="53.0" />
    </children>
-</VBox>
+</AnchorPane>

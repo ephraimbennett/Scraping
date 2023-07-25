@@ -30,6 +30,12 @@ public class Fetcher {
     /// list of observers
     private ArrayList<FetcherObserver> mObservers;
 
+    /// the timeout limit
+    private int mTimeout;
+
+    /// client object
+    OkHttpClient mClient;
+
     /**
      * Default constructor
      */
@@ -46,6 +52,7 @@ public class Fetcher {
     {
         mUrl = url;
         mObservers = new ArrayList<>();
+        mTimeout = 15;
     }
 
     /**
@@ -59,6 +66,12 @@ public class Fetcher {
      * @param url
      */
     public void setUrl(String url) {mUrl = url;}
+
+    /**
+     * Setter for the timeout
+     * @param timeout
+     */
+    public void setTimeout(int timeout) {mTimeout = timeout;}
 
     /**
      * Getter for the document
@@ -147,10 +160,10 @@ public class Fetcher {
                 .url(mUrl)
                 .build();
 
-        OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(15, TimeUnit.SECONDS);
+        mClient = new OkHttpClient();
+        mClient.setConnectTimeout(mTimeout, TimeUnit.SECONDS);
 
-        Call call = client.newCall(request);
+        Call call = mClient.newCall(request);
         try {
             Response response = call.execute();
 
@@ -183,6 +196,10 @@ public class Fetcher {
         {
             responseCode = -1;
         }
+        catch (ConnectException e)
+        {
+            responseCode = -7;
+        }
         catch (IOException e)
         {
             e.printStackTrace();
@@ -198,6 +215,14 @@ public class Fetcher {
         }
     }
 
+    /**
+     * Force cancels the call
+     */
+    public void cancel()
+    {
+        if (mClient != null)
+            mClient.getDispatcher().getExecutorService().shutdown();
+    }
 
     /**
      * Adds an observer

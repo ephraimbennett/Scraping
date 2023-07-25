@@ -100,6 +100,9 @@ public class Controller implements Initializable
     ///the scraper
     private Scraper scraper;
 
+    ///the spider
+    private Spider spider;
+
     ///the configuration settings
     private Configuration configuration;
 
@@ -112,11 +115,6 @@ public class Controller implements Initializable
     public void onExit()
     {
         menuBarController.onExit();
-    }
-
-    public void onEnd()
-    {
-
     }
 
     /**
@@ -149,13 +147,31 @@ public class Controller implements Initializable
      */
     public void onExportJSON()
     {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save");
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON File", ".json")
-        , new FileChooser.ExtensionFilter("All file types", "."));
-        File path = chooser.showSaveDialog(page.getScene().getWindow());
-        ExporterJSON exporter = new ExporterJSON(path);
-        exporter.export(scraper);
+        menuBarController.saveJSON(scraper);
+    }
+
+    /**
+     * Handler for opening a json file
+     */
+    public void onOpen()
+    {
+        //get the scraper ready to be filled
+        scraper = new Scraper("");
+        scraper.getSiteMap().setObserverInternalLinks(internalLinks);
+        scraper.getSiteMap().setObserverExternals(externalLinks);
+        scraper.getIssues().setObserverIssues(issues);
+
+        menuBarController.openJSON(scraper);
+
+        createTreeView(scraper);
+
+        populateInternalLinks(scraper);
+        populateExternalLinks(scraper);
+        populateIssues(scraper);
+
+        createOverview();
+
+
     }
 
     /**
@@ -220,6 +236,14 @@ public class Controller implements Initializable
 
     }
 
+    /**
+     * Handler for stopping the crawl
+     */
+    public void onStop()
+    {
+        if (spider != null)
+            spider.closeAll();
+    }
 
     /**
      * Asynchronously crawl
@@ -231,7 +255,7 @@ public class Controller implements Initializable
             long beginTime = System.currentTimeMillis();
 
             scraper = new Scraper(urlField.getText());
-            Spider spider = new Spider(scraper, configuration);
+            spider = new Spider(scraper, configuration);
 
 
             //add keywords
@@ -469,8 +493,9 @@ public class Controller implements Initializable
     {
         //make an empty scraper
         scraper = null;
+        spider = null;
         //set configruation
-        configuration = new Configuration(10, false, true, false);
+        configuration = new Configuration(10, 5, false, true, false);
         //set the keywords
         keywords = new ArrayList<>();
         keywords.add(new Keyword("Tree"));

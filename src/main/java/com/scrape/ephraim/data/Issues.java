@@ -62,6 +62,12 @@ public class Issues implements Iterable<Issue>
     public void setObserverIssues(TableView<Issue> issues) {mObserverIssues = issues;}
 
     /**
+     * Converts this into a basic array
+     * @return basic
+     */
+    public Issue[] toArray() {return mIssues.toArray(new Issue[0]);}
+
+    /**
      * Empties out the list
      */
     public void clear()

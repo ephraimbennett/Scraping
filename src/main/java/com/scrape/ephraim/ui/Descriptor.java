@@ -72,7 +72,7 @@ public class Descriptor
         valueCol.setCellValueFactory(header -> new ReadOnlyStringWrapper(header.getValue().getValue()));
         headersView.getColumns().add(nameCol);
         headersView.getColumns().add(valueCol);
-        var headers = scraper.getHeaders().get(page.getUrl());
+        var headers = page.getHeaders();
         if (headers != null)
         {
             //populate the table

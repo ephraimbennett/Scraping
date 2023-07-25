@@ -21,6 +21,9 @@ public class ConfigurationController implements Initializable
     TextField threadCountField;
 
     @FXML
+    TextField timeoutField;
+
+    @FXML
     CheckBox testImagesBox;
 
     @FXML
@@ -47,11 +50,14 @@ public class ConfigurationController implements Initializable
 
                 return null;
             };
-            TextFormatter<String> textFormatter = new TextFormatter<>(filter);
-            threadCountField.setTextFormatter(textFormatter);
+            TextFormatter<String> threadFormatter = new TextFormatter<>(filter);
+            TextFormatter<String> timeoutFormatter = new TextFormatter<>(filter);
+            threadCountField.setTextFormatter(threadFormatter);
+            timeoutField.setTextFormatter(timeoutFormatter);
 
             //reflect the fields with the actual info
             threadCountField.setText(String.valueOf(configuration.getThreadCount()));
+            timeoutField.setText(String.valueOf(configuration.getTimeout()));
             testImagesBox.setSelected(configuration.testImages());
             testExternalsBox.setSelected(configuration.testExternals());
             crawlSubdomainsBox.setSelected(configuration.crawlSubdomains());
@@ -61,6 +67,7 @@ public class ConfigurationController implements Initializable
     public void apply()
     {
         configuration.setThreadCount(Integer.valueOf(threadCountField.getText()));
+        configuration.setTimeout(Integer.valueOf(threadCountField.getText()));
         configuration.setTestExternals(testExternalsBox.isSelected());
         configuration.setTestImages(testImagesBox.isSelected());
         configuration.setCrawlSubdomains(crawlSubdomainsBox.isSelected());

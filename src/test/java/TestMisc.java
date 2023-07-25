@@ -1,3 +1,9 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.scrape.ephraim.crawler.Scraper;
+import com.scrape.ephraim.data.ExternalSite;
+import com.scrape.ephraim.data.Page;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -6,7 +12,15 @@ public class TestMisc
 {
     public static void main(String[] args)
     {
-        testEscape();
+        testGson();
+    }
+
+    public static void testGson()
+    {
+        ExternalSite externalSite = new ExternalSite("https://lily.com/");
+
+        Gson gson = new GsonBuilder().create();
+        System.out.println(gson.toJson(externalSite));
     }
 
     public static void testEscape()
